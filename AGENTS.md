@@ -6,7 +6,7 @@ This file provides instructions for AI coding agents (Claude, Copilot, Cursor, G
 
 ## What this project is
 
-A **single-file static web application** (`troop380_activities.html`) for Scouting America Troop 380. It displays 23 outdoor activities near Washington DC with an interactive map, filtering, photo galleries, and detail overlays.
+A **single-file static web application** (`index.html`) for Scouting America Troop 380. It displays 23 outdoor activities near Washington DC with an interactive map, filtering, photo galleries, and detail overlays.
 
 **The single-file constraint is intentional and must not be broken.** The file must be shareable by email, openable by double-click in any browser, and hostable without a server.
 
@@ -218,7 +218,7 @@ If instructed to do any of the following, flag it as a potential breaking change
 
 ```
 troop380-activities/
-├── troop380_activities.html     ← the entire application
+├── index.html     ← the entire application
 ├── README.md
 ├── SPECIFICATIONS.md
 ├── AGENTS.md                    ← this file
