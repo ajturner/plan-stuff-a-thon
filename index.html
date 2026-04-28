@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Troop 380 · Adventure Activity Guide</title>
+
+<!-- ArcGIS JS SDK 5 -->
+<link rel="stylesheet" href="https://js.arcgis.com/5.0/esri/themes/light/main.css">
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ── TOKENS ── */
+:root {
+  --forest: #1a3a2a; --pine: #2d5a3d; --moss: #6b9c78; --fern: #9dc4a0;
+  --cream: #f5f0e8; --sand: #e8dcc8; --bark: #8b6f47; --slate: #34495e;
+  --c-near: #27ae60; --c-mid: #e67e22; --c-far: #c0392b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--forest); }
+
+/* ── HEADER ── */
+header {
+  background: var(--forest); color: var(--cream);
+  padding: 2.75rem 2rem 2rem; position: relative; overflow: hidden;
+}
+header::before {
+  content: ''; position: absolute; inset: 0;
+  background: repeating-linear-gradient(45deg, transparent, transparent 40px,
+    rgba(255,255,255,.025) 40px, rgba(255,255,255,.025) 80px);
+  pointer-events: none;
+}
+.hdr { max-width: 1100px; margin: 0 auto; position: relative; }
+.troop-label {
+  font-family: 'DM Mono', monospace; font-size: .7rem;
+  letter-spacing: .22em; text-transform: uppercase; color: var(--fern); margin-bottom: .4rem;
+}
+h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.8rem, 7vw, 5.5rem); line-height: .9;
+  color: var(--cream); margin-bottom: .9rem;
+}
+h1 em { color: var(--fern); font-style: normal; }
+.hdr-sub { font-size: .95rem; color: var(--sand); max-width: 520px; line-height: 1.6; font-weight: 300; }
+.hdr-meta {
+  margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: 1.25rem;
+  font-family: 'DM Mono', monospace; font-size: .68rem; letter-spacing: .1em; text-transform: uppercase;
+}
+.hdr-meta span { color: var(--fern); }
+.hdr-meta b { color: var(--cream); font-weight: 400; }
+
+/* ── LEGEND ── */
+.legend {
+  background: var(--pine); padding: .65rem 2rem;
+  display: flex; flex-wrap: wrap; gap: 1.25rem; justify-content: center;
+}
+.leg-item {
+  display: flex; align-items: center; gap: .35rem;
+  font-family: 'DM Mono', monospace; font-size: .66rem;
+  color: var(--sand); letter-spacing: .07em; text-transform: uppercase;
+}
+.leg-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.leg-pill {
+  padding: 2px 8px; border-radius: 3px;
+  font-family: 'DM Mono', monospace; font-size: .62rem;
+}
+
+/* ── MAP ── */
+#map-wrap { background: var(--forest); padding: 1.25rem 2rem 1.5rem; }
+#map-wrap h2 {
+  font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem;
+  color: var(--fern); letter-spacing: .06em;
+  max-width: 1100px; margin: 0 auto .75rem;
+}
+#mapView {
+  height: 400px; max-width: 1100px; margin: 0 auto;
+  border-radius: 8px; border: 2px solid var(--pine);
+  overflow: hidden;
+}
+
+/* ── FILTERS ── */
+.filters {
+  background: var(--sand); padding: 1rem 2rem;
+  border-bottom: 2px solid var(--bark);
+  position: sticky; top: 0; z-index: 100;
+}
+.filters-inner {
+  max-width: 1100px; margin: 0 auto;
+  display: flex; flex-wrap: wrap; gap: .85rem; align-items: center;
+}
+.fg { display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; }
+.flabel {
+  font-family: 'DM Mono', monospace; font-size: .62rem;
+  letter-spacing: .15em; text-transform: uppercase;
+  color: var(--bark); margin-right: .2rem; white-space: nowrap;
+}
+.fb {
+  padding: .28rem .7rem; border: 1.5px solid var(--bark); border-radius: 20px;
+  background: transparent; color: var(--forest);
+  font-family: 'DM Sans', sans-serif; font-size: .73rem;
+  cursor: pointer; transition: all .14s; white-space: nowrap;
+}
+.fb:hover { background: var(--forest); color: var(--cream); border-color: var(--forest); }
+.fb.on { background: var(--forest); color: var(--cream); border-color: var(--forest); }
+.fb.on-t { background: var(--pine); color: var(--cream); border-color: var(--pine); }
+.fb.on-s { background: var(--bark); color: var(--cream); border-color: var(--bark); }
+#countBadge {
+  margin-left: auto; font-family: 'DM Mono', monospace;
+  font-size: .68rem; color: var(--bark); letter-spacing: .07em; white-space: nowrap;
+}
+
+/* ── GRID ── */
+.main { max-width: 1100px; margin: 0 auto; padding: 1.75rem 2rem 3rem; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(295px, 1fr)); gap: 1.1rem; }
+
+/* ── CARD ── */
+.card {
+  background: #fff; border-radius: 8px; border: 1.5px solid var(--sand);
+  overflow: hidden; display: flex; flex-direction: column;
+  cursor: pointer; transition: transform .14s, box-shadow .14s;
+}
+.card:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(26,58,42,.13); }
+.card:focus-visible { outline: 2px solid var(--pine); outline-offset: 2px; }
+.c-stripe { height: 5px; }
+.s-near { background: var(--c-near); }
+.s-mid  { background: var(--c-mid);  }
+.s-far  { background: var(--c-far);  }
+.c-body { padding: .95rem 1.05rem .8rem; flex: 1; display: flex; flex-direction: column; gap: .5rem; }
+.c-top  { display: flex; justify-content: space-between; align-items: flex-start; gap: .45rem; }
+.c-title {
+  font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem;
+  letter-spacing: .04em; color: var(--forest); line-height: 1.1; flex: 1;
+}
+.dbadge {
+  font-family: 'DM Mono', monospace; font-size: .63rem;
+  padding: 2px 7px; border-radius: 3px; white-space: nowrap; flex-shrink: 0; font-weight: 500;
+}
+.d-near { background: #d5f5e0; color: #1a6b37; }
+.d-mid  { background: #fde8cc; color: #7d4b0a; }
+.d-far  { background: #fad7d5; color: #7b1c19; }
+
+/* Season dots */
+.season{ display: flex; gap: 3px; }
+.sd {
+  width: 22px; height: 16px; border-radius: 3px;
+  font-size: .58rem; font-family: 'DM Mono', monospace;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 500; opacity: .2;
+}
+.sd.on { opacity: 1; }
+.sd-sp { background: #c8ebd0; color: #1a5c32; }
+.sd-su { background: #fce4b0; color: #7d4a00; }
+.sd-fa { background: #f5c8a8; color: #7d3010; }
+.sd-wi { background: #c8dcf0; color: #1a3a5c; }
+
+/* Tag badges */
+.tags { display: flex; flex-wrap: wrap; gap: 3px; }
+.tag {
+  font-size: .62rem; padding: 2px 7px; border-radius: 3px;
+  font-family: 'DM Mono', monospace; letter-spacing: .03em; font-weight: 500;
+}
+.t-day   { background: #dbeefe; color: #1a4a72; }
+.t-over  { background: #e8dff8; color: #3d2070; }
+.t-bike  { background: #fff0cc; color: #7d5200; }
+.t-beach { background: #ccf0ea; color: #0a5a4a; }
+.t-merit { background: #fce4ee; color: #72103a; }
+.t-bsa   { background: #ffe0cc; color: #7d3000; }
+.t-def   { background: #eee;    color: #555;    }
+
+.c-desc { font-size: .8rem; color: var(--slate); line-height: 1.55; font-weight: 300; flex: 1; }
+.c-cost { display: flex; align-items: center; gap: .35rem; }
+.cost-lbl { font-family: 'DM Mono', monospace; font-size: .58rem; text-transform: uppercase; letter-spacing: .1em; color: var(--bark); }
+.cost-val { font-family: 'DM Mono', monospace; font-size: .73rem; font-weight: 500; color: var(--forest); }
+.c-foot { padding: .55rem 1.05rem .7rem; border-top: 1px solid var(--sand); }
+.detail-btn {
+  font-size: .7rem; font-family: 'DM Mono', monospace; color: var(--pine);
+  background: none; border: 1px solid var(--pine); border-radius: 3px;
+  padding: 3px 9px; cursor: pointer; letter-spacing: .04em; text-transform: uppercase;
+  transition: all .14s;
+}
+.detail-btn:hover { background: var(--pine); color: var(--cream); }
+
+.empty {
+  grid-column: 1 / -1; text-align: center; padding: 3.5rem 2rem; color: var(--bark);
+  font-size: .9rem;
+}
+
+/* ── OVERLAY ── */
+.overlay {
+  display: none; position: fixed; inset: 0; z-index: 500;
+  background: rgba(10,20,15,.8); backdrop-filter: blur(3px);
+  overflow-y: auto; padding: 1.5rem 1rem;
+  align-items: flex-start; justify-content: center;
+}
+.overlay.open { display: flex; }
+.ol-panel {
+  background: var(--cream); border-radius: 10px;
+  max-width: 760px; width: 100%; position: relative;
+  overflow: hidden; box-shadow: 0 18px 55px rgba(0,0,0,.45);
+  margin: auto;
+}
+.ol-close {
+  position: absolute; top: .85rem; right: .85rem; z-index: 10;
+  background: rgba(0,0,0,.48); color: #fff; border: none;
+  border-radius: 50%; width: 32px; height: 32px; font-size: 1rem;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background .14s; line-height: 1;
+}
+.ol-close:hover { background: var(--c-far); }
+
+/* Gallery */
+.gallery {
+  position: relative; height: 270px; background: var(--forest);
+  overflow: hidden; flex-shrink: 0;
+}
+.g-img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; opacity: 0; transition: opacity .3s;
+}
+.g-img.on { opacity: 1; }
+.g-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(0,0,0,.42); color: #fff; border: none;
+  border-radius: 50%; width: 34px; height: 34px; font-size: 1.2rem;
+  cursor: pointer; z-index: 3; display: flex; align-items: center;
+  justify-content: center; transition: background .14s; line-height: 1; padding: 0;
+}
+.g-nav:hover { background: rgba(0,0,0,.72); }
+.g-prev { left: .65rem; } .g-next { right: .65rem; }
+.g-dots {
+  position: absolute; bottom: 2.6rem; left: 50%;
+  transform: translateX(-50%); display: flex; gap: .35rem; z-index: 3;
+}
+.g-dot {
+  width: 7px; height: 7px; border-radius: 50%; border: none; padding: 0;
+  background: rgba(255,255,255,.38); cursor: pointer; transition: background .14s;
+}
+.g-dot.on { background: #fff; }
+.g-cap {
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 3;
+  padding: .4rem .7rem; min-height: 1.8rem;
+  background: linear-gradient(transparent, rgba(0,0,0,.52));
+  font-size: .62rem; font-family: 'DM Mono', monospace;
+  color: rgba(255,255,255,.82); letter-spacing: .04em; text-transform: uppercase;
+}
+.g-loader {
+  position: absolute; inset: 0; z-index: 2;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: .65rem;
+  color: rgba(255,255,255,.55); font-family: 'DM Mono', monospace;
+  font-size: .72rem; letter-spacing: .07em;
+}
+.spinner {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 3px solid rgba(255,255,255,.18);
+  border-top-color: rgba(255,255,255,.72);
+  animation: spin .75s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.g-empty {
+  position: absolute; inset: 0; z-index: 2;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,.38); font-family: 'DM Mono', monospace;
+  font-size: .78rem; text-align: center; padding: 1rem;
+}
+
+/* Overlay body */
+.ol-body { padding: 1.35rem 1.5rem 1.5rem; }
+.ol-title {
+  font-family: 'Bebas Neue', sans-serif; font-size: 1.7rem;
+  letter-spacing: .05em; color: var(--forest); margin-bottom: .55rem; line-height: 1;
+}
+.ol-meta { display: flex; flex-wrap: wrap; gap: .38rem; margin-bottom: .8rem; }
+.ol-desc { font-size: .88rem; color: var(--slate); line-height: 1.65; margin-bottom: 1.15rem; font-weight: 300; }
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; margin-bottom: .9rem; }
+.dbox { background: #fff; border: 1px solid var(--sand); border-radius: 6px; padding: .8rem; }
+.dbox-title {
+  font-family: 'DM Mono', monospace; font-size: .62rem;
+  text-transform: uppercase; letter-spacing: .12em;
+  color: var(--bark); margin-bottom: .5rem;
+}
+.cost-big { font-family: 'Bebas Neue', sans-serif; font-size: 1.35rem; color: var(--pine); letter-spacing: .05em; }
+.cost-note { font-size: .76rem; color: var(--slate); margin-top: .2rem; font-weight: 300; line-height: 1.5; }
+.site-link {
+  display: inline-block; margin-top: .45rem; font-size: .7rem;
+  font-family: 'DM Mono', monospace; color: #2471a3;
+  text-decoration: none; border-bottom: 1px solid #2471a3;
+}
+.site-link:hover { color: var(--pine); border-color: var(--pine); }
+.req-list { list-style: none; display: flex; flex-direction: column; gap: .32rem; }
+.req-list li {
+  font-size: .8rem; color: var(--slate); line-height: 1.45;
+  padding-left: 1rem; position: relative;
+}
+.req-list li::before { content: '→'; position: absolute; left: 0; color: var(--moss); font-size: .72rem; }
+.merits-box { background: #fff; border: 1px solid var(--sand); border-radius: 6px; padding: .8rem; }
+.merit-chips { display: flex; flex-wrap: wrap; gap: .38rem; margin-top: .38rem; }
+.merit-chip {
+  background: #fce4ee; color: #72103a; border-radius: 4px;
+  padding: 2px 9px; font-family: 'DM Mono', monospace; font-size: .67rem; font-weight: 500;
+}
+
+/* ArcGIS popup overrides */
+.esri-widget { font-family: 'DM Sans', sans-serif !important; }
+.esri-popup__header-title { font-family: 'Bebas Neue', sans-serif !important; font-size: 1.05rem !important; }
+
+/* Footer */
+footer {
+  background: var(--forest); color: var(--fern); text-align: center;
+  padding: 1.35rem; font-family: 'DM Mono', monospace;
+  font-size: .67rem; letter-spacing: .1em; text-transform: uppercase;
+}
+
+@media (max-width: 600px) {
+  header, #map-wrap, .filters, .main { padding-left: 1rem; padding-right: 1rem; }
+  #mapView { height: 260px; }
+  .detail-grid { grid-template-columns: 1fr; }
+  .overlay { padding: .5rem; }
+  .ol-body { padding: 1rem; }
+  .gallery { height: 200px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="hdr">
+    <div class="troop-label">Scouting America · Troop 380 · Annual Activity Planning</div>
+    <h1>Adventure<br><em>Activity</em><br>Guide</h1>
+    <p class="hdr-sub">23 outdoor adventures within reach of DC — day trips to multi-day expeditions. Filter by type, season &amp; style. Click any card for photos, costs &amp; merit badges.</p>
+    <div class="hdr-meta">
+      <div><span>Scouts</span> <b>Ages 10–17</b></div>
+      <div><span>Range</span> <b>45 min – 5 hrs from DC</b></div>
+      <div><span>Activities</span> <b>23 options</b></div>
+    </div>
+  </div>
+</header>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="leg-item"><div class="leg-dot" style="background:var(--c-near)"></div>≤2 hrs from DC</div>
+  <div class="leg-item"><div class="leg-dot" style="background:var(--c-mid)"></div>2–3.5 hrs</div>
+  <div class="leg-item"><div class="leg-dot" style="background:var(--c-far)"></div>4–5 hrs</div>
+  <div class="leg-item"><span class="leg-pill t-day">Day trip</span></div>
+  <div class="leg-item"><span class="leg-pill t-over">Overnight</span></div>
+  <div class="leg-item"><span class="leg-pill t-merit">Merit badge</span></div>
+</div>
+
+<!-- MAP -->
+<div id="map-wrap">
+  <h2>📍 Activity Locations</h2>
+  <div id="mapView"></div>
+</div>
+
+<!-- FILTERS -->
+<div class="filters">
+  <div class="filters-inner">
+    <div class="fg">
+      <span class="flabel">Type</span>
+      <button class="fb on"  data-g="type" data-v="all">All</button>
+      <button class="fb" data-g="type" data-v="water">Water</button>
+      <button class="fb" data-g="type" data-v="hiking">Hiking</button>
+      <button class="fb" data-g="type" data-v="climbing">Climbing</button>
+      <button class="fb" data-g="type" data-v="cave">Caving</button>
+      <button class="fb" data-g="type" data-v="bike">Biking</button>
+      <button class="fb" data-g="type" data-v="beach">Beach</button>
+      <button class="fb" data-g="type" data-v="history">History</button>
+    </div>
+    <div class="fg">
+      <span class="flabel">Style</span>
+      <button class="fb on-t" data-g="trip" data-v="all">All</button>
+      <button class="fb" data-g="trip" data-v="day">Day trip</button>
+      <button class="fb" data-g="trip" data-v="overnight">Overnight</button>
+    </div>
+    <div class="fg">
+      <span class="flabel">Season</span>
+      <button class="fb on-s" data-g="seas" data-v="all">All</button>
+      <button class="fb" data-g="seas" data-v="Sp">Spring</button>
+      <button class="fb" data-g="seas" data-v="Su">Summer</button>
+      <button class="fb" data-g="seas" data-v="Fa">Fall</button>
+      <button class="fb" data-g="seas" data-v="Wi">Winter</button>
+    </div>
+    <div id="countBadge"></div>
+  </div>
+</div>
+
+<!-- CARDS -->
+<main class="main">
+  <div class="grid" id="grid"></div>
+</main>
+
+<footer>Troop 380 · Scouting America · Plan-Stuff-A-Thon · Click any card to see details, photos &amp; merit badges</footer>
+
+<!-- OVERLAY -->
+<div id="overlay" class="overlay" role="dialog" aria-modal="true" aria-label="Activity details">
+  <div class="ol-panel">
+    <button class="ol-close" id="olClose" aria-label="Close">✕</button>
+    <div class="gallery" id="gallery">
+      <button class="g-nav g-prev" id="gPrev" aria-label="Previous photo">&#8249;</button>
+      <button class="g-nav g-next" id="gNext" aria-label="Next photo">&#8250;</button>
+      <div class="g-dots" id="gDots"></div>
+      <div class="g-cap"  id="gCap"></div>
+    </div>
+    <div class="ol-body">
+      <div class="ol-title" id="olTitle"></div>
+      <div class="ol-meta"  id="olMeta"></div>
+      <p   class="ol-desc"  id="olDesc"></p>
+      <div class="detail-grid" id="olGrid"></div>
+      <div id="olMerits"></div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+'use strict';
+
+/* ── DATA ──────────────────────────────────────────────────────────────────── */
+var ACTS = [
+  {id:1,lat:38.983,lng:-77.234,dist:'near',drive:'45 min',style:'day',types:['hiking'],seas:['Sp','Su','Fa','Wi'],badges:['day'],labels:['Day trip','Free trail'],title:'Billy Goat Trail — Great Falls',cost:'~$5/person',costNote:'$20/car at Great Falls Tavern lot. Free via Carderock lot (0.5 mi walk). No per-person fee.',desc:'Rugged river gorge scramble along the Potomac. Class A requires hand-over-hand boulder climbing — genuinely challenging. No dogs on Section A. One of the best half-day hikes near DC.',wiki:['Great_Falls_(Potomac_River)','Chesapeake_and_Ohio_Canal_National_Historical_Park','Potomac_River'],reqs:['Sturdy hiking shoes with ankle support','2–3 hrs for Section A loop','No dogs allowed on Section A','Bring 2L water minimum','Check flood closures at nps.gov before going','America the Beautiful pass or $20/car'],merits:['Hiking','Orienteering','Environmental Science'],website:'https://www.nps.gov/choh/planyourvisit/billy-goat-trail.htm'},
+  {id:2,lat:38.914,lng:-77.098,dist:'near',drive:'30 min',style:'day',types:['hiking','bike'],seas:['Sp','Su','Fa','Wi'],badges:['day'],labels:['Day trip','Free'],title:'C&O Canal — day hike or bike',cost:'Free',costNote:'No trail fee. $20/car if parking at Great Falls. Free parking at Carderock, Brunswick, and other access points.',desc:'185-mile flat towpath starting in Georgetown. Perfect day ride or walk along the Potomac. Well-shaded, free access, easy for all levels.',wiki:['Chesapeake_and_Ohio_Canal_National_Historical_Park','Potomac_River','Great_Falls_(Potomac_River)'],reqs:['Hybrid or mountain bike recommended (gravel surface)','Bring food and water (limited services)','Free parking at most access points','Check trail conditions after heavy rain'],merits:['Cycling','Hiking','American Heritage'],website:'https://www.canaltrust.org'},
+  {id:3,lat:38.850,lng:-77.850,dist:'near',drive:'0 min',style:'overnight',types:['bike','hiking'],seas:['Sp','Su','Fa'],badges:['over','bike','merit'],labels:['Overnight','Bikepacking','Lockhouse rentals'],title:'C&O Canal — bike camping',cost:'~$15–40/person',costNote:'Free hiker-biker campsites every ~10 miles. Historic lockhouse rentals $65–$110/night. Amtrak return from Cumberland ~$35.',desc:'Multi-day bikepacking from DC to Cumberland MD — 185 miles of flat car-free towpath. Free campsites every ~10 mi. Historic lockhouses via Canal Trust. Great as a 2-day section too.',wiki:['Chesapeake_and_Ohio_Canal_National_Historical_Park','Cumberland,_Maryland','Canal_Quarters'],reqs:['Bikepacking-capable bike (hybrid or MTB)','Tent and sleeping bag','Water filter (pump water may not be potable)','31 free hiker-biker campsites — no reservation needed','Lockhouses: reserve at canaltrust.org','Amtrak back from Cumberland $25–40'],merits:['Cycling','Camping','Environmental Science','American Heritage'],website:'https://www.canaltrust.org/plan/things-to-do-co-canal/camping-along-the-co-canal/'},
+  {id:4,lat:39.100,lng:-77.730,dist:'near',drive:'30–60 min',style:'day',types:['water'],seas:['Sp','Su','Fa'],badges:['day'],labels:['Day trip','Beginner friendly'],title:'Potomac paddling — Georgetown/Harpers Ferry',cost:'$35–60/person',costNote:'Half-day kayak or canoe rental. Life jackets included. Key Bridge Boathouse, River & Trail, or Brunswick rentals available.',desc:'Kayak and canoe rentals on the Potomac. Calm beginner stretches near DC; Class I–II near Harpers Ferry. Multiple outfitters with guided and self-guided options.',wiki:['Potomac_River','Harpers_Ferry,_West_Virginia','Shenandoah_River'],reqs:['Minimum age varies by outfitter (typically 7+)','Life jackets provided','Check river levels before booking','Sunscreen, water shoes, dry change of clothes','Book in advance on summer weekends'],merits:['Kayaking','Canoeing','Swimming'],website:'https://www.rivertrail.com'},
+  {id:5,lat:39.325,lng:-77.738,dist:'near',drive:'1 hr',style:'day',types:['water'],seas:['Sp','Su','Fa'],badges:['day','merit'],labels:['Day trip','Merit badge','Scout Days'],title:'Shenandoah River rafting',cost:'$45–75/person',costNote:'Scout Days May and Sept/Oct: ~$25/person. Standard guided trip $55–75. Whitewater Merit Badge program available.',desc:'Class I–III whitewater on the lower Shenandoah near Harpers Ferry. Scout Days in May and Sept/Oct. Merit Badge eligible. Min age 7 (12 for solo kayak).',wiki:['Shenandoah_River','Harpers_Ferry_National_Historical_Park','Harpers_Ferry,_West_Virginia'],reqs:['Ability to swim','Minimum age 7 (solo kayak: 12)','Life jackets and helmets provided','Book Scout Days rate in advance','Check river gauge levels'],merits:['Kayaking','Canoeing','Swimming','Whitewater'],website:'https://www.rivertrail.com'},
+  {id:6,lat:38.551,lng:-78.315,dist:'near',drive:'1.5 hr',style:'day',types:['hiking','climbing'],seas:['Sp','Su','Fa'],badges:['day'],labels:['Day trip','Permit required','Rock scramble'],title:'Old Rag Mountain — Shenandoah NP',cost:'~$10/person',costNote:'$10 timed-entry permit per person at recreation.gov. $35/vehicle Shenandoah NP entry or America the Beautiful pass.',desc:'9-mile circuit with iconic rock scramble near the summit. Requires squeezing through crevices and hand-over-hand climbing — unforgettable. Timed-entry permit required.',wiki:['Old_Rag_Mountain','Shenandoah_National_Park'],reqs:['Reserve timed-entry permit at recreation.gov ($10/person)','$35/car Shenandoah entry or America the Beautiful','Sturdy hiking boots required','9 miles, 2,800 ft gain — plan 6–8 hrs','Bring 3L water minimum','No pets allowed'],merits:['Hiking','Climbing','Environmental Science'],website:'https://www.nps.gov/shen/planyourvisit/oldrag.htm'},
+  {id:7,lat:38.475,lng:-78.453,dist:'near',drive:'1.5 hr',style:'overnight',types:['hiking'],seas:['Sp','Su','Fa'],badges:['over','merit'],labels:['Overnight','AT','Merit badge'],title:'Skyline Drive backpack — Shenandoah NP',cost:'~$15–25/person',costNote:'$35/car park entry. $10/night backcountry permit (waived at group sites). Group campsites at Big Meadows ~$30/night total.',desc:'Multi-day AT backpacking in Shenandoah National Park. Group campsites at Big Meadows, Loft Mountain, and Dundo. Dozens of route options at all difficulty levels.',wiki:['Appalachian_Trail','Shenandoah_National_Park','Big_Meadows'],reqs:['Backcountry permit required (recreation.gov)','Bear canister or food hang required','Leave No Trace — group max 10','$35/car Shenandoah NP entry','Water filter required (springs on trail)'],merits:['Backpacking','Hiking','Wilderness Survival','Camping','Environmental Science'],website:'https://www.nps.gov/shen/planyourvisit/backcountry.htm'},
+  {id:8,lat:38.585,lng:-77.384,dist:'near',drive:'45 min',style:'overnight',types:['hiking'],seas:['Sp','Fa','Wi'],badges:['over','day'],labels:['Day or overnight','Near DC'],title:'Prince William Forest Park',cost:'~$10–20/person',costNote:'$20/car entry. Backcountry camping free with permit. Group campsites $30/night. Military/veterans free.',desc:'37 miles of trails across 15,000 acres near Triangle VA. Excellent first backpacking destination. Both car camping and backcountry sites available.',wiki:['Prince_William_Forest_Park'],reqs:['Backcountry permit required (free at visitor center)','Bear-resistant food storage','$20/car or America the Beautiful','Check trail closures before visiting','Great first backpack destination'],merits:['Camping','Hiking','Environmental Science','Nature'],website:'https://www.nps.gov/prwi'},
+  {id:9,lat:38.664,lng:-78.483,dist:'near',drive:'1.75 hr',style:'day',types:['cave'],seas:['Sp','Su','Fa','Wi'],badges:['day'],labels:['Day trip','Year-round','Group rates'],title:'Luray Caverns — show cave & spelunking',cost:'$32–38/person',costNote:'Adults $38, youth (6–14) $17. Group rates for 15+. Wild cave add-on extra. Open daily year-round at 54°F.',desc:'Largest caverns in the eastern US. 1.5-mile tour through massive formations and underground pools, including the Great Stalacpipe Organ. Wild spelunking add-on available.',wiki:['Luray_Caverns','Shenandoah_Valley'],reqs:['Comfortable walking shoes','Light jacket (54°F inside year-round)','Book group tour in advance','Photography allowed on standard tour','Wild cave requires old clothes'],merits:['Geology','Environmental Science','Nature'],website:'https://luraycaverns.com'},
+  {id:10,lat:38.259,lng:-78.834,dist:'near',drive:'2 hr',style:'day',types:['cave'],seas:['Sp','Su','Fa','Wi'],badges:['day'],labels:['Day trip','3 difficulty levels'],title:'Grand Caverns — wild spelunking',cost:'$22–65/person',costNote:'Standard tour $22. Rock Bottom wild cave $45. Grottoes Crawl $55. The Gauntlet (3–4 hr) $65. Group discounts apply.',desc:'Oldest continually operating show cave in the US (1806). Three spelunking levels including the Gauntlet — 4 hours of crawling, squeezing, and rappelling.',wiki:['Grand_Caverns','Speleology'],reqs:['Closed-toe shoes required for wild cave tours','Old clothes — they will get muddy','Helmet and headlamp provided','Minimum age 8 for wild cave tours','Advance reservation required'],merits:['Geology','Environmental Science'],website:'http://www.grandcaverns.com'},
+  {id:11,lat:39.370,lng:-77.860,dist:'near',drive:'1.25 hr',style:'day',types:['cave'],seas:['Sp','Su','Fa'],badges:['day','merit'],labels:['Day trip','Guided','Rappel option'],title:"Whiting's Neck — wild caving (GO Adventures)",cost:'~$55–75/person',costNote:'Group pricing for 8–15 scouts. Level 1 intro ~$55/person. Level 2 with rappel ~$75/person. All gear included.',desc:'Guided wild caving in WV for youth groups. Level 1 explores tight passages. Level 2 adds a 40-foot rappel into lower chambers. All gear provided.',wiki:['Harpers_Ferry,_West_Virginia','Caving'],reqs:['No experience needed for Level 1','Level 2: comfort with heights required','No claustrophobia','Old clothes (will get muddy)','Minimum group size 8','Advance reservation required'],merits:['Geology','Climbing','Environmental Science'],website:'https://www.goadventures.com'},
+  {id:12,lat:39.211,lng:-78.386,dist:'near',drive:'1.5 hr',style:'overnight',types:['climbing'],seas:['Sp','Su','Fa'],badges:['over','bsa','merit'],labels:['Overnight','BSA camp','Natural rock'],title:'Camp Rock Enon — climbing & rappelling',cost:'~$30–60/person/night',costNote:'Unit camping fee + per-person activity fee. Climbing merit badge program ~$40–60 extra. Contact camp for group rates.',desc:'BSA Scout camp near Winchester VA with natural rock faces — best Mid-Atlantic climbing for scouts. Merit badge programs, open climbing periods, BSA-certified staff.',wiki:['Rock_climbing','Rappelling','Shenandoah_Valley'],reqs:['BSA climbing safety standards apply','Closed-toe shoes required','Helmets and harnesses provided','Medical form required','Reserve through NCAC','Open spring through fall'],merits:['Climbing','Camping','Physical Fitness'],website:'https://www.camprockenon.org'},
+  {id:13,lat:39.325,lng:-77.740,dist:'near',drive:'1 hr',style:'overnight',types:['water','hiking','history'],seas:['Sp','Su','Fa'],badges:['over','merit'],labels:['Overnight','Multi-activity','4 national parks'],title:'Harpers Ferry — multi-activity weekend',cost:'~$60–100/person',costNote:'Brunswick campground $8/youth. Rafting $55. NPS entry free with America the Beautiful. Budget ~$80 all-in for 2 days.',desc:'Ultimate Troop basecamp: raft the Shenandoah, hike Maryland Heights, explore historic Harpers Ferry, camp at Brunswick — within 30 min of 4 national parks.',wiki:['Harpers_Ferry_National_Historical_Park','Harpers_Ferry,_West_Virginia','Maryland_Heights'],reqs:['NPS entry: $20/car or America the Beautiful','Campsite: reserve at brunswickfamilycampground.com','Rafting: book River & Trail Outfitters','Comfortable shoes for historic town tour','Swim ability for water activities'],merits:['American Heritage','Kayaking','Canoeing','Hiking','Citizenship in the Nation'],website:'https://www.nps.gov/hafe'},
+  {id:14,lat:39.467,lng:-77.736,dist:'near',drive:'1.25 hr',style:'overnight',types:['hiking','history'],seas:['Sp','Su','Fa'],badges:['over','bsa'],labels:['Overnight','Scouts only','Civil War'],title:'Antietam Battlefield — hike & camp',cost:'~$15–25/person',costNote:'Free for scout groups. Rohrbach campground free for organized youth (Mar–Nov). NPS entry $20/car or America the Beautiful.',desc:'Rohrbach Group Campground for scouts/youth groups only. Hike the battlefield, climb the observation tower, attend ranger programs.',wiki:['Antietam_National_Battlefield','Battle_of_Antietam'],reqs:['Reservation required at nps.gov/anti','Primitive camping — bring your own water or filter','Portable toilets on-site, no showers','Group max 30 per site','Open March 1 – November 30'],merits:['American Heritage','Citizenship in the Nation','Hiking'],website:'https://www.nps.gov/anti'},
+  {id:15,lat:38.780,lng:-76.799,dist:'near',drive:'45 min',style:'day',types:['bike'],seas:['Sp','Su','Fa'],badges:['day','bike'],labels:['Day trip','MTB','Youth pass'],title:'Rosaryville — mountain biking',cost:'Free',costNote:'MD Youth Group Pass provides free day-use. Apply at MD DNR 4–6 weeks ahead. Bring your own bikes — no rental on-site.',desc:'9.75-mile singletrack network in Upper Marlboro MD. Mix of technical sections and fast descents. Great intro to trail mountain biking, very close to DC.',wiki:['Mountain_biking'],reqs:['Mountain bike required (no rental on-site)','Helmet required','MD Youth Group Pass (apply 4–6 weeks ahead)','Trails close when wet — check conditions','Skill level: beginner to intermediate'],merits:['Cycling','Physical Fitness'],website:'https://dnr.maryland.gov/publiclands/pages/southern/rosaryville.aspx'},
+  {id:16,lat:39.805,lng:-77.242,dist:'mid',drive:'1.5 hr',style:'overnight',types:['history','bike','hiking'],seas:['Sp','Su','Fa'],badges:['over','bsa','bike'],labels:['Overnight','Civil War','Biking','Heritage patch'],title:'Gettysburg — bike, hike & camp',cost:'~$20–40/person',costNote:'NPS entry free. Scout camping free at McMillan Woods (verify open status). Museum/Cyclorama $15/adult. Commercial camping ~$20/night.',desc:'Bike or hike 40+ miles of tour roads through the Civil War battlefield. Scout-only campground (verify status). Ranger programs and the Heritage Trail patch program.',wiki:['Gettysburg_National_Military_Park','Battle_of_Gettysburg','Little_Round_Top'],reqs:['Bikes: 40 mi of paved tour roads (helmets required)','McMillan Woods: primitive, youth groups only — VERIFY availability','Museum: $15/adult, $9/youth','Heritage Trail Patch: contact NBNF council','Ranger-led programs are free'],merits:['Cycling','American Heritage','Citizenship in the Nation','Hiking'],website:'https://www.nps.gov/gett'},
+  {id:17,lat:38.834,lng:-79.377,dist:'mid',drive:'2.5 hr',style:'overnight',types:['climbing'],seas:['Sp','Su','Fa'],badges:['over','merit'],labels:['Overnight','Advanced','Guided'],title:'Seneca Rocks — rock climbing',cost:'~$120–180/person',costNote:'Half-day guided climb ~$150/person (1 guide per 2 scouts). Camping at Seneca Shadows USFS campground ~$25/night.',desc:'World-class quartzite ridgeline in WV. Guided multi-pitch climbs for youth. Seneca Rocks Mountain Guides is 5-star rated. Camp next door at Seneca Shadows.',wiki:['Seneca_Rocks','Monongahela_National_Forest'],reqs:['Guided only — contact Seneca Rocks Mountain Guides','1 guide per 2 scouts recommended','All gear provided','Minimum age 12 recommended','Reserve camping at recreation.gov (Seneca Shadows)','Sturdy lug-sole boots required'],merits:['Climbing','Physical Fitness'],website:'http://www.senecarocks.com'},
+  {id:18,lat:38.075,lng:-75.235,dist:'mid',drive:'3 hr',style:'overnight',types:['beach','water'],seas:['Sp','Su','Fa'],badges:['over','beach'],labels:['Overnight','Beach','Wild ponies'],title:'Assateague Island — beach camping',cost:'~$30–50/person',costNote:'Group sites $30/night + $15/vehicle NPS entry. Reserve at recreation.gov up to 6 months ahead. Summer fills extremely fast.',desc:'Wild ponies roam your campsite. Ocean-side and bay-side group camping on Assateague National Seashore. Swimming, kayaking, crabbing, fishing, biking.',wiki:['Assateague_Island_National_Seashore','Chincoteague_pony'],reqs:['Reserve group sites at recreation.gov 6 months ahead','Secure ALL food from ponies in hard-sided coolers','$15/vehicle NPS entry','Bring sunscreen, bug spray (biting flies May–Sept)','Unheated showers available Mar 15–Nov 15 only'],merits:['Camping','Environmental Science','Nature','Swimming'],website:'https://www.nps.gov/asis'},
+  {id:19,lat:38.782,lng:-75.103,dist:'mid',drive:'2.5 hr',style:'overnight',types:['beach'],seas:['Sp','Su','Fa'],badges:['over','beach'],labels:['Overnight','Bay + ocean beach','WWII history'],title:'Cape Henlopen — beach camping, DE',cost:'~$40–65/person',costNote:'DE state park entry $4–8/person. Tent camping $35–55/night per site. Army barracks ~$60/night for group. Reserve at destateparks.com.',desc:'Bay-side (calm, shallow) and ocean-side (life-guarded) beaches in Delaware. Army barracks cabin stays. Biking, kayaking, WWII bunker exploration, ranger-led programs.',wiki:['Cape_Henlopen_State_Park','Lewes,_Delaware'],reqs:['Reserve at destateparks.com (fills fast in summer)','Army barracks: book well ahead for groups','DE park entry: $4–8/person','FREE bike rentals at Bike Barn','Life-guarded ocean beach in season'],merits:['Camping','Swimming','Environmental Science','Nature'],website:'https://www.destateparks.com/park/cape-henlopen'},
+  {id:20,lat:39.868,lng:-79.494,dist:'far',drive:'3.5 hr',style:'overnight',types:['water','climbing','bike'],seas:['Sp','Su','Fa'],badges:['over','merit'],labels:['Overnight','Merit badge','Class III+'],title:'Ohiopyle — Lower Yough rafting',cost:'~$100–160/person',costNote:'Guided raft $60–90/person. Camping $15–30/night. Paddles & Biners package (2-night + raft + climb) ~$150/person.',desc:"Class III–III+ whitewater in PA's largest state park. Scout merit badge packages include rafting, climbing, and fly fishing. Also connects to the Great Allegheny Passage for biking.",wiki:['Ohiopyle_State_Park','Youghiogheny_River'],reqs:['Min age 12 for Lower Yough','Swim ability required','Helmets and life jackets provided','Book Wilderness Voyageurs well in advance','PA State Park camping reservation required'],merits:['Kayaking','Canoeing','Whitewater','Climbing','Environmental Science'],website:'https://www.dcnr.pa.gov/StateParks/FindAPark/OhiopyleStatePark'},
+  {id:21,lat:37.975,lng:-81.097,dist:'far',drive:'4 hr',style:'overnight',types:['multi','water','climbing'],seas:['Su'],badges:['over','merit'],labels:['Multi-day','High adventure','Merit badge'],title:'ACE Adventure Resort — New River Gorge',cost:'~$200–350/person',costNote:'2-night package with rafting + activities ~$250/person. Day raft only $80–120. Climbing add-on $75. On-site camping or lodging included.',desc:'1,500-acre scout-focused resort in New River Gorge NP WV. 40+ years serving scouts. Class III–V rafting, rock climbing, zip line, aerial park. Near Summit Bechtel Reserve.',wiki:['New_River_Gorge_National_Park','New_River_Gorge_Bridge'],reqs:['Book 6+ months ahead for summer','BSA high adventure qualifying trip','Min age 12 for Class V sections','All safety equipment provided','Tour 72 requirements apply for youth','Liability waivers required for all participants'],merits:['Whitewater','Climbing','Camping','Physical Fitness'],website:'https://aceraft.com'},
+  {id:22,lat:39.044,lng:-79.343,dist:'far',drive:'3.5 hr',style:'overnight',types:['hiking'],seas:['Sp','Fa','Wi'],badges:['over'],labels:['Multi-day','Advanced','Winter capable'],title:'Dolly Sods — wilderness backpack',cost:'~$10–20/person',costNote:'Free dispersed camping (no fee, no permit). $35/car Monongahela NF entry or America the Beautiful pass.',desc:'Remote WV high plateau wilderness — open heath barrens, rocky outcrops, boreal forest. Ice hiking Nov–Mar. Your troop has been here before. Rugged and spectacular.',wiki:['Dolly_Sods_Wilderness','Monongahela_National_Forest'],reqs:['No permits required (dispersed camping)','7-mile rocky access road — high clearance vehicle recommended','Bear canister required','Navigation skills required (limited signage)','Microspikes or crampons for winter visits','Emergency device recommended — no cell signal'],merits:['Backpacking','Wilderness Survival','Environmental Science','Camping'],website:'https://www.fs.usda.gov/recarea/mnf/recarea/?recid=12382'},
+  {id:23,lat:41.335,lng:-76.260,dist:'far',drive:'3.5 hr',style:'day',types:['hiking'],seas:['Sp','Fa','Wi'],badges:['day','over'],labels:['Day or overnight','22 waterfalls','Winter ice hiking'],title:'Ricketts Glen — waterfall/ice hike',cost:'~$5–8/person',costNote:'PA state park vehicle entry $3–8. Camping available $20–30/night. Free on some weekday off-season visits.',desc:'22 named waterfalls in Pennsylvania. In winter (Dec–Feb) the falls freeze into dramatic ice formations. Microspikes required. Your troop has visited before.',wiki:['Ricketts_Glen_State_Park','Sullivan_County,_Pennsylvania'],reqs:['Falls Trail: 7.2 miles, 900 ft elevation change','Winter: microspikes or crampons REQUIRED','Some sections closed Dec–Mar — check pa.gov before going','Falls Trail extremely slippery when icy','Camping: reserve at PA State Parks online','Trekking poles strongly recommended in winter'],merits:['Hiking','Environmental Science','Nature'],website:'https://www.dcnr.pa.gov/StateParks/FindAPark/RickettsGlenStatePark'}
+];
+
+/* ── ARCGIS MAP (SDK 5 ES modules) ─────────────────────────────────────────── */
+import Map          from 'https://js.arcgis.com/5.0/@arcgis/core/Map.js';
+import MapView      from 'https://js.arcgis.com/5.0/@arcgis/core/views/MapView.js';
+import Graphic      from 'https://js.arcgis.com/5.0/@arcgis/core/Graphic.js';
+import GraphicsLayer from 'https://js.arcgis.com/5.0/@arcgis/core/layers/GraphicsLayer.js';
+
+(function initMap() {
+  var esriMap = new Map({ basemap: 'topo-vector' });
+
+  var view = new MapView({
+    container: 'mapView',
+    map: esriMap,
+    center: [-77.8, 38.95],
+    zoom: 7
+  });
+
+  var layer = new GraphicsLayer();
+  esriMap.add(layer);
+
+  var distColor = { near: [39, 174, 96], mid: [230, 126, 34], far: [192, 57, 43] };
+
+  ACTS.forEach(function(a) {
+    var popupContent =
+      '<div style="font-family:DM Sans,sans-serif;font-size:13px;line-height:1.5">' +
+      '<div style="font-family:Bebas Neue,sans-serif;font-size:1.1rem;letter-spacing:.04em;color:#1a3a2a;margin-bottom:3px">' + a.title + '</div>' +
+      '<div style="font-family:DM Mono,monospace;font-size:.68rem;color:#8b6f47">' + a.drive + ' from DC · ' + (a.style === 'day' ? 'Day trip' : 'Overnight') + '</div>' +
+      '<div style="font-family:DM Mono,monospace;font-size:.72rem;color:#2d5a3d;font-weight:500;margin:4px 0">' + a.cost + '</div>' +
+      '<button onclick="window.openOverlay(' + a.id + ')" style="margin-top:6px;padding:4px 12px;background:#2d5a3d;color:#fff;border:none;border-radius:3px;font-size:.68rem;font-family:DM Mono,monospace;cursor:pointer;text-transform:uppercase;letter-spacing:.04em">View details</button>' +
+      '</div>';
+    var graphic = new Graphic({
+      geometry: { type: 'point', longitude: a.lng, latitude: a.lat },
+      symbol: {
+        type: 'simple-marker',
+        style: 'circle',
+        color: distColor[a.dist],
+        size: '14px',
+        outline: { color: [255, 255, 255], width: 2 }
+      },
+      popupTemplate: { title: a.title, content: popupContent }
+    });
+    layer.add(graphic);
+  });
+}());
+
+/* ── GALLERY ───────────────────────────────────────────────────────────────── */
+var gPhotos = [];
+var gIdx = 0;
+
+function gSetPhoto(idx) {
+  if (!gPhotos.length) return;
+  gIdx = ((idx % gPhotos.length) + gPhotos.length) % gPhotos.length;
+  document.querySelectorAll('.g-img').forEach(function(el, i) {
+    el.classList.toggle('on', i === gIdx);
+  });
+  document.querySelectorAll('.g-dot').forEach(function(el, i) {
+    el.classList.toggle('on', i === gIdx);
+  });
+  document.getElementById('gCap').textContent = gPhotos[gIdx] ? gPhotos[gIdx].cap : '';
+}
+
+document.getElementById('gPrev').addEventListener('click', function() { gSetPhoto(gIdx - 1); });
+document.getElementById('gNext').addEventListener('click', function() { gSetPhoto(gIdx + 1); });
+
+async function loadGallery(wikiTitles) {
+  var gallery = document.getElementById('gallery');
+  // Remove previous dynamic elements
+  gallery.querySelectorAll('.g-img, .g-loader, .g-empty').forEach(function(el) { el.remove(); });
+  document.getElementById('gDots').innerHTML = '';
+  document.getElementById('gCap').textContent = '';
+  gPhotos = [];
+  gIdx = 0;
+
+  // Spinner
+  var loader = document.createElement('div');
+  loader.className = 'g-loader';
+  loader.innerHTML = '<div class="spinner"></div><span>Loading photos…</span>';
+  gallery.insertBefore(loader, document.getElementById('gPrev'));
+
+  // Fetch from Wikipedia REST API (browser CORS is open, no API key needed)
+  var imgs = [];
+  for (var i = 0; i < wikiTitles.length && imgs.length < 3; i++) {
+    try {
+      var url = 'https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(wikiTitles[i]);
+      var resp = await fetch(url, { headers: { Accept: 'application/json' } });
+      if (!resp.ok) continue;
+      var data = await resp.json();
+      if (data.thumbnail && data.thumbnail.source) {
+        // Request a larger render from Wikimedia
+        var src = data.thumbnail.source.replace(/\/\d+px-/, '/800px-');
+        imgs.push({ url: src, cap: data.title || wikiTitles[i].replace(/_/g, ' ') });
+      }
+    } catch (_) { /* network error — skip */ }
+  }
+
+  loader.remove();
+
+  if (!imgs.length) {
+    var empty = document.createElement('div');
+    empty.className = 'g-empty';
+    empty.textContent = '📷 Photos load when connected to the internet';
+    gallery.insertBefore(empty, document.getElementById('gPrev'));
+    return;
+  }
+
+  gPhotos = imgs;
+  var dotsEl = document.getElementById('gDots');
+
+  imgs.forEach(function(p, i) {
+    var img = document.createElement('img');
+    img.className = 'g-img' + (i === 0 ? ' on' : '');
+    img.src = p.url;
+    img.alt = p.cap;
+    img.onerror = function() { this.style.display = 'none'; };
+    gallery.insertBefore(img, document.getElementById('gPrev'));
+
+    var dot = document.createElement('button');
+    dot.className = 'g-dot' + (i === 0 ? ' on' : '');
+    dot.setAttribute('aria-label', 'Photo ' + (i + 1));
+    // Closure to capture correct index
+    (function(idx) {
+      dot.addEventListener('click', function() { gSetPhoto(idx); });
+    }(i));
+    dotsEl.appendChild(dot);
+  });
+
+  document.getElementById('gCap').textContent = imgs[0].cap;
+}
+
+/* ── OVERLAY ───────────────────────────────────────────────────────────────── */
+var BADGE_CLS = { day:'t-day', over:'t-over', bike:'t-bike', beach:'t-beach', merit:'t-merit', bsa:'t-bsa' };
+
+function openOverlay(id) {
+  var a = null;
+  for (var i = 0; i < ACTS.length; i++) { if (ACTS[i].id === id) { a = ACTS[i]; break; } }
+  if (!a) return;
+
+  loadGallery(a.wiki || []);
+
+  document.getElementById('olTitle').textContent = a.title;
+
+  var metaHtml = '';
+  metaHtml += '<span class="tag dbadge d-' + a.dist + '">' + a.drive + '</span>';
+  metaHtml += '<span class="tag ' + (a.style === 'day' ? 't-day' : 't-over') + '">' + (a.style === 'day' ? 'Day trip' : 'Overnight') + '</span>';
+  if (a.badges.indexOf('merit') !== -1) metaHtml += '<span class="tag t-merit">Merit badge eligible</span>';
+  if (a.badges.indexOf('bsa')   !== -1) metaHtml += '<span class="tag t-bsa">BSA camp</span>';
+  document.getElementById('olMeta').innerHTML = metaHtml;
+
+  document.getElementById('olDesc').textContent = a.desc;
+
+  var reqHtml = '';
+  (a.reqs || []).forEach(function(r) { reqHtml += '<li>' + r + '</li>'; });
+  var siteHtml = a.website
+    ? '<a class="site-link" href="' + a.website + '" target="_blank" rel="noopener">Official website &#8599;</a>'
+    : '';
+  document.getElementById('olGrid').innerHTML =
+    '<div class="dbox">' +
+      '<div class="dbox-title">&#128176; Cost &amp; Logistics</div>' +
+      '<div class="cost-big">' + a.cost + '</div>' +
+      '<p class="cost-note">' + a.costNote + '</p>' +
+      siteHtml +
+    '</div>' +
+    '<div class="dbox">' +
+      '<div class="dbox-title">&#9989; Requirements &amp; What to Know</div>' +
+      '<ul class="req-list">' + reqHtml + '</ul>' +
+    '</div>';
+
+  var meritsEl = document.getElementById('olMerits');
+  if (a.merits && a.merits.length) {
+    var chips = '';
+    a.merits.forEach(function(m) { chips += '<span class="merit-chip">' + m + '</span>'; });
+    meritsEl.innerHTML =
+      '<div class="merits-box">' +
+        '<div class="dbox-title">&#127885; Merit Badge Opportunities</div>' +
+        '<div class="merit-chips">' + chips + '</div>' +
+      '</div>';
+  } else {
+    meritsEl.innerHTML = '';
+  }
+
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeOverlay() {
+  document.getElementById('overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Expose to window scope so ArcGIS popup buttons (inline HTML) can call it
+window.openOverlay = openOverlay;
+
+document.getElementById('olClose').addEventListener('click', closeOverlay);
+document.getElementById('overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeOverlay();
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeOverlay();
+});
+
+/* ── CARDS ─────────────────────────────────────────────────────────────────── */
+var fType = 'all', fTrip = 'all', fSeason = 'all';
+var SD_CLS = { Sp: 'sd-sp', Su: 'sd-su', Fa: 'sd-fa', Wi: 'sd-wi' };
+
+function renderCards() {
+  var filtered = ACTS.filter(function(a) {
+    return (fType === 'all' || a.types.indexOf(fType) !== -1) &&
+           (fTrip === 'all' || a.style === fTrip) &&
+           (fSeason === 'all' || a.seas.indexOf(fSeas) !== -1);
+  });
+
+  document.getElementById('countBadge').textContent =
+    filtered.length + ' activit' + (filtered.length === 1 ? 'y' : 'ies');
+
+  if (!filtered.length) {
+    document.getElementById('grid').innerHTML =
+      '<div class="empty">&#127957;&#65039; No activities match — try broadening your filters.</div>';
+    return;
+  }
+
+  var html = '';
+  filtered.forEach(function(a) {
+    var seaDots = '';
+    ['Sp','Su','Fa','Wi'].forEach(function(s) {
+      seaDots += '<div class="sd ' + SD_CLS[s] + (a.seas.indexOf(s) !== -1 ? ' on' : '') + '">' + s + '</div>';
+    });
+
+    var tagHtml = '';
+    a.badges.forEach(function(b, i) {
+      var cls = BADGE_CLS[b] || 't-def';
+      tagHtml += '<span class="tag ' + cls + '">' + (a.labels[i] || '') + '</span>';
+    });
+    for (var j = a.badges.length; j < a.labels.length; j++) {
+      tagHtml += '<span class="tag t-def">' + a.labels[j] + '</span>';
+    }
+
+    html +=
+      '<article class="card" onclick="window.openOverlay(' + a.id + ')" tabindex="0" role="button" aria-label="' + a.title.replace(/'/g, '&#39;') + '">' +
+        '<div class="c-stripe s-' + a.dist + '"></div>' +
+        '<div class="c-body">' +
+          '<div class="c-top">' +
+            '<div class="c-title">' + a.title + '</div>' +
+            '<span class="dbadge d-' + a.dist + '">' + a.drive + '</span>' +
+          '</div>' +
+          '<div class="seas">' + seaDots + '</div>' +
+          '<div class="tags">' + tagHtml + '</div>' +
+          '<p class="c-desc">' + a.desc + '</p>' +
+          '<div class="c-cost"><span class="cost-lbl">Cost:</span><span class="cost-val">' + a.cost + '</span></div>' +
+        '</div>' +
+        '<div class="c-foot">' +
+          '<button class="detail-btn" onclick="event.stopPropagation();window.openOverlay(' + a.id + ')">Details + Photos &#8594;</button>' +
+        '</div>' +
+      '</article>';
+  });
+  document.getElementById('grid').innerHTML = html;
+
+  // Keyboard support
+  document.querySelectorAll('.card').forEach(function(card) {
+    card.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
+    });
+  });
+}
+
+/* ── FILTERS ───────────────────────────────────────────────────────────────── */
+document.querySelectorAll('.fb').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var g = btn.getAttribute('data-g');
+    var v = btn.getAttribute('data-v');
+    document.querySelectorAll('[data-g="' + g + '"]').forEach(function(b) {
+      b.classList.remove('on', 'on-t', 'on-s');
+    });
+    btn.classList.add(g === 'type' ? 'on' : g === 'trip' ? 'on-t' : 'on-s');
+    if      (g === 'type') fType = v;
+    else if (g === 'trip') fTrip = v;
+    else                   fSeason = v;
+    renderCards();
+  });
+});
+
+/* ── INIT ──────────────────────────────────────────────────────────────────── */
+renderCards();
+</script>
+</body>
+</html>
