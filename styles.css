@@ -302,6 +302,12 @@ h1 em { color: var(--fern); font-style: normal; }
   height: 200px; border-radius: 6px;
   border: 1px solid var(--sand); overflow: hidden;
 }
+/* Print-image fallback row — hidden on screen, visible when printing */
+.ol-maps-print { display: none; }
+.ol-map-img {
+  display: block; width: 100%; height: 200px;
+  object-fit: cover; border-radius: 6px; border: 1px solid var(--sand);
+}
 
 /* ArcGIS popup overrides */
 .esri-widget { font-family: 'DM Sans', sans-serif !important; }
@@ -321,7 +327,7 @@ footer {
   .overlay { padding: .5rem; }
   .ol-body { padding: 1rem; }
   .gallery { height: 200px; }
-  .ol-maps { grid-template-columns: 1fr; }
+  .ol-maps, .ol-maps-print { grid-template-columns: 1fr; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -459,6 +465,22 @@ footer {
   body.print-single .g-loader,
   body.print-single .ol-maps {
     display: none !important;
+  }
+
+  /* Show static screenshot images instead of ArcGIS canvas maps */
+  body.print-single .ol-maps-print {
+    display: grid !important;
+    grid-template-columns: 3fr 2fr;
+    gap: 8pt;
+    margin-bottom: 10pt;
+    page-break-inside: avoid;
+  }
+  body.print-single .ol-map-img {
+    height: 1.8in !important;
+    border: 1px solid #888 !important;
+    border-radius: 4pt !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   /* Print header for single activity sheet */

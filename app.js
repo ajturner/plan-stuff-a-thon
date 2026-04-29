@@ -161,6 +161,117 @@ async function loadGallery(wikiTitles) {
 /* ── OVERLAY ───────────────────────────────────────────────────────────────── */
 var BADGE_CLS = { day:'t-day', over:'t-over', bike:'t-bike', beach:'t-beach', merit:'t-merit', bsa:'t-bsa' };
 
+/* ── MINI-MAPS ─────────────────────────────────────────────────────────────── */
+var _detailView = null;
+var _contextView = null;
+var _detailLayer = null;
+var _contextLayer = null;
+var CAPITOL = { lat: 38.8899, lng: -77.0091 };
+var DIST_ZOOM = { near: 9, mid: 8, far: 7 };
+
+// Capture a screenshot of a MapView and write the data URL to an <img> element.
+// Waits for the view to finish updating tiles before snapping.
+function _captureMapImg(view, imgId) {
+  function doCapture() {
+    view.takeScreenshot({ width: 600, height: 200 }).then(function(s) {
+      var img = document.getElementById(imgId);
+      if (img) { img.src = s.dataUrl; }
+    }).catch(function(err) { console.warn('Mini-map screenshot failed:', err); });
+  }
+  if (!view.updating) {
+    doCapture();
+  } else {
+    var handle = view.watch('updating', function(updating) {
+      if (!updating) { handle.remove(); doCapture(); }
+    });
+  }
+}
+
+function loadMiniMaps(a) {
+  var detailZoom = (a.types.indexOf('bike') !== -1) ? 11 : 13;
+  var ctxZoom = DIST_ZOOM[a.dist] || 8;
+  var ctxLat = (a.lat + CAPITOL.lat) / 2;
+  var ctxLng = (a.lng + CAPITOL.lng) / 2;
+
+  var actSymbol = {
+    type: 'simple-marker', style: 'circle',
+    color: [192, 57, 43], size: '14px',
+    outline: { color: [255, 255, 255], width: 2 }
+  };
+  var dcSymbol = {
+    type: 'simple-marker', style: 'circle',
+    color: [44, 130, 201], size: '10px',
+    outline: { color: [255, 255, 255], width: 2 }
+  };
+
+  if (!_detailView) {
+    // First open — create both MapViews
+    var detailMap = new Map({ basemap: 'topo-vector' });
+    _detailLayer = new GraphicsLayer();
+    detailMap.add(_detailLayer);
+    _detailView = new MapView({
+      container: 'olMapDetail',
+      map: detailMap,
+      center: [a.lng, a.lat],
+      zoom: detailZoom
+    });
+
+    var contextMap = new Map({ basemap: 'gray-vector' });
+    _contextLayer = new GraphicsLayer();
+    contextMap.add(_contextLayer);
+    _contextView = new MapView({
+      container: 'olMapContext',
+      map: contextMap,
+      center: [ctxLng, ctxLat],
+      zoom: ctxZoom
+    });
+
+    _detailView.when(function() {
+      _detailLayer.add(new Graphic({
+        geometry: { type: 'point', longitude: a.lng, latitude: a.lat },
+        symbol: actSymbol
+      }));
+      _captureMapImg(_detailView, 'olMapDetailImg');
+    });
+
+    _contextView.when(function() {
+      _contextLayer.add(new Graphic({
+        geometry: { type: 'point', longitude: a.lng, latitude: a.lat },
+        symbol: actSymbol
+      }));
+      _contextLayer.add(new Graphic({
+        geometry: { type: 'point', longitude: CAPITOL.lng, latitude: CAPITOL.lat },
+        symbol: dcSymbol
+      }));
+      _captureMapImg(_contextView, 'olMapContextImg');
+    });
+  } else {
+    // Subsequent opens — clear old graphics and re-center without animation
+    _detailLayer.removeAll();
+    _contextLayer.removeAll();
+
+    _detailLayer.add(new Graphic({
+      geometry: { type: 'point', longitude: a.lng, latitude: a.lat },
+      symbol: actSymbol
+    }));
+    _contextLayer.add(new Graphic({
+      geometry: { type: 'point', longitude: a.lng, latitude: a.lat },
+      symbol: actSymbol
+    }));
+    _contextLayer.add(new Graphic({
+      geometry: { type: 'point', longitude: CAPITOL.lng, latitude: CAPITOL.lat },
+      symbol: dcSymbol
+    }));
+
+    _detailView.goTo({ center: [a.lng, a.lat], zoom: detailZoom }, { animate: false })
+      .then(function() { _captureMapImg(_detailView, 'olMapDetailImg'); })
+      .catch(function(err) { console.warn('Detail mini-map navigation failed:', err); });
+    _contextView.goTo({ center: [ctxLng, ctxLat], zoom: ctxZoom }, { animate: false })
+      .then(function() { _captureMapImg(_contextView, 'olMapContextImg'); })
+      .catch(function(err) { console.warn('Context mini-map navigation failed:', err); });
+  }
+}
+
 function openOverlay(id) {
   var a = null;
   for (var i = 0; i < ACTS.length; i++) { if (ACTS[i].id === id) { a = ACTS[i]; break; } }
@@ -211,6 +322,10 @@ function openOverlay(id) {
 
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
+
+  // Load mini-maps after the overlay is visibly rendered so ArcGIS can
+  // measure the containers and tiles load correctly.
+  setTimeout(function() { loadMiniMaps(a); }, 50);
 }
 
 function closeOverlay() {

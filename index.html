@@ -110,6 +110,31 @@
       <div class="ol-title" id="olTitle"></div>
       <div class="ol-meta"  id="olMeta"></div>
       <p   class="ol-desc"  id="olDesc"></p>
+
+      <!-- Interactive mini-maps (screen only — ArcGIS MapViews) -->
+      <div class="ol-maps">
+        <div>
+          <div class="ol-map-label">&#128205; Activity Location</div>
+          <div id="olMapDetail"></div>
+        </div>
+        <div>
+          <div class="ol-map-label">&#128506; Distance from DC</div>
+          <div id="olMapContext"></div>
+        </div>
+      </div>
+
+      <!-- Static map screenshots for print (hidden on screen) -->
+      <div class="ol-maps-print">
+        <div>
+          <div class="ol-map-label">&#128205; Activity Location</div>
+          <img id="olMapDetailImg" class="ol-map-img" alt="Activity location map">
+        </div>
+        <div>
+          <div class="ol-map-label">&#128506; Distance from DC</div>
+          <img id="olMapContextImg" class="ol-map-img" alt="Context map showing distance from DC">
+        </div>
+      </div>
+
       <div class="detail-grid" id="olGrid"></div>
       <div id="olMerits"></div>
 
