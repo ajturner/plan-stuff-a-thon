@@ -308,6 +308,20 @@ h1 em { color: var(--fern); font-style: normal; }
   padding: 2px 9px; font-family: 'DM Mono', monospace; font-size: .67rem; font-weight: 500;
 }
 
+/* ── OVERLAY MINI-MAPS ── */
+.ol-maps {
+  display: grid; grid-template-columns: 3fr 2fr; gap: .75rem; margin-bottom: 1.15rem;
+}
+.ol-map-label {
+  font-family: 'DM Mono', monospace; font-size: .62rem;
+  text-transform: uppercase; letter-spacing: .12em;
+  color: var(--bark); margin-bottom: .3rem;
+}
+#olMapDetail, #olMapContext {
+  height: 200px; border-radius: 6px;
+  border: 1px solid var(--sand); overflow: hidden;
+}
+
 /* ArcGIS popup overrides */
 .esri-widget { font-family: 'DM Sans', sans-serif !important; }
 .esri-popup__header-title { font-family: 'Bebas Neue', sans-serif !important; font-size: 1.05rem !important; }
