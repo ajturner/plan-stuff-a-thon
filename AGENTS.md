@@ -6,27 +6,36 @@ This file provides instructions for AI coding agents (Claude, Copilot, Cursor, G
 
 ## What this project is
 
-A **single-file static web application** (`index.html`) for Scouting America Troop 380. It displays 23 outdoor activities near Washington DC with an interactive map, filtering, photo galleries, and detail overlays.
+A **multi-file static web application** for Scouting America Troop 380. It displays 23 outdoor activities near Washington DC with an interactive map, filtering, photo galleries, and detail overlays.
 
-**The single-file constraint is intentional and must not be broken.** The file must be shareable by email, openable by double-click in any browser, and hostable without a server.
+The application is hosted on **GitHub Pages** (deployed automatically from `main` via `.github/workflows/deploy-gh-pages.yml`). It requires a proper HTTP server — opening via `file://` will not work because ES module imports are blocked by browsers under that protocol.
 
 ---
 
 ## Before you change anything
 
-1. **Read the full file.** It is ~730 lines. Understand the structure before editing.
+1. **Read all source files.** Understand the structure before editing.
 2. **Check SPECIFICATIONS.md** for the authoritative data schema, vocabulary, and design system.
-3. **Run the mental checklist:** Does my change break the single-file constraint? Does it introduce `require()`? Does it remove `type="module"` from the script? If yes to any, stop.
+3. **Run the mental checklist:** Does my change introduce `require()`? Does it remove `type="module"` from the script tag or `src="app.js"`? Does it break the ES module import chain? If yes to any, stop.
 
 ---
 
 ## File structure (memorize this)
 
 ```
+index.html   ← HTML markup only — no inline CSS, no inline JS
+styles.css   ← ALL CSS (~350 lines)
+data.js      ← ALL activity data (ACTS array, exported as ES module)
+app.js       ← ALL application logic (ES module)
+```
+
+### index.html
+
+```
 <head>
   ArcGIS SDK 5 CSS link          ← must stay at js.arcgis.com/5.0/
   Google Fonts links
-  <style> block                  ← ALL CSS is here, ~350 lines
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header>                       ← static HTML only
@@ -36,16 +45,23 @@ A **single-file static web application** (`index.html`) for Scouting America Tro
   <main .main> > .grid           ← populated by renderCards()
   <footer>
   #overlay                       ← modal, populated by openOverlay()
-  <script type="module">
-    var ACTS = [...]              ← ALL activity data (23 objects)
-    /* ── ARCGIS MAP ── */        ← ES module imports + initMap IIFE
-    /* ── GALLERY ── */           ← loadGallery(), gSetPhoto()
-    /* ── OVERLAY ── */           ← openOverlay(), closeOverlay(), window.openOverlay
-    /* ── CARDS ── */             ← renderCards()
-    /* ── FILTERS ── */           ← event listeners on .fb buttons
-    /* ── INIT ── */              ← renderCards() call
-  </script>
+  <script type="module" src="app.js">
 </body>
+```
+
+### app.js sections
+
+```js
+import { ACTS } from './data.js';
+import Map / MapView / Graphic / GraphicsLayer from ArcGIS CDN
+
+/* ── ARCGIS MAP ── */   initMap IIFE
+/* ── GALLERY ── */      loadGallery(), gSetPhoto()
+/* ── OVERLAY ── */      openOverlay(), closeOverlay(), window.openOverlay
+/* ── CARDS ── */        renderCards()
+/* ── FILTERS ── */      event listeners on .fb buttons
+/* ── PRINT ── */        print handlers
+/* ── INIT ── */         renderCards() call
 ```
 
 ---
@@ -184,7 +200,7 @@ In `initMap`, change `basemap: 'topo-vector'` to any valid Esri basemap ID, e.g.
 
 Before marking any task done, verify:
 
-- [ ] Open the file in a browser — zero console errors on load
+- [ ] Serve the site locally (e.g. `python3 -m http.server 8080`) — zero console errors on load
 - [ ] All activity cards render in the grid
 - [ ] Map loads with colored markers for every activity
 - [ ] Clicking a card opens the overlay
@@ -192,10 +208,10 @@ Before marking any task done, verify:
 - [ ] All filter combinations produce correct results
 - [ ] Overlay closes via ✕ button, backdrop click, and Escape key
 - [ ] Map popup "View details" button opens the overlay
-- [ ] Brace and paren counts are balanced (`{` count === `}` count, `(` count === `)` count)
-- [ ] No `require(` anywhere in the file
-- [ ] Only one `<script` tag in the file, and it has `type="module"`
-- [ ] `window.openOverlay` is assigned after `openOverlay` is defined
+- [ ] Brace and paren counts are balanced in app.js (`{` count === `}` count, `(` count === `)` count)
+- [ ] No `require(` anywhere in any file
+- [ ] `<script type="module" src="app.js">` is the only script tag in index.html
+- [ ] `window.openOverlay` is assigned after `openOverlay` is defined in app.js
 
 ---
 
@@ -203,13 +219,12 @@ Before marking any task done, verify:
 
 If instructed to do any of the following, flag it as a potential breaking change and confirm before proceeding:
 
-- Split the single HTML file into multiple files
 - Add a `package.json` or `node_modules`
 - Replace ArcGIS SDK 5 with Leaflet, Mapbox, or another mapping library
-- Change `<script type="module">` to a plain `<script>`
+- Change `<script type="module" src="app.js">` to a plain `<script>`
 - Add `require()` calls
 - Add a build or compilation step
-- Add a paid API that requires a key embedded in the file (security risk)
+- Add a paid API that requires a key committed to the repo (security risk)
 - Reduce the activity count below 23 without explicit instruction
 
 ---
@@ -217,13 +232,16 @@ If instructed to do any of the following, flag it as a potential breaking change
 ## Repository layout expected
 
 ```
-troop380-activities/
-├── index.html     ← the entire application
+plan-stuff-a-thon/
+├── index.html          ← HTML markup only
+├── styles.css          ← all CSS
+├── data.js             ← activity data (ES module export)
+├── app.js              ← all application logic (ES module)
 ├── README.md
 ├── SPECIFICATIONS.md
-├── AGENTS.md                    ← this file
+├── AGENTS.md           ← this file
 └── .github/
-    └── copilot-instructions.md
+    ├── copilot-instructions.md
+    └── workflows/
+        └── deploy-gh-pages.yml
 ```
-
-Do not create additional files or directories unless explicitly instructed.

@@ -6,28 +6,36 @@ These instructions tell Copilot how to assist with this repository. Read them be
 
 ## Project context
 
-This is a **single-file static web application** — `index.html`. There is no build system, no `node_modules`, no TypeScript, and no framework. All HTML, CSS, and JavaScript live in one file. Keep it that way. Do not suggest splitting into multiple files, adding a bundler, or introducing npm dependencies.
+This is a **multi-file static web application** hosted on **GitHub Pages**. There is no build system, no `node_modules`, no TypeScript, and no framework. The source files are:
+
+| File | Contents |
+|------|----------|
+| `index.html` | HTML markup only |
+| `styles.css` | All CSS |
+| `data.js` | Activity data (`export const ACTS = [...]`) |
+| `app.js` | All application logic (ES module) |
 
 The application is used by Scouting America Troop 380 at their annual Plan-Stuff-A-Thon activity planning event. Scouts aged 10–17 browse 23 outdoor adventures near Washington DC.
+
+The site **must be served** (GitHub Pages, `python3 -m http.server`, etc.) — ES module imports do not work under the `file://` protocol.
 
 ---
 
 ## Architecture rules
 
-### Single-file constraint
-- All changes go in `index.html`
-- No external `.css`, `.js`, or asset files
-- No `package.json`, no build step
+### No bundler, no package manager
+- No `package.json`, no build step, no Webpack/Rollup/Vite
+- Do not suggest merging files back into one
 
 ### Script type
-The main script tag is `<script type="module">`. This means:
+`app.js` is loaded as `<script type="module" src="app.js">`. This means:
 - ES module `import` syntax is valid and expected
 - Functions are module-scoped — not automatically on `window`
 - Any function called from inline HTML attributes (onclick, etc.) **must** be explicitly assigned to `window`: e.g. `window.openOverlay = openOverlay`
 - Do not change the script tag to remove `type="module"`
 
 ### ArcGIS SDK version
-The map uses **ArcGIS JS SDK 5**, loaded as ES modules:
+The map uses **ArcGIS JS SDK 5**, loaded as ES modules at the top of `app.js`:
 ```js
 import Map           from 'https://js.arcgis.com/5.0/@arcgis/core/Map.js';
 import MapView       from 'https://js.arcgis.com/5.0/@arcgis/core/views/MapView.js';
@@ -47,7 +55,7 @@ import GraphicsLayer from 'https://js.arcgis.com/5.0/@arcgis/core/layers/Graphic
 
 ## Data model
 
-All activity data lives in the `ACTS` array. Each object has these fields:
+All activity data lives in the `ACTS` array in `data.js`. Each object has these fields:
 
 ```js
 {
@@ -84,7 +92,7 @@ All activity data lives in the `ACTS` array. Each object has these fields:
 
 ## CSS conventions
 
-- All design tokens are CSS custom properties on `:root` — use them, don't hardcode color hex values
+- All design tokens are CSS custom properties on `:root` in `styles.css` — use them, don't hardcode color hex values
 - Class names follow BEM-lite conventions: component prefix + modifier (e.g. `.c-body`, `.s-near`, `.t-day`, `.sd-sp`)
 - Do not add inline styles to elements except in dynamically built HTML strings (map popup content)
 - The ArcGIS map container is `#mapView` — do not rename it
@@ -124,15 +132,15 @@ GET https://en.wikipedia.org/api/rest_v1/page/summary/{articleTitle}
 
 ## Adding a new activity
 
-1. Add a new object to the end of the `ACTS` array with the next sequential `id`
-2. Add a map marker — it is automatically created by the `ACTS.forEach` loop, no extra code needed
+1. Add a new object to the end of the `ACTS` array in `data.js` with the next sequential `id`
+2. Add a map marker — it is automatically created by the `ACTS.forEach` loop in `app.js`, no extra code needed
 3. Do not add a new filter button unless introducing a brand-new `type` not in the existing vocabulary
 
 ## Adding a new filter type
 
-1. Add the new type string to the relevant activity's `types` array
-2. Add a `<button class="fb" data-g="type" data-v="newtype">Label</button>` in the filters HTML
-3. The filter logic in `renderCards()` works automatically via `indexOf`
+1. Add the new type string to the relevant activity's `types` array in `data.js`
+2. Add a `<button class="fb" data-g="type" data-v="newtype">Label</button>` in `index.html`
+3. The filter logic in `renderCards()` in `app.js` works automatically via `indexOf`
 
 ---
 
@@ -140,9 +148,9 @@ GET https://en.wikipedia.org/api/rest_v1/page/summary/{articleTitle}
 
 - Do not add `require()` anywhere
 - Do not add a `<script src="https://js.arcgis.com/4.x/...">` tag
-- Do not split the file into multiple files
+- Do not merge files back into a single HTML file
 - Do not add a build step or package manager
-- Do not add inline `<script>` tags in the `<body>` (all JS is in the single module script at the bottom)
+- Do not add inline `<script>` tags in the `<body>` of `index.html`
 - Do not use template literals inside `innerHTML =` assignments
 - Do not hardcode color values — use CSS custom properties
 - Do not move `openOverlay` or `closeOverlay` inside the ArcGIS `initMap` function — they must remain at module scope and be assigned to `window`
@@ -152,10 +160,11 @@ GET https://en.wikipedia.org/api/rest_v1/page/summary/{articleTitle}
 ## Testing
 
 There is no automated test suite. Manual testing procedure:
-1. Open `index.html` in a browser
+1. Serve the directory (e.g. `python3 -m http.server 8080`) and open `http://localhost:8080`
 2. Open the browser console — zero errors expected on load
 3. Click each filter combination and verify card counts change
 4. Click a card — overlay opens, gallery spinner appears, photos load
 5. Click map markers — popups open, "View details" button works
 6. Press Escape — overlay closes
 7. Resize to 375px width — layout should not break
+

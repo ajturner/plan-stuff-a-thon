@@ -1,6 +1,6 @@
 # Troop 380 Activity Guide — Specifications
 
-Version 1.0 · Single-file static web application
+Version 2.0 · Multi-file static web application — hosted on GitHub Pages
 
 ---
 
@@ -16,29 +16,48 @@ The Activity Guide is a planning tool used at Troop 380's annual **Plan-Stuff-A-
 
 ## 2. File Architecture
 
-The application is intentionally a **single self-contained HTML file** with no build toolchain, no `package.json`, and no local dependencies. This is a deliberate constraint — it must remain sharable by email, openable by double-click, and hostable on any static server.
+The application is a **multi-file static web application** hosted on **GitHub Pages**. There is no build toolchain and no `package.json`. The site is served from the `gh-pages` branch via the workflow in `.github/workflows/deploy-gh-pages.yml`.
 
 ```
-troop380_activities.html
-├── <head>
-│   ├── ArcGIS JS SDK 5 CSS (CDN)
-│   ├── Google Fonts (CDN) — Bebas Neue, DM Sans, DM Mono
-│   └── <style> — all CSS (inline, ~350 lines)
-├── <body>
-│   ├── <header>       — branding, title, troop metadata
-│   ├── .legend        — distance and badge key
-│   ├── #map-wrap      — ArcGIS MapView container
-│   ├── .filters       — sticky filter bar (type / trip style / season)
-│   ├── <main .main>   — card grid
-│   ├── <footer>
-│   └── #overlay       — modal detail panel with gallery
-└── <script type="module">
-    ├── ACTS[]         — activity data array (23 entries)
-    ├── ArcGIS map     — ES module imports + MapView init
-    ├── Gallery        — Wikipedia API fetch + DOM manipulation
-    ├── Overlay        — open/close + content population
-    ├── Cards          — renderCards() with filter logic
-    └── Filters        — event listeners on .fb buttons
+index.html   ← HTML markup only
+styles.css   ← all CSS (~350 lines)
+data.js      ← activity data array (ES module export)
+app.js       ← all application logic (ES module, imports data.js + ArcGIS SDK 5)
+```
+
+### index.html structure
+
+```
+<head>
+  ArcGIS JS SDK 5 CSS (CDN)
+  Google Fonts (CDN) — Bebas Neue, DM Sans, DM Mono
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>       — branding, title, troop metadata
+  .legend        — distance and badge key
+  #map-wrap      — ArcGIS MapView container
+  .filters       — sticky filter bar (type / trip style / season)
+  <main .main>   — card grid
+  <footer>
+  #overlay       — modal detail panel with gallery
+  <script type="module" src="app.js">
+</body>
+```
+
+### app.js structure
+
+```js
+import { ACTS } from './data.js';
+import Map / MapView / Graphic / GraphicsLayer from ArcGIS SDK 5 CDN
+
+/* ── ARCGIS MAP ── */   initMap IIFE — ES module imports + MapView init
+/* ── GALLERY ── */      loadGallery(), gSetPhoto()
+/* ── OVERLAY ── */      openOverlay(), closeOverlay(), window.openOverlay
+/* ── CARDS ── */        renderCards() with filter logic
+/* ── FILTERS ── */      event listeners on .fb buttons
+/* ── PRINT ── */        print handlers
+/* ── INIT ── */         renderCards() call
 ```
 
 ---
@@ -320,7 +339,7 @@ Use official BSA merit badge names exactly as they appear on scouting.org. Commo
 
 ## 10. Quality Checklist
 
-Before merging any change to `troop380_activities.html`:
+Before merging any change:
 
 - [ ] File opens without console errors in Chrome, Firefox, and Safari
 - [ ] All 23 (or updated count) activity cards render
