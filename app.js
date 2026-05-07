@@ -23,6 +23,18 @@ import GraphicsLayer from 'https://js.arcgis.com/5.0/@arcgis/core/layers/Graphic
   esriMap.add(layer);
 
   var distColor = { near: [39, 174, 96], mid: [230, 126, 34], far: [192, 57, 43] };
+  var graphicsById = {};
+
+  function makeSymbol(distKey, active) {
+    var rgb = distColor[distKey];
+    return {
+      type: 'simple-marker',
+      style: 'circle',
+      color: active ? rgb : [rgb[0], rgb[1], rgb[2], 0.18],
+      size: active ? '14px' : '10px',
+      outline: { color: active ? [255, 255, 255] : [255, 255, 255, 0.5], width: active ? 2 : 1 }
+    };
+  }
 
   ACTS.forEach(function(a) {
     var popupContent =
@@ -34,17 +46,24 @@ import GraphicsLayer from 'https://js.arcgis.com/5.0/@arcgis/core/layers/Graphic
       '</div>';
     var graphic = new Graphic({
       geometry: { type: 'point', longitude: a.lng, latitude: a.lat },
-      symbol: {
-        type: 'simple-marker',
-        style: 'circle',
-        color: distColor[a.dist],
-        size: '14px',
-        outline: { color: [255, 255, 255], width: 2 }
-      },
+      symbol: makeSymbol(a.dist, true),
       popupTemplate: { title: a.title, content: popupContent }
     });
+    graphicsById[a.id] = graphic;
     layer.add(graphic);
   });
+
+  // Called from renderCards when filters change. Active markers stay full
+  // color; non-matching markers dim but remain visible for spatial context.
+  window.updateMapHighlight = function(activeIds) {
+    var activeSet = {};
+    activeIds.forEach(function(id) { activeSet[id] = true; });
+    ACTS.forEach(function(a) {
+      var g = graphicsById[a.id];
+      if (!g) return;
+      g.symbol = makeSymbol(a.dist, !!activeSet[a.id]);
+    });
+  };
 }());
 
 /* ── GALLERY ───────────────────────────────────────────────────────────────── */
@@ -244,6 +263,10 @@ function renderCards() {
 
   document.getElementById('countBadge').textContent =
     filtered.length + ' activit' + (filtered.length === 1 ? 'y' : 'ies');
+
+  if (window.updateMapHighlight) {
+    window.updateMapHighlight(filtered.map(function(a) { return a.id; }));
+  }
 
   if (!filtered.length) {
     document.getElementById('grid').innerHTML =
