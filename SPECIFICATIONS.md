@@ -120,6 +120,7 @@ Each value corresponds to a filter button. Adding a new type requires adding a m
 | `beach` | `.t-beach` | teal | Beach destination |
 | `merit` | `.t-merit` | pink | Merit badge program available |
 | `bsa` | `.t-bsa` | orange | Official BSA camp/program |
+| `baloo` | `.t-baloo` | gold | BALOO-compliant for Cub Scout pack/den outings and recruiting |
 
 Extra `labels` beyond the `badges` array length are rendered as `.t-def` (grey) pills.
 

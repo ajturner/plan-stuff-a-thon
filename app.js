@@ -159,7 +159,7 @@ async function loadGallery(wikiTitles) {
 }
 
 /* ── OVERLAY ───────────────────────────────────────────────────────────────── */
-var BADGE_CLS = { day:'t-day', over:'t-over', bike:'t-bike', beach:'t-beach', merit:'t-merit', bsa:'t-bsa' };
+var BADGE_CLS = { day:'t-day', over:'t-over', bike:'t-bike', beach:'t-beach', merit:'t-merit', bsa:'t-bsa', baloo:'t-baloo' };
 
 function openOverlay(id) {
   var a = null;
@@ -175,6 +175,7 @@ function openOverlay(id) {
   metaHtml += '<span class="tag ' + (a.style === 'day' ? 't-day' : 't-over') + '">' + (a.style === 'day' ? 'Day trip' : 'Overnight') + '</span>';
   if (a.badges.indexOf('merit') !== -1) metaHtml += '<span class="tag t-merit">Merit badge eligible</span>';
   if (a.badges.indexOf('bsa')   !== -1) metaHtml += '<span class="tag t-bsa">BSA camp</span>';
+  if (a.badges.indexOf('baloo') !== -1) metaHtml += '<span class="tag t-baloo">Cub Scout / BALOO</span>';
   document.getElementById('olMeta').innerHTML = metaHtml;
 
   document.getElementById('olDesc').textContent = a.desc;
@@ -230,14 +231,15 @@ document.addEventListener('keydown', function(e) {
 });
 
 /* ── CARDS ─────────────────────────────────────────────────────────────────── */
-var fType = 'all', fTrip = 'all', fSeas = 'all';
+var fType = 'all', fTrip = 'all', fSeas = 'all', fBaloo = 'all';
 var SD_CLS = { Sp: 'sd-sp', Su: 'sd-su', Fa: 'sd-fa', Wi: 'sd-wi' };
 
 function renderCards() {
   var filtered = ACTS.filter(function(a) {
     return (fType === 'all' || a.types.indexOf(fType) !== -1) &&
            (fTrip === 'all' || a.style === fTrip) &&
-           (fSeas === 'all' || a.seas.indexOf(fSeas) !== -1);
+           (fSeas === 'all' || a.seas.indexOf(fSeas) !== -1) &&
+           (fBaloo === 'all' || a.badges.indexOf('baloo') !== -1);
   });
 
   document.getElementById('countBadge').textContent =
@@ -294,17 +296,19 @@ function renderCards() {
 }
 
 /* ── FILTERS ───────────────────────────────────────────────────────────────── */
+var ON_CLS = { type: 'on', trip: 'on-t', seas: 'on-s', baloo: 'on-b' };
 document.querySelectorAll('.fb').forEach(function(btn) {
   btn.addEventListener('click', function() {
     var g = btn.getAttribute('data-g');
     var v = btn.getAttribute('data-v');
     document.querySelectorAll('[data-g="' + g + '"]').forEach(function(b) {
-      b.classList.remove('on', 'on-t', 'on-s');
+      b.classList.remove('on', 'on-t', 'on-s', 'on-b');
     });
-    btn.classList.add(g === 'type' ? 'on' : g === 'trip' ? 'on-t' : 'on-s');
-    if      (g === 'type') fType = v;
-    else if (g === 'trip') fTrip = v;
-    else                   fSeas = v;
+    btn.classList.add(ON_CLS[g] || 'on');
+    if      (g === 'type')  fType  = v;
+    else if (g === 'trip')  fTrip  = v;
+    else if (g === 'seas')  fSeas  = v;
+    else if (g === 'baloo') fBaloo = v;
     renderCards();
   });
 });
