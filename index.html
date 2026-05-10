@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Troop 380 · Adventure Activity Guide</title>
+
+<!-- ArcGIS JS SDK 5 -->
+<link rel="stylesheet" href="https://js.arcgis.com/5.0/esri/themes/light/main.css">
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- App styles -->
+<link rel="stylesheet" href="styles.css">
+
+</head>
+<body>
+
+<!-- HEADER -->
+
+<header>
+  <div class="hdr">
+    <div class="troop-label">Scouting America · Troop 380 · Annual Activity Planning</div>
+    <h1>Adventure<br><em>Activity</em><br>Guide</h1>
+    <p class="hdr-sub">29 outdoor adventures within reach of DC — day trips to multi-day expeditions, including BALOO-compliant Cub Scout sites. Filter by type, season, style &amp; Cub Scout readiness. Click any card for photos, costs &amp; merit badges.</p>
+    <div class="hdr-meta">
+      <div><span>Scouts</span> <b>Ages 5–17</b></div>
+      <div><span>Range</span> <b>45 min – 5 hrs from DC</b></div>
+      <div><span>Activities</span> <b>29 options</b></div>
+    </div>
+    <button class="print-btn" id="printIndexBtn" type="button">🖨 Print full index</button>
+  </div>
+</header>
+
+<!-- LEGEND -->
+
+<div class="legend">
+  <div class="leg-item"><div class="leg-dot" style="background:var(--c-near)"></div>≤2 hrs from DC</div>
+  <div class="leg-item"><div class="leg-dot" style="background:var(--c-mid)"></div>2–3.5 hrs</div>
+  <div class="leg-item"><div class="leg-dot" style="background:var(--c-far)"></div>4–5 hrs</div>
+  <div class="leg-item"><span class="leg-pill t-day">Day trip</span></div>
+  <div class="leg-item"><span class="leg-pill t-over">Overnight</span></div>
+  <div class="leg-item"><span class="leg-pill t-merit">Merit badge</span></div>
+  <div class="leg-item"><span class="leg-pill t-baloo">Cub Scout / BALOO</span></div>
+</div>
+
+<!-- MAP -->
+
+<div id="map-wrap">
+  <h2>📍 Activity Locations</h2>
+  <div id="mapView"></div>
+</div>
+
+<!-- FILTERS -->
+
+<div class="filters">
+  <div class="filters-inner">
+    <div class="fg">
+      <span class="flabel">Type</span>
+      <button class="fb on"  data-g="type" data-v="all">All</button>
+      <button class="fb" data-g="type" data-v="water">Water</button>
+      <button class="fb" data-g="type" data-v="hiking">Hiking</button>
+      <button class="fb" data-g="type" data-v="climbing">Climbing</button>
+      <button class="fb" data-g="type" data-v="cave">Caving</button>
+      <button class="fb" data-g="type" data-v="bike">Biking</button>
+      <button class="fb" data-g="type" data-v="beach">Beach</button>
+      <button class="fb" data-g="type" data-v="history">History</button>
+    </div>
+    <div class="fg">
+      <span class="flabel">Style</span>
+      <button class="fb on-t" data-g="trip" data-v="all">All</button>
+      <button class="fb" data-g="trip" data-v="day">Day trip</button>
+      <button class="fb" data-g="trip" data-v="overnight">Overnight</button>
+    </div>
+    <div class="fg">
+      <span class="flabel">Season</span>
+      <button class="fb on-s" data-g="seas" data-v="all">All</button>
+      <button class="fb" data-g="seas" data-v="Sp">Spring</button>
+      <button class="fb" data-g="seas" data-v="Su">Summer</button>
+      <button class="fb" data-g="seas" data-v="Fa">Fall</button>
+      <button class="fb" data-g="seas" data-v="Wi">Winter</button>
+    </div>
+    <div class="fg">
+      <span class="flabel">Cub Scout</span>
+      <button class="fb on-b" data-g="baloo" data-v="all">All</button>
+      <button class="fb" data-g="baloo" data-v="yes">BALOO compliant</button>
+    </div>
+    <div id="countBadge"></div>
+  </div>
+</div>
+
+<!-- CARDS -->
+
+<main class="main">
+  <div class="grid" id="grid"></div>
+</main>
+
+<footer>Troop 380 · Scouting America · Plan-Stuff-A-Thon · Click any card to see details, photos &amp; merit badges</footer>
+
+<!-- OVERLAY -->
+
+<div id="overlay" class="overlay" role="dialog" aria-modal="true" aria-label="Activity details">
+  <div class="ol-panel">
+    <button class="ol-close" id="olClose" aria-label="Close">✕</button>
+    <div class="gallery" id="gallery">
+      <button class="g-nav g-prev" id="gPrev" aria-label="Previous photo">&#8249;</button>
+      <button class="g-nav g-next" id="gNext" aria-label="Next photo">&#8250;</button>
+      <div class="g-dots" id="gDots"></div>
+      <div class="g-cap"  id="gCap"></div>
+    </div>
+    <div class="ol-body">
+      <div class="ol-title" id="olTitle"></div>
+      <div class="ol-meta"  id="olMeta"></div>
+      <p   class="ol-desc"  id="olDesc"></p>
+      <div class="detail-grid" id="olGrid"></div>
+      <div id="olMerits"></div>
+
+      <!-- Print button (screen only) -->
+      <button class="print-btn print-btn-inline" id="printActivityBtn" type="button">🖨 Print this activity sheet</button>
+
+      <!-- Notes section — print-only, used when scouts/chairs annotate sheet -->
+      <div class="notes-block">
+        <div class="notes-title">📝 Planning Notes</div>
+        <div class="notes-grid">
+          <div class="notes-field">
+            <div class="notes-label">Proposed Date(s)</div>
+            <div style="min-height:.4in"></div>
+          </div>
+          <div class="notes-field">
+            <div class="notes-label">Activity Chair</div>
+            <div style="min-height:.4in"></div>
+          </div>
+          <div class="notes-field">
+            <div class="notes-label">Estimated # of Scouts</div>
+            <div style="min-height:.4in"></div>
+          </div>
+          <div class="notes-field">
+            <div class="notes-label">Estimated # of Adults</div>
+            <div style="min-height:.4in"></div>
+          </div>
+        </div>
+
+        <div class="notes-lines-label">Scout Preferences &amp; Interest Level</div>
+        <div class="notes-lines"></div>
+
+        <div class="notes-lines-label" style="margin-top:10pt">Logistics &amp; Transportation Notes</div>
+        <div class="notes-lines"></div>
+
+        <div class="notes-lines-label" style="margin-top:10pt">Additional Notes / Action Items</div>
+        <div class="notes-lines notes-lines-large"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="app.js"></script>
+
+</body>
+</html>
