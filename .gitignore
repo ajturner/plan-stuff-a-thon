@@ -1,0 +1,11 @@
+# Google API credentials — never commit
+service-account*.json
+credentials.json
+token.json
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
