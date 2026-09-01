@@ -659,3 +659,25 @@ footer {
     text-align: center;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MAP POPUP — built as DOM nodes by buildPopupNode() in app.js
+   ═══════════════════════════════════════════════════════════════════════════ */
+.map-pop { font-family: 'DM Sans', sans-serif; font-size: 13px; line-height: 1.5; }
+.map-pop-title {
+  font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem;
+  letter-spacing: .04em; color: #1a3a2a; margin-bottom: 3px;
+}
+.map-pop-meta { font-family: 'DM Mono', monospace; font-size: .68rem; color: #8b6f47; }
+.map-pop-cost {
+  font-family: 'DM Mono', monospace; font-size: .72rem;
+  color: #2d5a3d; font-weight: 500; margin: 4px 0;
+}
+.map-pop-btn {
+  margin-top: 6px; padding: 4px 12px; background: #2d5a3d; color: #fff;
+  border: none; border-radius: 3px; font-size: .68rem;
+  font-family: 'DM Mono', monospace; cursor: pointer;
+  text-transform: uppercase; letter-spacing: .04em;
+}
+.map-pop-btn:hover { background: #1a3a2a; }
+.map-pop-btn:focus-visible { outline: 2px solid #1a3a2a; outline-offset: 2px; }

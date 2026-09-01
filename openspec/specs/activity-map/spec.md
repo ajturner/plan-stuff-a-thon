@@ -44,17 +44,22 @@ A planner SHALL be able to reach an activity's full detail overlay from its map 
 
 #### Scenario: Opening details from the map
 
-- **WHEN** the planner activates the details affordance in a marker popup
+- **WHEN** the planner clicks "View details" in a marker popup
 - **THEN** the detail overlay for that activity opens
 
-> **Known deviation — this requirement is not currently met.** The popup content
-> is supplied to the SDK as an HTML string, and ArcGIS Maps SDK 5 sanitises that
-> string: it strips the `<button>` element and its `onclick` handler, leaving the
-> words "View details" as an inert text node. Clicking it does nothing. Verified
-> in Chrome — the rendered popup DOM contains no `button` element. Satisfying
-> this requirement needs the popup content supplied as a function returning a
-> real DOM node with a listener attached, rather than as a string. Card clicks
-> are unaffected and remain the working route into the overlay.
+#### Scenario: Opening details from a dimmed marker
+
+- **WHEN** the planner clicks "View details" in the popup of a marker the current filters exclude
+- **THEN** the detail overlay for that activity opens, so a filtered-out option can still be inspected in full
+
+### Requirement: Popup content must be built as DOM nodes
+
+Popup content SHALL be supplied as a function returning a DOM node with listeners attached, never as an HTML string.
+
+#### Scenario: Interactive content survives
+
+- **WHEN** the popup is rendered
+- **THEN** its button is a real element with a working listener, because the SDK sanitises string content and would otherwise strip the button and its inline handler, leaving inert text
 
 ### Requirement: Filtered markers are dimmed, not removed
 

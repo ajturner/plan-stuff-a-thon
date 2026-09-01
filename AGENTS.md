@@ -146,6 +146,27 @@ window.openOverlay = openOverlay;
 
 ---
 
+## The map popup content rule (critical)
+
+`popupTemplate.content` must be a **function returning a DOM node**, not an HTML
+string:
+
+```js
+// ✅ Correct — buildPopupNode() creates elements and attaches a listener
+popupTemplate: { title: a.title, content: function() { return buildPopupNode(a); } }
+
+// ❌ Wrong — SDK 5 sanitises string content: the <button> and its onclick are
+// stripped, leaving "View details" as dead text that looks fine but does nothing
+popupTemplate: { title: a.title, content: '<div>…<button onclick="…">View details</button></div>' }
+```
+
+This is why `buildPopupNode()` uses `document.createElement` and
+`addEventListener` rather than string concatenation, and why popup styling lives
+in `styles.css` under `.map-pop*` instead of inline attributes. The button calls
+`window.openOverlay(id)` so the print handler's activity tracking still runs.
+
+---
+
 ## innerHTML string concatenation rule
 
 All dynamic `innerHTML` assignments use **string concatenation**, not template literals. This is intentional — template literals with nested quotes caused parse failures in earlier versions.
@@ -239,10 +260,8 @@ Before marking any task done, verify:
 - [ ] Gallery spinner shows, then photos appear (requires internet)
 - [ ] All filter combinations produce correct results
 - [ ] Overlay closes via ✕ button, backdrop click, and Escape key
-- [ ] Map popup opens on marker click and shows title, drive time, style, cost
-      (NOTE: the popup's "View details" button does **not** work — SDK 5
-      sanitises string popup content and strips the button and its onclick.
-      See the known deviation in `openspec/specs/activity-map/spec.md`.)
+- [ ] Map popup "View details" button opens the overlay (including for markers
+      greyed out by the current filters)
 - [ ] Brace and paren counts are balanced in app.js (`{` count === `}` count, `(` count === `)` count)
 - [ ] No `require(` anywhere in any file
 - [ ] `<script type="module" src="app.js">` is the only script tag in index.html

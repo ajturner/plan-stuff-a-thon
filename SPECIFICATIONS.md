@@ -159,13 +159,16 @@ Each activity gets a `simple-marker` circle with:
 - White outline, width `2`
 
 ### 4.5 Popups
-Each graphic's `popupTemplate.content` is an HTML string containing:
+Each graphic's `popupTemplate.content` is a **function returning a DOM node**
+(built by `buildPopupNode(a)`), not an HTML string — SDK 5 sanitises string
+content and strips buttons and event handlers. Styling comes from the `.map-pop*`
+classes in `styles.css`. The node contains:
 1. Activity title (Bebas Neue, styled inline)
 2. Drive time + trip style
 3. Cost string
 4. `<button onclick="window.openOverlay(id)">View details</button>`
 
-**Critical:** The button must call `window.openOverlay()` (not bare `openOverlay()`) because the popup content executes in a context outside the ES module scope. `openOverlay` is explicitly assigned to `window` in the OVERLAY section.
+**Critical:** The button's listener calls `window.openOverlay()` rather than the bare module-scope `openOverlay`, so that the print handler's wrapper — which records the currently open activity — still runs. `openOverlay` is explicitly assigned to `window` in the OVERLAY section.
 
 ### 4.6 `window.openOverlay` contract
 ```js
