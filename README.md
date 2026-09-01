@@ -1,6 +1,6 @@
 # Troop 380 · Adventure Activity Guide
 
-A single-page web application for **Scouting America Troop 380** that helps scouts plan their annual activities at the Plan-Stuff-A-Thon. The guide presents 29 curated outdoor adventures within reach of Washington DC — including BALOO-compliant Cub Scout camping sites for pack outings and recruiting events — with interactive filtering, an ArcGIS map, photo galleries, cost estimates, gear requirements, and merit badge opportunities.
+A single-page web application for **Scouting America Troop 380** that helps scouts plan their annual activities at the Plan-Stuff-A-Thon. The guide presents 45 curated outdoor adventures — day trips and weekends within reach of Washington DC, BALOO-compliant Cub Scout camping sites, and high adventure bases from Goshen and the Adirondacks to Philmont, Northern Tier, Sea Base, and Alaska — with interactive filtering, an ArcGIS map, photo galleries, cost estimates, gear requirements, and merit badge opportunities.
 
 ---
 
@@ -12,9 +12,10 @@ Open `troop380_activities.html` directly in any modern browser — no build step
 
 ## Features
 
-- **29 activities** ranging from 45-minute day trips to 5-hour exceptional adventures, including 12 BALOO-compliant Cub Scout sites
+- **45 activities** ranging from 45-minute day trips to fly-in high adventure expeditions, including 12 BALOO-compliant Cub Scout sites and 16 high adventure programs (age 13/14+)
 - **ArcGIS JS SDK 5** interactive map with color-coded distance markers and popup cards
-- **Four-axis filtering** — by activity type, trip style (day/overnight), season, and Cub Scout / BALOO compliance
+- **Five-axis filtering** — by activity type, trip style (day/overnight), season, Cub Scout / BALOO compliance, and high adventure (show only / hide)
+- **Map stays in sync with the filters** — markers for activities that no longer match are greyed out and shrunk rather than removed, so you keep the geographic context
 - **Photo galleries** loaded live from the Wikipedia REST API (no API keys required)
 - **Detail overlays** with cost breakdown, requirements checklist, and merit badge opportunities
 - **Fully static** — one HTML file, zero dependencies to install, works offline except for map tiles, fonts, and photos
@@ -95,6 +96,7 @@ All activity data lives in the `ACTS` array near the top of the `<script type="m
 | `merit` | pink | Merit badge programs |
 | `bsa` | orange | Official BSA camps |
 | `baloo` | gold | BALOO-compliant for Cub Scout pack/den outings |
+| `ha` | purple | High adventure trek or base (age 13/14+); toggled by the High adventure filter |
 
 ---
 

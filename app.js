@@ -9,6 +9,24 @@ import Graphic      from 'https://js.arcgis.com/5.0/@arcgis/core/Graphic.js';
 import GraphicsLayer from 'https://js.arcgis.com/5.0/@arcgis/core/layers/GraphicsLayer.js';
 
 /* ── ARCGIS MAP (SDK 5 ES modules) ─────────────────────────────────────────── */
+var distColor = { near: [39, 174, 96], mid: [230, 126, 34], far: [192, 57, 43], xfar: [91, 58, 140] };
+var MUTED_COLOR = [176, 176, 176, 0.45];
+
+// id -> Graphic, so the filter bar can mute markers that no longer match
+var markerById = {};
+
+// Build the marker symbol for an activity. Inactive (filtered-out) markers are
+// smaller and grey so matching results stand out on the map.
+function markerSymbol(a, active) {
+  return {
+    type: 'simple-marker',
+    style: 'circle',
+    color: active ? distColor[a.dist] : MUTED_COLOR,
+    size: active ? '14px' : '9px',
+    outline: { color: active ? [255, 255, 255] : [255, 255, 255, 0.6], width: active ? 2 : 1 }
+  };
+}
+
 (function initMap() {
   var esriMap = new Map({ basemap: 'topo-vector' });
 
@@ -22,8 +40,6 @@ import GraphicsLayer from 'https://js.arcgis.com/5.0/@arcgis/core/layers/Graphic
   var layer = new GraphicsLayer();
   esriMap.add(layer);
 
-  var distColor = { near: [39, 174, 96], mid: [230, 126, 34], far: [192, 57, 43] };
-
   ACTS.forEach(function(a) {
     var popupContent =
       '<div style="font-family:DM Sans,sans-serif;font-size:13px;line-height:1.5">' +
@@ -34,16 +50,11 @@ import GraphicsLayer from 'https://js.arcgis.com/5.0/@arcgis/core/layers/Graphic
       '</div>';
     var graphic = new Graphic({
       geometry: { type: 'point', longitude: a.lng, latitude: a.lat },
-      symbol: {
-        type: 'simple-marker',
-        style: 'circle',
-        color: distColor[a.dist],
-        size: '14px',
-        outline: { color: [255, 255, 255], width: 2 }
-      },
+      symbol: markerSymbol(a, true),
       popupTemplate: { title: a.title, content: popupContent }
     });
     layer.add(graphic);
+    markerById[a.id] = graphic;
   });
 }());
 
@@ -159,7 +170,7 @@ async function loadGallery(wikiTitles) {
 }
 
 /* ── OVERLAY ───────────────────────────────────────────────────────────────── */
-var BADGE_CLS = { day:'t-day', over:'t-over', bike:'t-bike', beach:'t-beach', merit:'t-merit', bsa:'t-bsa', baloo:'t-baloo' };
+var BADGE_CLS = { day:'t-day', over:'t-over', bike:'t-bike', beach:'t-beach', merit:'t-merit', bsa:'t-bsa', baloo:'t-baloo', ha:'t-ha' };
 
 function openOverlay(id) {
   var a = null;
@@ -176,6 +187,7 @@ function openOverlay(id) {
   if (a.badges.indexOf('merit') !== -1) metaHtml += '<span class="tag t-merit">Merit badge eligible</span>';
   if (a.badges.indexOf('bsa')   !== -1) metaHtml += '<span class="tag t-bsa">BSA camp</span>';
   if (a.badges.indexOf('baloo') !== -1) metaHtml += '<span class="tag t-baloo">Cub Scout / BALOO</span>';
+  if (a.badges.indexOf('ha')    !== -1) metaHtml += '<span class="tag t-ha">High adventure (13/14+)</span>';
   document.getElementById('olMeta').innerHTML = metaHtml;
 
   document.getElementById('olDesc').textContent = a.desc;
@@ -231,16 +243,30 @@ document.addEventListener('keydown', function(e) {
 });
 
 /* ── CARDS ─────────────────────────────────────────────────────────────────── */
-var fType = 'all', fTrip = 'all', fSeas = 'all', fBaloo = 'all';
+var fType = 'all', fTrip = 'all', fSeas = 'all', fBaloo = 'all', fHA = 'all';
 var SD_CLS = { Sp: 'sd-sp', Su: 'sd-su', Fa: 'sd-fa', Wi: 'sd-wi' };
 
-function renderCards() {
-  var filtered = ACTS.filter(function(a) {
-    return (fType === 'all' || a.types.indexOf(fType) !== -1) &&
-           (fTrip === 'all' || a.style === fTrip) &&
-           (fSeas === 'all' || a.seas.indexOf(fSeas) !== -1) &&
-           (fBaloo === 'all' || a.badges.indexOf('baloo') !== -1);
+// Single source of truth for the filter bar — used by both the card grid and the map
+function matchesFilters(a) {
+  return (fType === 'all' || a.types.indexOf(fType) !== -1) &&
+         (fTrip === 'all' || a.style === fTrip) &&
+         (fSeas === 'all' || a.seas.indexOf(fSeas) !== -1) &&
+         (fBaloo === 'all' || a.badges.indexOf('baloo') !== -1) &&
+         (fHA === 'all' || (fHA === 'yes') === (a.badges.indexOf('ha') !== -1));
+}
+
+// Grey out map markers for activities the current filters exclude
+function applyMapFilter() {
+  ACTS.forEach(function(a) {
+    var g = markerById[a.id];
+    if (g) g.symbol = markerSymbol(a, matchesFilters(a));
   });
+}
+
+function renderCards() {
+  var filtered = ACTS.filter(matchesFilters);
+
+  applyMapFilter();
 
   document.getElementById('countBadge').textContent =
     filtered.length + ' activit' + (filtered.length === 1 ? 'y' : 'ies');
@@ -296,19 +322,20 @@ function renderCards() {
 }
 
 /* ── FILTERS ───────────────────────────────────────────────────────────────── */
-var ON_CLS = { type: 'on', trip: 'on-t', seas: 'on-s', baloo: 'on-b' };
+var ON_CLS = { type: 'on', trip: 'on-t', seas: 'on-s', baloo: 'on-b', ha: 'on-h' };
 document.querySelectorAll('.fb').forEach(function(btn) {
   btn.addEventListener('click', function() {
     var g = btn.getAttribute('data-g');
     var v = btn.getAttribute('data-v');
     document.querySelectorAll('[data-g="' + g + '"]').forEach(function(b) {
-      b.classList.remove('on', 'on-t', 'on-s', 'on-b');
+      b.classList.remove('on', 'on-t', 'on-s', 'on-b', 'on-h');
     });
     btn.classList.add(ON_CLS[g] || 'on');
     if      (g === 'type')  fType  = v;
     else if (g === 'trip')  fTrip  = v;
     else if (g === 'seas')  fSeas  = v;
     else if (g === 'baloo') fBaloo = v;
+    else if (g === 'ha')    fHA    = v;
     renderCards();
   });
 });
