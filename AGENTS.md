@@ -12,10 +12,32 @@ The application is hosted on **GitHub Pages** (deployed automatically from `main
 
 ---
 
+## Three layers of documentation
+
+| Document | Answers |
+|----------|---------|
+| `openspec/specs/*/spec.md` | **What the guide does and why** — behaviour, as requirements with scenarios |
+| `SPECIFICATIONS.md` | **How it is built** — data schema, vocabulary, design system, CSS classes |
+| `AGENTS.md` (this file) | **What not to break** — guardrails and common tasks |
+
+The OpenSpec capability specs are the behavioural contract. If you change what
+the guide *does*, update the relevant `spec.md` in the same change. If you only
+change how something is implemented, the specs should still describe it
+accurately — if they no longer do, you changed behaviour.
+
+Validate specs with `openspec validate --specs --strict`.
+
+Capabilities: `activity-catalog`, `activity-filtering`, `activity-map`,
+`activity-detail-overlay`, `activity-photo-gallery`, `activity-printing`,
+`site-delivery`, `camping-idea-intake`.
+
+---
+
 ## Before you change anything
 
 1. **Read all source files.** Understand the structure before editing.
 2. **Check SPECIFICATIONS.md** for the authoritative data schema, vocabulary, and design system.
+3. **Check `openspec/specs/`** for the behaviour the change must preserve.
 3. **Run the mental checklist:** Does my change introduce `require()`? Does it remove `type="module"` from the script tag or `src="app.js"`? Does it break the ES module import chain? If yes to any, stop.
 
 ---
@@ -217,7 +239,10 @@ Before marking any task done, verify:
 - [ ] Gallery spinner shows, then photos appear (requires internet)
 - [ ] All filter combinations produce correct results
 - [ ] Overlay closes via ✕ button, backdrop click, and Escape key
-- [ ] Map popup "View details" button opens the overlay
+- [ ] Map popup opens on marker click and shows title, drive time, style, cost
+      (NOTE: the popup's "View details" button does **not** work — SDK 5
+      sanitises string popup content and strips the button and its onclick.
+      See the known deviation in `openspec/specs/activity-map/spec.md`.)
 - [ ] Brace and paren counts are balanced in app.js (`{` count === `}` count, `(` count === `)` count)
 - [ ] No `require(` anywhere in any file
 - [ ] `<script type="module" src="app.js">` is the only script tag in index.html
@@ -250,6 +275,11 @@ plan-stuff-a-thon/
 ├── README.md
 ├── SPECIFICATIONS.md
 ├── AGENTS.md           ← this file
+├── openspec/
+│   ├── config.yaml     ← project context for spec tooling
+│   └── specs/          ← behaviour specs, one directory per capability
+├── tools/
+│   └── create_camping_form.py
 └── .github/
     ├── copilot-instructions.md
     └── workflows/

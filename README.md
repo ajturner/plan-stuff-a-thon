@@ -25,14 +25,56 @@ Open `troop380_activities.html` directly in any modern browser — no build step
 ## Repository Structure
 
 ```
-troop380-activities/
-├── troop380_activities.html   # The entire application (single file)
+plan-stuff-a-thon/
+├── index.html                 # Markup only — no inline CSS or JS
+├── styles.css                 # All styling, including two print modes
+├── data.js                    # The ACTS activity array (ES module export)
+├── app.js                     # All application logic (ES module entry point)
 ├── README.md                  # This file
-├── SPECIFICATIONS.md          # Detailed technical and content specifications
-├── .github/
-│   └── copilot-instructions.md  # GitHub Copilot workspace instructions
-└── AGENTS.md                  # Guidance for AI coding agents (Copilot, Claude, etc.)
+├── SPECIFICATIONS.md          # Data schema, vocabulary, and design system
+├── AGENTS.md                  # Guardrails for AI coding agents
+├── openspec/
+│   ├── config.yaml            # Project context for spec tooling
+│   └── specs/                 # Behaviour specs, one directory per capability
+├── tools/
+│   └── create_camping_form.py # Provisions the activity-suggestion Google Form
+└── .github/
+    ├── copilot-instructions.md
+    └── workflows/
+        └── deploy-gh-pages.yml
 ```
+
+The application is split across four files and loads as native ES modules, so
+it must be served over HTTP — opening `index.html` from the filesystem will not
+work, because browsers block module imports over `file://`.
+
+---
+
+## Specifications
+
+Behaviour is documented as [OpenSpec](https://github.com/Fission-AI/OpenSpec)
+capability specs in `openspec/specs/`, written as requirements with concrete
+scenarios:
+
+| Capability | Covers |
+|------------|--------|
+| `activity-catalog` | The activity record schema, vocabularies, and data invariants |
+| `activity-filtering` | The five filter groups and their combined semantics |
+| `activity-map` | Map rendering, markers, popups, and filter dimming |
+| `activity-detail-overlay` | The detail modal and how it opens and closes |
+| `activity-photo-gallery` | Wikipedia and Commons photo sourcing and navigation |
+| `activity-printing` | The full index and single-activity planning sheet |
+| `site-delivery` | The no-build static architecture and publication |
+| `camping-idea-intake` | The activity-suggestion Google Form tool |
+
+```bash
+openspec list --specs                  # list capabilities
+openspec show activity-filtering       # read one
+openspec validate --specs --strict     # check them
+```
+
+Read the specs to learn what the guide is meant to do; read `SPECIFICATIONS.md`
+for how it is built.
 
 ---
 
@@ -146,8 +188,15 @@ Requires a browser with ES module support and `fetch`. All modern browsers (Chro
 ## Contributing
 
 1. Fork the repository
-2. Edit `troop380_activities.html` — all content and logic is in this single file
-3. Test by opening the file locally in a browser
-4. Open a pull request with a description of what changed and why
+2. Make your change in the relevant file — `data.js` for activities, `app.js`
+   for behaviour, `styles.css` for appearance, `index.html` for markup
+3. Serve the directory over HTTP (`python3 -m http.server 8080`) and check it in
+   a browser — the console should be clean, cards and markers should render, and
+   every filter combination should behave
+4. If you changed what the guide *does*, update the matching spec in
+   `openspec/specs/` and run `openspec validate --specs --strict`
+5. Open a pull request describing what changed and why
 
-See `SPECIFICATIONS.md` for detailed content and technical requirements, and `AGENTS.md` for guidance on using AI assistants to make changes.
+See `SPECIFICATIONS.md` for the data schema and design system, `openspec/specs/`
+for the behavioural contract, and `AGENTS.md` for guidance on using AI assistants
+to make changes.
