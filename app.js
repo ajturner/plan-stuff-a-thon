@@ -15,6 +15,34 @@ var MUTED_COLOR = [176, 176, 176, 0.45];
 // id -> Graphic, so the filter bar can mute markers that no longer match
 var markerById = {};
 
+// Build a popup body as real DOM nodes with a live listener.
+//
+// This must not be an HTML string: ArcGIS Maps SDK 5 sanitises string popup
+// content, discarding the <button> element along with its onclick attribute,
+// which leaves the words "View details" as inert text. Returning a node from a
+// content function bypasses the sanitiser and keeps the listener attached.
+function buildPopupNode(a) {
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    n.className = cls;
+    if (text !== undefined) n.textContent = text;
+    return n;
+  }
+
+  var wrap = el('div', 'map-pop');
+  wrap.appendChild(el('div', 'map-pop-title', a.title));
+  wrap.appendChild(el('div', 'map-pop-meta',
+    a.drive + ' from DC \u00b7 ' + (a.style === 'day' ? 'Day trip' : 'Overnight')));
+  wrap.appendChild(el('div', 'map-pop-cost', a.cost));
+
+  var btn = el('button', 'map-pop-btn', 'View details');
+  btn.type = 'button';
+  btn.addEventListener('click', function() { window.openOverlay(a.id); });
+  wrap.appendChild(btn);
+
+  return wrap;
+}
+
 // Build the marker symbol for an activity. Inactive (filtered-out) markers are
 // smaller and grey so matching results stand out on the map.
 function markerSymbol(a, active) {
@@ -41,17 +69,12 @@ function markerSymbol(a, active) {
   esriMap.add(layer);
 
   ACTS.forEach(function(a) {
-    var popupContent =
-      '<div style="font-family:DM Sans,sans-serif;font-size:13px;line-height:1.5">' +
-      '<div style="font-family:Bebas Neue,sans-serif;font-size:1.1rem;letter-spacing:.04em;color:#1a3a2a;margin-bottom:3px">' + a.title + '</div>' +
-      '<div style="font-family:DM Mono,monospace;font-size:.68rem;color:#8b6f47">' + a.drive + ' from DC · ' + (a.style === 'day' ? 'Day trip' : 'Overnight') + '</div>' +
-      '<div style="font-family:DM Mono,monospace;font-size:.72rem;color:#2d5a3d;font-weight:500;margin:4px 0">' + a.cost + '</div>' +
-      '<button onclick="window.openOverlay(' + a.id + ')" style="margin-top:6px;padding:4px 12px;background:#2d5a3d;color:#fff;border:none;border-radius:3px;font-size:.68rem;font-family:DM Mono,monospace;cursor:pointer;text-transform:uppercase;letter-spacing:.04em">View details</button>' +
-      '</div>';
     var graphic = new Graphic({
       geometry: { type: 'point', longitude: a.lng, latitude: a.lat },
       symbol: markerSymbol(a, true),
-      popupTemplate: { title: a.title, content: popupContent }
+      // Content MUST be a function returning a DOM node, not an HTML string.
+      // SDK 5 sanitises string content and strips buttons and event handlers.
+      popupTemplate: { title: a.title, content: function() { return buildPopupNode(a); } }
     });
     layer.add(graphic);
     markerById[a.id] = graphic;

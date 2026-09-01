@@ -8,7 +8,7 @@ Give a planner everything needed to decide on and organise one trip — photos, 
 
 ### Requirement: Opening the overlay
 
-The overlay SHALL open from a card click, from a card's details button, from keyboard activation of a focused card, and from a marker popup on the map. (The map route is currently blocked by SDK popup sanitisation — see the known deviation in the `activity-map` spec.)
+The overlay SHALL open from a card click, from a card's details button, from keyboard activation of a focused card, and from a marker popup's "View details" button on the map.
 
 #### Scenario: Clicking a card
 
