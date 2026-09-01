@@ -97,6 +97,9 @@ Each entry in the `ACTS` array must conform to the following schema. All fields 
 | `near` | ≤ 2 hours | `#27ae60` green | `.d-near` green |
 | `mid` | 2 – 3.5 hours | `#e67e22` orange | `.d-mid` orange |
 | `far` | 4 – 5 hours | `#c0392b` red | `.d-far` red |
+| `xfar` | 6+ hours or fly-in (high adventure bases) | `#5b3a8c` purple | `.d-xfar` purple |
+
+Markers for activities excluded by the current filters are redrawn grey (`#b0b0b0` at 45% alpha) and shrunk from 14px to 9px by `applyMapFilter()`, which `renderCards()` calls on every filter change. They stay on the map and remain clickable.
 
 **`types` vocabulary:**
 `water` | `hiking` | `climbing` | `cave` | `bike` | `beach` | `history` | `multi`
@@ -121,6 +124,7 @@ Each value corresponds to a filter button. Adding a new type requires adding a m
 | `merit` | `.t-merit` | pink | Merit badge program available |
 | `bsa` | `.t-bsa` | orange | Official BSA camp/program |
 | `baloo` | `.t-baloo` | gold | BALOO-compliant for Cub Scout pack/den outings and recruiting |
+| `ha` | `.t-ha` | purple | High adventure trek/base (age 13/14+). Drives the High adventure filter (`data-g="ha"`, values `all` / `yes` = show only / `no` = hide). |
 
 Extra `labels` beyond the `badges` array length are rendered as `.t-def` (grey) pills.
 
@@ -241,6 +245,7 @@ Three module-scoped variables: `fType`, `fTrip`, `fSeason`. Default `'all'`.
 An activity passes all three filters if:
 ```
 (fType === 'all' || a.types.indexOf(fType) !== -1) &&
+(fHA === 'all' || (fHA === 'yes') === (a.badges.indexOf('ha') !== -1)) &&
 (fTrip === 'all' || a.style === fTrip) &&
 (fSeason === 'all' || a.seas.indexOf(fSeason) !== -1)
 ```

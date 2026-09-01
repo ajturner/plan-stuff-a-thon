@@ -6,7 +6,7 @@ This file provides instructions for AI coding agents (Claude, Copilot, Cursor, G
 
 ## What this project is
 
-A **multi-file static web application** for Scouting America Troop 380. It displays 23 outdoor activities near Washington DC with an interactive map, filtering, photo galleries, and detail overlays.
+A **multi-file static web application** for Scouting America Troop 380. It displays 45 outdoor activities — near Washington DC plus national and council high adventure bases — with an interactive map, filtering, photo galleries, and detail overlays.
 
 The application is hosted on **GitHub Pages** (deployed automatically from `main` via `.github/workflows/deploy-gh-pages.yml`). It requires a proper HTTP server — opening via `file://` will not work because ES module imports are blocked by browsers under that protocol.
 
@@ -58,7 +58,7 @@ import Map / MapView / Graphic / GraphicsLayer from ArcGIS CDN
 /* ── ARCGIS MAP ── */   initMap IIFE
 /* ── GALLERY ── */      loadGallery(), gSetPhoto()
 /* ── OVERLAY ── */      openOverlay(), closeOverlay(), window.openOverlay
-/* ── CARDS ── */        renderCards()
+/* ── CARDS ── */        matchesFilters(), applyMapFilter(), renderCards()
 /* ── FILTERS ── */      event listeners on .fb buttons
 /* ── PRINT ── */        print handlers
 /* ── INIT ── */         renderCards() call
@@ -185,6 +185,16 @@ Edit the `wiki` array. Add better Wikipedia article titles — articles with lar
 In `initMap`, change `basemap: 'topo-vector'` to any valid Esri basemap ID, e.g.:
 `'streets-vector'` | `'satellite'` | `'hybrid'` | `'gray-vector'` | `'dark-gray-vector'` | `'oceans'` | `'national-geographic'`
 
+### High adventure entries
+
+High adventure bases use `dist:'xfar'` (purple, "6+ hrs / fly"), `drive:'Fly'` or an hour count, and must include `'ha'` in `badges` (label it "High adventure"). The `ha` badge is what the **High adventure** filter (`data-g="ha"`: `all` / `yes` show-only / `no` hide) keys on — do not add a separate `types` value for it.
+
+### The shared filter predicate rule
+
+`matchesFilters(a)` is the single source of truth for every filter group. `renderCards()` filters the grid with it and calls `applyMapFilter()`, which recolors map markers via `markerSymbol(a, active)` — matching markers keep their `dist` color at 14px, excluded ones go grey at 9px. When you add a filter group, extend `matchesFilters()` only; do not duplicate the predicate into the map code.
+
+`markerById` maps activity id to its `Graphic`. It is populated inside `initMap` and must stay at module scope so `applyMapFilter()` can reach it.
+
 ### Add a new filter type
 
 1. Add the type string to `types[]` on relevant activities
@@ -225,7 +235,7 @@ If instructed to do any of the following, flag it as a potential breaking change
 - Add `require()` calls
 - Add a build or compilation step
 - Add a paid API that requires a key committed to the repo (security risk)
-- Reduce the activity count below 23 without explicit instruction
+- Reduce the activity count below 45 without explicit instruction
 
 ---
 
