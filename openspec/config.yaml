@@ -1,0 +1,54 @@
+schema: spec-driven
+
+context: |
+  Troop 380 Adventure Activity Guide — a static web app used at the annual
+  Plan-Stuff-A-Thon to choose the troop's outdoor activities for the year.
+
+  Tech stack: plain HTML, CSS, and ES modules. No build step, no bundler, no
+  package manifest, no installed dependencies. The map is ArcGIS Maps SDK 5,
+  imported as ES modules from the ArcGIS CDN. Photos come from the Wikipedia
+  and Wikimedia Commons APIs at runtime. Deployed to GitHub Pages on push to
+  main.
+
+  Files: index.html (markup only), styles.css (all styling incl. two print
+  modes), data.js (the ACTS activity array), app.js (all behaviour).
+  tools/create_camping_form.py provisions the Google Form used to collect
+  activity suggestions.
+
+  Audience: Scouting America volunteers, not professional developers. Changes
+  should stay editable by someone who knows a little HTML. Keep the no-build
+  constraint intact.
+
+  See also: SPECIFICATIONS.md for the data schema and design system in
+  implementation detail; AGENTS.md for contributor guardrails.
+
+# Project context (optional)
+# This is shown to AI when creating artifacts.
+# Add your tech stack, conventions, style guides, domain knowledge, etc.
+# Example:
+#   context: |
+#     Tech stack: TypeScript, React, Node.js
+#     We use conventional commits
+#     Domain: e-commerce platform
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+# This is separate from artifact rules above.
+# Example:
+#   operations:
+#     apply:
+#       guidance:
+#         - Keep test summaries concise
+#     archive:
+#       guidance:
+#         - Summarize the archive outcome before finishing
