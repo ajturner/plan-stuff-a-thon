@@ -22,6 +22,12 @@ Open `troop380_activities.html` directly in any modern browser — no build step
 
 ---
 
+## Summer Camp 2027 page
+
+`camps.html` compares Scouts BSA resident camps within about five hours of DC for the troop's 2027 summer camp: sortable and filterable cards, a map, a week-by-week table, and a details panel per camp with photos, activities, costs, and registration links. Each camp gets a fit score against the patrols' requests. Data lives in `camps-data.js`.
+
+---
+
 ## Repository Structure
 
 ```

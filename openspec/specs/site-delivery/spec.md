@@ -8,7 +8,7 @@ Keep the guide a plain static site that any troop volunteer can edit and that pu
 
 ### Requirement: File separation
 
-The application SHALL be split into `index.html` for markup, `styles.css` for all styling, `data.js` for the activity data, and `app.js` for all behaviour. Markup SHALL carry no inline styles or inline script blocks.
+The application SHALL be split into `index.html` for markup, `styles.css` for all styling, `data.js` for the activity data, and `app.js` for all behaviour. The summer camp page follows the same split: `camps.html`, `camps-data.js`, and `camps.js`, sharing `styles.css`. Markup SHALL carry no inline styles or inline script blocks.
 
 #### Scenario: Adding a style
 

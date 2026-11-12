@@ -29,7 +29,16 @@ Validate specs with `openspec validate --specs --strict`.
 
 Capabilities: `activity-catalog`, `activity-filtering`, `activity-map`,
 `activity-detail-overlay`, `activity-photo-gallery`, `activity-printing`,
-`site-delivery`, `camping-idea-intake`.
+`site-delivery`, `camping-idea-intake`, `summer-camp-comparison`.
+
+### Summer camp page
+
+`camps.html` + `camps-data.js` + `camps.js` follow the same rules as the main
+page (ES modules, string concatenation, DOM-node map popups). Generated markup
+calls `window.openCamp(id)`. To update a camp, edit its entry in
+`camps-data.js`; use `null` for anything not confirmed so the page shows "?".
+Patrol requests live in `PATROLS`; each request's `key` must match a key in
+`FIT_KEYS` in `camps.js`, or be `null` (shown, not scored).
 
 ---
 
