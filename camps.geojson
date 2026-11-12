@@ -1,0 +1,399 @@
+{
+ "type": "FeatureCollection",
+ "name": "Troop 380 Summer Camp 2027",
+ "description": "Scouts BSA resident camps within about five hours of Washington, DC. Data gathered Nov 12, 2026 from each camp’s registration pages. Source: camps-data.js.",
+ "attribution": "Troop 380 · camp data from each camp’s own pages",
+ "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -79.46397,
+     37.967
+    ]
+   },
+   "properties": {
+    "Name": "Camp Olmsted",
+    "Place": "Goshen, VA",
+    "Drive": "3.5 hr",
+    "Meals": "Dining hall",
+    "Youth": "$580–610",
+    "Weeks": "6/27, 7/4, 7/11, 7/18, 7/25",
+    "Water": "Fresh water",
+    "Badges": "68 merit badges",
+    "Council": "National Capital Area Council",
+    "Link": "https://www.gotogoshen.org/scouts-bsa-camp/camp-olmsted/",
+    "Summary": "3.5 hr drive · Dining hall · Fresh water · Youth $580–610 · 2027 weeks: 6/27, 7/4, 7/11, 7/18, 7/25 · 68 merit badges"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -79.4508,
+     37.95994
+    ]
+   },
+   "properties": {
+    "Name": "Camp Bowman",
+    "Place": "Goshen, VA",
+    "Drive": "3.5 hr",
+    "Meals": "Patrol cooking",
+    "Youth": "$580–610",
+    "Weeks": "6/27, 7/4, 7/11, 7/18",
+    "Water": "Fresh water",
+    "Badges": "45 merit badges",
+    "Council": "National Capital Area Council",
+    "Link": "https://www.gotogoshen.org/scouts-bsa-camp/camp-bowman/",
+    "Summary": "3.5 hr drive · Patrol cooking · Fresh water · Youth $580–610 · 2027 weeks: 6/27, 7/4, 7/11, 7/18 · 45 merit badges"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -79.44574,
+     37.9717
+    ]
+   },
+   "properties": {
+    "Name": "Camp Marriott",
+    "Place": "Goshen, VA",
+    "Drive": "3.5 hr",
+    "Meals": "Patrol cooking or Heater stack",
+    "Youth": "$580–610",
+    "Weeks": "6/27, 7/4, 7/11, 7/18",
+    "Water": "Fresh water",
+    "Badges": "65 merit badges",
+    "Council": "National Capital Area Council",
+    "Link": "https://www.gotogoshen.org/scouts-bsa-camp/camp-marriott/",
+    "Summary": "3.5 hr drive · Patrol cooking or Heater stack · Fresh water · Youth $580–610 · 2027 weeks: 6/27, 7/4, 7/11, 7/18 · 65 merit badges"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.97918,
+     39.51041
+    ]
+   },
+   "properties": {
+    "Name": "Rodney Scout Reservation",
+    "Place": "North East, MD",
+    "Drive": "1.5 hr",
+    "Meals": "Meals not confirmed",
+    "Youth": "Not posted",
+    "Weeks": "6/20, 6/27, 7/4, 7/11, 7/18, 7/25",
+    "Water": "Salt water",
+    "Badges": "",
+    "Council": "Del-Mar-Va Council",
+    "Link": "https://scoutingevent.com/081-rsrsummer",
+    "Summary": "1.5 hr drive · Meals not confirmed · Salt water · Youth Not posted · 2027 weeks: 6/20, 6/27, 7/4, 7/11, 7/18, 7/25"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -76.26452,
+     39.68538
+    ]
+   },
+   "properties": {
+    "Name": "Broad Creek (Camp Saffran)",
+    "Place": "Whiteford, MD",
+    "Drive": "1.5 hr",
+    "Meals": "Dining hall or Patrol cooking",
+    "Youth": "$530–545",
+    "Weeks": "6/27, 7/4, 7/11, 7/18",
+    "Water": "Fresh water",
+    "Badges": "",
+    "Council": "Baltimore Area Council",
+    "Link": "https://scoutingevent.com/220-27bcsc",
+    "Summary": "1.5 hr drive · Dining hall or Patrol cooking · Fresh water · Youth $530–545 · 2027 weeks: 6/27, 7/4, 7/11, 7/18"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -77.09689,
+     40.09998
+    ]
+   },
+   "properties": {
+    "Name": "Camp Tuckahoe",
+    "Place": "Dillsburg, PA",
+    "Drive": "2 hr",
+    "Meals": "Dining hall",
+    "Youth": "Not posted",
+    "Weeks": "6/27, 7/4, 7/11",
+    "Water": "Fresh water",
+    "Badges": "",
+    "Council": "New Birth of Freedom Council",
+    "Link": "https://scoutingevent.com/544-114330",
+    "Summary": "2 hr drive · Dining hall · Fresh water · Youth Not posted · 2027 weeks: 6/27, 7/4, 7/11"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -77.96389,
+     40.09518
+    ]
+   },
+   "properties": {
+    "Name": "Sinoquipe Scout Reservation",
+    "Place": "Fort Littleton, PA",
+    "Drive": "2 hr",
+    "Meals": "Dining hall or Patrol cooking",
+    "Youth": "$525",
+    "Weeks": "6/13, 6/20, 6/27, 7/4, 7/11, 7/18",
+    "Water": "Fresh water",
+    "Badges": "",
+    "Council": "Shenandoah Area Council",
+    "Link": "https://scoutingevent.com/598-116935",
+    "Summary": "2 hr drive · Dining hall or Patrol cooking · Fresh water · Youth $525 · 2027 weeks: 6/13, 6/20, 6/27, 7/4, 7/11, 7/18"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -79.22784,
+     38.13417
+    ]
+   },
+   "properties": {
+    "Name": "Camp Shenandoah",
+    "Place": "Swoope, VA",
+    "Drive": "3 hr",
+    "Meals": "Dining hall",
+    "Youth": "$435–495",
+    "Weeks": "6/20, 6/27, 7/4, 7/11",
+    "Water": "Fresh water",
+    "Badges": "59 merit badges",
+    "Council": "Virginia Headwaters Council",
+    "Link": "https://scoutingevent.com/763-CampShenandoah2027",
+    "Summary": "3 hr drive · Dining hall · Fresh water · Youth $435–495 · 2027 weeks: 6/20, 6/27, 7/4, 7/11 · 59 merit badges"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -77.86062,
+     37.67568
+    ]
+   },
+   "properties": {
+    "Name": "Camp T. Brady Saunders",
+    "Place": "Maidens, VA",
+    "Drive": "2.5 hr",
+    "Meals": "Dining hall",
+    "Youth": "$445–470",
+    "Weeks": "6/13, 6/20, 6/27, 7/4",
+    "Water": "Fresh water",
+    "Badges": "16+ merit badges",
+    "Council": "Heart of Virginia Council",
+    "Link": "https://scoutingevent.com/602-2027TBSSummerCamp",
+    "Summary": "2.5 hr drive · Dining hall · Fresh water · Youth $445–470 · 2027 weeks: 6/13, 6/20, 6/27, 7/4 · 16+ merit badges"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -76.87759,
+     37.19529
+    ]
+   },
+   "properties": {
+    "Name": "Pipsico Scout Reservation",
+    "Place": "Spring Grove, VA",
+    "Drive": "3 hr",
+    "Meals": "Meals not confirmed",
+    "Youth": "TBD",
+    "Weeks": "6/20, 6/27, 7/4, 7/11",
+    "Water": "Water not confirmed",
+    "Badges": "",
+    "Council": "Colonial Virginia Council",
+    "Link": "https://pipsicobsa.com/summer-camp-programs/scoutsbsa-summer-camp/",
+    "Summary": "3 hr drive · Meals not confirmed · Water not confirmed · Youth TBD · 2027 weeks: 6/20, 6/27, 7/4, 7/11"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -79.54619,
+     39.76042
+    ]
+   },
+   "properties": {
+    "Name": "Camp Freedom (Heritage)",
+    "Place": "Farmington, PA",
+    "Drive": "3.5 hr",
+    "Meals": "Dining hall",
+    "Youth": "$499–570",
+    "Weeks": "6/20, 6/27, 7/4, 7/11, 7/18, 7/25",
+    "Water": "Fresh water",
+    "Badges": "",
+    "Council": "Laurel Highlands Council",
+    "Link": "https://scoutingevent.com/527-SBSA2027",
+    "Summary": "3.5 hr drive · Dining hall · Fresh water · Youth $499–570 · 2027 weeks: 6/20, 6/27, 7/4, 7/11, 7/18, 7/25"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -79.55227,
+     39.76012
+    ]
+   },
+   "properties": {
+    "Name": "Camp Liberty (Heritage)",
+    "Place": "Farmington, PA",
+    "Drive": "3.5 hr",
+    "Meals": "Patrol cooking",
+    "Youth": "$499–570",
+    "Weeks": "6/20, 6/27, 7/4, 7/11, 7/18, 7/25",
+    "Water": "Fresh water",
+    "Badges": "",
+    "Council": "Laurel Highlands Council",
+    "Link": "https://scoutingevent.com/527-SBSA2027",
+    "Summary": "3.5 hr drive · Patrol cooking · Fresh water · Youth $499–570 · 2027 weeks: 6/20, 6/27, 7/4, 7/11, 7/18, 7/25"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -79.89858,
+     39.52187
+    ]
+   },
+   "properties": {
+    "Name": "Camp Mountaineer",
+    "Place": "Morgantown, WV",
+    "Drive": "3.5 hr",
+    "Meals": "Meals not confirmed",
+    "Youth": "$450–490",
+    "Weeks": "6/20, 6/27, 7/4",
+    "Water": "Water not confirmed",
+    "Badges": "",
+    "Council": "Mountaineer Area Council",
+    "Link": "https://scoutingevent.com/615-115609",
+    "Summary": "3.5 hr drive · Meals not confirmed · Water not confirmed · Youth $450–490 · 2027 weeks: 6/20, 6/27, 7/4"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -76.23435,
+     40.54237
+    ]
+   },
+   "properties": {
+    "Name": "Hawk Mountain Scout Reservation",
+    "Place": "Schuylkill Haven, PA",
+    "Drive": "3 hr",
+    "Meals": "Meals not confirmed",
+    "Youth": "Not posted",
+    "Weeks": "6/20, 6/27, 7/4, 7/11, 7/18",
+    "Water": "Fresh water",
+    "Badges": "",
+    "Council": "Hawk Mountain Council",
+    "Link": "https://scoutingevent.com/528-117403",
+    "Summary": "3 hr drive · Meals not confirmed · Fresh water · Youth Not posted · 2027 weeks: 6/20, 6/27, 7/4, 7/11, 7/18"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -77.60087,
+     40.766
+    ]
+   },
+   "properties": {
+    "Name": "Seven Mountains Scout Camp",
+    "Place": "Spring Mills, PA",
+    "Drive": "3.5 hr",
+    "Meals": "Dining hall",
+    "Youth": "Not posted",
+    "Weeks": "not posted",
+    "Water": "Fresh water",
+    "Badges": "",
+    "Council": "Juniata Valley Council",
+    "Link": "https://www.sevenmountainsscoutcamp.org/index.php/summer-camp/",
+    "Summary": "3.5 hr drive · Dining hall · Fresh water · Youth Not posted · 2027 weeks: not posted"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.42109,
+     41.12773
+    ]
+   },
+   "properties": {
+    "Name": "Camp Minsi",
+    "Place": "Pocono Summit, PA",
+    "Drive": "4 hr",
+    "Meals": "Meals not confirmed",
+    "Youth": "$550–590",
+    "Weeks": "7/4, 7/11, 7/18, 7/25",
+    "Water": "Water not confirmed",
+    "Badges": "",
+    "Council": "Minsi Trails Council",
+    "Link": "https://scoutingevent.com/Download/502183654/OR/2027CampMinsiFlyer.pdf",
+    "Summary": "4 hr drive · Meals not confirmed · Water not confirmed · Youth $550–590 · 2027 weeks: 7/4, 7/11, 7/18, 7/25"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -81.11327,
+     37.89122
+    ]
+   },
+   "properties": {
+    "Name": "Summit Bechtel Reserve — Scout Camp",
+    "Place": "Glen Jean, WV",
+    "Drive": "5 hr",
+    "Meals": "Meals not confirmed",
+    "Youth": "$480",
+    "Weeks": "not posted",
+    "Water": "Water not confirmed",
+    "Badges": "",
+    "Council": "National (Scouting America)",
+    "Link": "https://www.summitbsa.org/wp-content/uploads/2026/01/2027-SBR-INSTRUCTIONS.pdf",
+    "Summary": "5 hr drive · Meals not confirmed · Water not confirmed · Youth $480 · 2027 weeks: not posted"
+   }
+  }
+ ]
+}

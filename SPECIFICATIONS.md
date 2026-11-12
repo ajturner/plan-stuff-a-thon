@@ -383,3 +383,7 @@ Files: `camps.html` (markup), `camps-data.js` (data), `camps.js` (behaviour); st
 Camp fields: `id`, `name`, `site`, `council`, `place`, `lat`, `lng`, `dist` (`near`/`mid`/`far`), `drive`, `mins` (for sorting), `weeks` (`{'MM-DD': 'open'|'almost'|'full'|'listed'}`; a missing week is not offered), `youth` (number for sorting, or `null`), `youthLabel`, `adult`, `costNote`, `meals` (`dh`/`pc`/`hs`; empty = not confirmed), `water`, `fresh` (`true`/`false`/`null`), `flags` (`shoot`, `craft`, `nature`, `stem`, `climb`, `bike`: `true`/`false`/`null`), `desc`, `programs`, `notes`, `wiki`, `links` (`[{label, url}]`), `merits` (`{source, url, partial, areas:[{area, badges}]}`, or `null` when the camp publishes no list).
 
 `null` always means "not confirmed" and renders as "?". Fit keys: `fresh`, `dh`, `pc`, `shoot`, `craft`, `nature`, `short` (drive of 2.5 hours or less).
+
+### 8.1 Pocket map (`camps.geojson`)
+
+`camps.geojson` is a point layer of the camps for the PocketMaps booklet generator (https://ajturner.github.io/pocketmaps/). It is generated from `camps-data.js`; regenerate it after changing camp data. Properties: `Name`, `Place`, `Drive`, `Meals`, `Youth`, `Weeks`, `Water`, `Badges`, `Council`, `Link` (camp registration page, used for each page's QR code), and `Summary` (one line used as the page description). The "Print a pocket map" header link on `camps.html` opens the generator with `name=Name&desc=Summary&qrlink={Link}`.
