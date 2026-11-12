@@ -380,6 +380,6 @@ Files: `camps.html` (markup), `camps-data.js` (data), `camps.js` (behaviour); st
 | `PATROLS` | `{code, name, asks:[{text, key}]}`; `key` is a `FIT_KEYS` name or `null` |
 | `CAMPS` | One object per camp (fields below) |
 
-Camp fields: `id`, `name`, `site`, `council`, `place`, `lat`, `lng`, `dist` (`near`/`mid`/`far`), `drive`, `mins` (for sorting), `weeks` (`{'MM-DD': 'open'|'almost'|'full'|'listed'}`; a missing week is not offered), `youth` (number for sorting, or `null`), `youthLabel`, `adult`, `costNote`, `meals` (`dh`/`pc`/`hs`; empty = not confirmed), `water`, `fresh` (`true`/`false`/`null`), `flags` (`shoot`, `craft`, `nature`, `stem`, `climb`, `bike`: `true`/`false`/`null`), `desc`, `programs`, `notes`, `wiki`, `links` (`[{label, url}]`).
+Camp fields: `id`, `name`, `site`, `council`, `place`, `lat`, `lng`, `dist` (`near`/`mid`/`far`), `drive`, `mins` (for sorting), `weeks` (`{'MM-DD': 'open'|'almost'|'full'|'listed'}`; a missing week is not offered), `youth` (number for sorting, or `null`), `youthLabel`, `adult`, `costNote`, `meals` (`dh`/`pc`/`hs`; empty = not confirmed), `water`, `fresh` (`true`/`false`/`null`), `flags` (`shoot`, `craft`, `nature`, `stem`, `climb`, `bike`: `true`/`false`/`null`), `desc`, `programs`, `notes`, `wiki`, `links` (`[{label, url}]`), `merits` (`{source, url, partial, areas:[{area, badges}]}`, or `null` when the camp publishes no list).
 
 `null` always means "not confirmed" and renders as "?". Fit keys: `fresh`, `dh`, `pc`, `shoot`, `craft`, `nature`, `short` (drive of 2.5 hours or less).

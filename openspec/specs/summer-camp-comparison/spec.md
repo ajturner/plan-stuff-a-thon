@@ -33,6 +33,15 @@ The planner SHALL be able to sort camps by patrol fit, drive time, youth cost (c
 - **WHEN** the planner chooses "Both at one camp"
 - **THEN** only camps offering both dining hall and patrol cooking remain, and the other markers grey out on the map
 
+### Requirement: Merit badge options
+
+Camps that publish a merit badge list SHALL show it in their details, grouped by program area, with its source link and a note when the list is partial. The planner SHALL be able to search camps by merit badge name and sort by the number of badges listed. A camp with no published list SHALL never match a badge search.
+
+#### Scenario: Searching for a badge
+
+- **WHEN** the planner types "Automotive" in the merit badge search
+- **THEN** only camps whose list includes a matching badge remain, and each card names the matching badges
+
 ### Requirement: Week availability
 
 Each camp SHALL show its 2027 weeks with a status of open, almost full, full, or offered (status not published), and the weeks named in the parent survey SHALL be highlighted. A week-by-week table SHALL show the same camps in the same order.

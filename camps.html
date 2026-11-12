@@ -26,7 +26,7 @@
   <div class="hdr">
     <div class="troop-label">Scouting America · Troop 380 · Summer Camp Planning</div>
     <h1>Summer<br><em>Camp</em><br>2027</h1>
-    <p class="hdr-sub">Scouts BSA resident camps within about five hours of DC, compared against what each patrol asked for. Sort and filter the camps, check which weeks each one runs, and open any camp for photos, activities, costs and registration links.</p>
+    <p class="hdr-sub">Scouts BSA resident camps within about five hours of DC, compared against what each patrol asked for. Sort and filter the camps, search by merit badge, check which weeks each one runs, and open any camp for photos, activities, merit badges, costs and registration links.</p>
     <div class="hdr-meta">
       <div><span>Camps</span> <b id="hdrCount">17 options</b></div>
       <div><span>Survey weeks</span> <b>Jun 27 · Jul 4</b></div>
@@ -78,6 +78,7 @@
         <option value="drive">Shortest drive</option>
         <option value="cost">Lowest youth cost</option>
         <option value="weeks">Most weeks offered</option>
+        <option value="merits">Most merit badges</option>
         <option value="name">Name A–Z</option>
       </select>
     </div>
@@ -109,6 +110,11 @@
       <button class="fb" data-g="drive" data-v="120">≤2 hr</button>
       <button class="fb" data-g="drive" data-v="180">≤3 hr</button>
       <button class="fb" data-g="drive" data-v="210">≤3.5 hr</button>
+    </div>
+    <div class="fg">
+      <label class="flabel" for="mbSearch">Merit badge</label>
+      <input id="mbSearch" class="mb-search" list="mbList" type="search" placeholder="e.g. Welding" autocomplete="off">
+      <datalist id="mbList"></datalist>
     </div>
     <div id="countBadge"></div>
   </div>
@@ -145,6 +151,7 @@
       <p   class="ol-desc"  id="olDesc"></p>
       <div class="ol-weeks" id="olWeeks"></div>
       <div class="detail-grid" id="olGrid"></div>
+      <div id="olMerits"></div>
       <div id="olFit"></div>
     </div>
   </div>

@@ -805,6 +805,17 @@ footer {
   .fit-row { flex-direction: column; gap: .25rem; }
 }
 
+/* Merit badges on the camp page */
+.mb-search {
+  padding: .28rem .7rem; border: 1.5px solid var(--bark); border-radius: 20px;
+  background: #fff; color: var(--forest); font-family: 'DM Sans', sans-serif; font-size: .73rem; width: 11rem;
+}
+.c-merits { font-family: 'DM Mono', monospace; font-size: .62rem; color: var(--bark); letter-spacing: .03em; }
+.mb-box { margin-bottom: .9rem; }
+.mb-area { margin-top: .55rem; }
+.mb-area-name { font-family: 'DM Mono', monospace; font-size: .6rem; text-transform: uppercase; letter-spacing: .08em; color: var(--pine); }
+.merit-chip.merit-hit { background: #72103a; color: #fff; }
+
 /* Camps page: the activity guide's print modes do not apply */
 @media print {
   .camps-page #map-wrap, .camps-page .filters, .camps-page .overlay { display: none !important; }
