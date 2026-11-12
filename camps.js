@@ -27,6 +27,23 @@ function weekCount(c) { return Object.keys(c.weeks).length; }
 
 function hasMeal(c, m) { return c.meals.indexOf(m) !== -1; }
 
+// Flat list of a camp's merit badges, or null when the camp publishes no list
+function meritList(c) {
+  if (!c.merits) return null;
+  var all = [];
+  c.merits.areas.forEach(function(a) { all = all.concat(a.badges); });
+  return all;
+}
+
+function meritCount(c) { var m = meritList(c); return m ? m.length : 0; }
+
+function offersBadge(c, q) {
+  var m = meritList(c);
+  if (!m) return false;
+  q = q.toLowerCase();
+  return m.some(function(b) { return b.toLowerCase().indexOf(q) !== -1; });
+}
+
 /* ── PATROL FIT ────────────────────────────────────────────────────────────── */
 // Each fit key answers true (camp meets it), false (camp does not) or null (not confirmed).
 var FIT_KEYS = {
@@ -273,6 +290,17 @@ function fitBar(c) {
          '</div>';
 }
 
+function meritLine(c) {
+  if (!c.merits) return 'Merit badges: list not published';
+  var n = meritCount(c);
+  var line = (c.merits.partial ? n + '+ merit badges' : n + ' merit badges');
+  if (fBadge) {
+    var hits = meritList(c).filter(function(b) { return b.toLowerCase().indexOf(fBadge.toLowerCase()) !== -1; });
+    line += ' \u00b7 offers ' + hits.join(', ');
+  }
+  return esc(line);
+}
+
 /* ── OVERLAY ───────────────────────────────────────────────────────────────── */
 function openCamp(id) {
   var c = null;
@@ -319,6 +347,28 @@ function openCamp(id) {
       '<p class="cost-note">Waterfront: ' + esc(c.water) + '</p>' +
     '</div>';
 
+  var mEl = document.getElementById('olMerits');
+  if (c.merits) {
+    var areas = '';
+    c.merits.areas.forEach(function(a) {
+      var chips = '';
+      a.badges.forEach(function(b) {
+        var hit = fBadge && b.toLowerCase().indexOf(fBadge.toLowerCase()) !== -1;
+        chips += '<span class="merit-chip' + (hit ? ' merit-hit' : '') + '">' + esc(b) + '</span>';
+      });
+      areas += '<div class="mb-area"><div class="mb-area-name">' + esc(a.area) + '</div><div class="merit-chips">' + chips + '</div></div>';
+    });
+    mEl.innerHTML =
+      '<div class="merits-box mb-box">' +
+        '<div class="dbox-title">&#127885; Merit badges — ' + meritCount(c) + (c.merits.partial ? '+ (partial list)' : '') + '</div>' +
+        areas +
+        '<p class="cost-note">Source: <a class="site-link" href="' + esc(c.merits.url) + '" target="_blank" rel="noopener">' + esc(c.merits.source) + ' &#8599;</a></p>' +
+      '</div>';
+  } else {
+    mEl.innerHTML = '<div class="merits-box mb-box"><div class="dbox-title">&#127885; Merit badges</div>' +
+      '<p class="cost-note">This camp has not published its merit badge list online yet. Check its registration page or leader guide.</p></div>';
+  }
+
   var fitHtml = '';
   c._fit.perPatrol.forEach(function(pp) {
     var chips = '';
@@ -358,7 +408,7 @@ document.addEventListener('keydown', function(e) {
 });
 
 /* ── FILTER + SORT ─────────────────────────────────────────────────────────── */
-var fMeals = 'all', fWeek = 'all', fWater = 'all', fDrive = 'all', sortBy = 'fit';
+var fMeals = 'all', fWeek = 'all', fWater = 'all', fDrive = 'all', fBadge = '', sortBy = 'fit';
 
 // Single source of truth for the filter bar — used by the cards, the week table and the map
 function matchesFilters(c) {
@@ -370,13 +420,16 @@ function matchesFilters(c) {
     (fWeek === 'survey' ? SURVEY_WEEKS.some(function(k) { return !!c.weeks[k]; }) : !!c.weeks[fWeek]);
   var waterOk = fWater === 'all' || c.fresh === true;
   var driveOk = fDrive === 'all' || c.mins <= parseInt(fDrive, 10);
-  return mealsOk && weekOk && waterOk && driveOk;
+  // Camps that publish no merit badge list never match a badge search
+  var badgeOk = !fBadge || offersBadge(c, fBadge);
+  return mealsOk && weekOk && waterOk && driveOk && badgeOk;
 }
 
 function compare(a, b) {
   var byName = a.name.localeCompare(b.name);
   if (sortBy === 'name') return byName;
   if (sortBy === 'drive') return (a.mins - b.mins) || byName;
+  if (sortBy === 'merits') return (meritCount(b) - meritCount(a)) || byName;
   if (sortBy === 'weeks') return (weekCount(b) - weekCount(a)) || (a.mins - b.mins) || byName;
   if (sortBy === 'cost') {
     // Camps with no posted fee sort last
@@ -426,6 +479,7 @@ function renderCards() {
           weekStrip(c) +
           '<p class="c-desc">' + esc(c.desc) + '</p>' +
           fitBar(c) +
+          '<div class="c-merits">' + meritLine(c) + '</div>' +
           '<div class="c-cost"><span class="cost-lbl">Youth:</span><span class="cost-val">' + esc(c.youthLabel) + '</span></div>' +
         '</div>' +
         '<div class="c-foot">' +
@@ -497,6 +551,20 @@ document.querySelectorAll('.fb').forEach(function(btn) {
 
 document.getElementById('sortSel').addEventListener('change', function() {
   sortBy = this.value;
+  renderCards();
+});
+
+/* ── MERIT BADGE SEARCH ───────────────────────────────────────────────────── */
+(function fillBadgeList() {
+  var seen = {};
+  CAMPS.forEach(function(c) { (meritList(c) || []).forEach(function(b) { seen[b] = true; }); });
+  var opts = '';
+  Object.keys(seen).sort().forEach(function(b) { opts += '<option value="' + esc(b) + '">'; });
+  document.getElementById('mbList').innerHTML = opts;
+}());
+
+document.getElementById('mbSearch').addEventListener('input', function() {
+  fBadge = this.value.trim();
   renderCards();
 });
 
