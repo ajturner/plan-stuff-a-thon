@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="canonical" href="https://ajturner.github.io/plan-stuff-a-thon/summer-camp/">
+<title>Troop 380 · Summer Camp 2027</title>
+
+<!-- ArcGIS JS SDK 5 -->
+<link rel="stylesheet" href="https://js.arcgis.com/5.0/esri/themes/light/main.css">
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- App styles (shared with the activity guide) -->
+<link rel="stylesheet" href="../styles.css">
+
+</head>
+<body class="camps-page">
+
+<!-- HEADER -->
+
+<header>
+  <div class="hdr">
+    <div class="troop-label">Scouting America · Troop 380 · Summer Camp Planning</div>
+    <h1>Summer<br><em>Camp</em><br>2027</h1>
+    <p class="hdr-sub">Scouts BSA resident camps within about five hours of DC, compared against what each patrol asked for. Sort and filter the camps, search by merit badge, check which weeks each one runs, and open any camp for photos, activities, merit badges, costs and registration links.</p>
+    <div class="hdr-meta">
+      <div><span>Camps</span> <b id="hdrCount">17 options</b></div>
+      <div><span>Survey weeks</span> <b>Jun 27 · Jul 4</b></div>
+      <div><span>Budget</span> <b>About $550 / Scout</b></div>
+      <div><span>Data as of</span> <b>Nov 12, 2026</b></div>
+    </div>
+    <a class="print-btn page-link" href="../">&#8592; Activity guide</a>
+    <a class="print-btn page-link" href="https://ajturner.github.io/pocketmaps/app.html?url=https%3A%2F%2Fajturner.github.io%2Fplan-stuff-a-thon%2Fcamps.geojson&amp;title=Troop+380+Summer+Camp+2027&amp;subtitle=Scout+camps+within+5+hours+of+DC&amp;name=Name&amp;desc=Summary&amp;qrlink=%7BLink%7D" target="_blank" rel="noopener">&#128506; Print a pocket map</a>
+  </div>
+</header>
+
+<!-- PATROL PREFERENCES -->
+
+<section class="pref-wrap" aria-labelledby="prefTitle">
+  <div class="pref-inner">
+    <h2 id="prefTitle">What the patrols asked for</h2>
+    <p class="pref-sub">Each camp gets a fit score: one point for every patrol request it meets. Requests no camp page can confirm yet (such as "flat camp") are listed but not scored.</p>
+    <div class="pref-grid" id="prefGrid"></div>
+  </div>
+</section>
+
+<!-- LEGEND -->
+
+<div class="legend">
+  <div class="leg-item"><div class="leg-dot ld-near"></div>≤2 hrs from DC</div>
+  <div class="leg-item"><div class="leg-dot ld-mid"></div>2–3.5 hrs</div>
+  <div class="leg-item"><div class="leg-dot ld-far"></div>4–5 hrs</div>
+  <div class="leg-item"><span class="wk-pill wk-open">Open</span></div>
+  <div class="leg-item"><span class="wk-pill wk-almost">Almost full</span></div>
+  <div class="leg-item"><span class="wk-pill wk-listed">Offered</span></div>
+  <div class="leg-item"><span class="wk-pill wk-none">Not offered</span></div>
+  <div class="leg-item"><div class="leg-dot ld-muted"></div>Filtered out on map</div>
+</div>
+
+<!-- MAP -->
+
+<div id="map-wrap">
+  <h2>📍 Camp Locations</h2>
+  <div id="mapView"></div>
+</div>
+
+<!-- SORT + FILTERS -->
+
+<div class="filters">
+  <div class="filters-inner">
+    <div class="fg">
+      <label class="flabel" for="sortSel">Sort</label>
+      <select id="sortSel" class="sort-sel">
+        <option value="fit">Best patrol fit</option>
+        <option value="drive">Shortest drive</option>
+        <option value="cost">Lowest youth cost</option>
+        <option value="weeks">Most weeks offered</option>
+        <option value="merits">Most merit badges</option>
+        <option value="name">Name A–Z</option>
+      </select>
+    </div>
+    <div class="fg">
+      <span class="flabel">Meals</span>
+      <button class="fb on" data-g="meals" data-v="all">All</button>
+      <button class="fb" data-g="meals" data-v="dh">Dining hall</button>
+      <button class="fb" data-g="meals" data-v="pc">Patrol cooking</button>
+      <button class="fb" data-g="meals" data-v="both">Both at one camp</button>
+    </div>
+    <div class="fg">
+      <span class="flabel">Week</span>
+      <button class="fb on-t" data-g="week" data-v="all">Any</button>
+      <button class="fb" data-g="week" data-v="survey">Either survey week</button>
+      <button class="fb" data-g="week" data-v="06-27">Jun 27</button>
+      <button class="fb" data-g="week" data-v="07-04">Jul 4</button>
+      <button class="fb" data-g="week" data-v="07-11">Jul 11</button>
+      <button class="fb" data-g="week" data-v="07-18">Jul 18</button>
+      <button class="fb" data-g="week" data-v="07-25">Jul 25</button>
+    </div>
+    <div class="fg">
+      <span class="flabel">Water</span>
+      <button class="fb on-s" data-g="water" data-v="all">All</button>
+      <button class="fb" data-g="water" data-v="fresh">Fresh water</button>
+    </div>
+    <div class="fg">
+      <span class="flabel">Drive</span>
+      <button class="fb on-b" data-g="drive" data-v="all">Any</button>
+      <button class="fb" data-g="drive" data-v="120">≤2 hr</button>
+      <button class="fb" data-g="drive" data-v="180">≤3 hr</button>
+      <button class="fb" data-g="drive" data-v="210">≤3.5 hr</button>
+    </div>
+    <div class="fg">
+      <label class="flabel" for="mbSearch">Merit badge</label>
+      <input id="mbSearch" class="mb-search" list="mbList" type="search" placeholder="e.g. Welding" autocomplete="off">
+      <datalist id="mbList"></datalist>
+    </div>
+    <div id="countBadge"></div>
+  </div>
+</div>
+
+<!-- CARDS -->
+
+<main class="main">
+  <div class="grid" id="grid"></div>
+
+  <section class="wk-section" aria-labelledby="wkTitle">
+    <h2 id="wkTitle" class="wk-title">Week by week</h2>
+    <p class="wk-sub">Same camps, same order as the cards. Highlighted columns are the two weeks in the parent survey. Click a row for details.</p>
+    <div class="wk-scroll"><table class="wk-table" id="wkTable"></table></div>
+  </section>
+</main>
+
+<footer>Troop 380 · Scouting America · Summer Camp 2027 · Fees and dates change — confirm on each camp's registration page</footer>
+
+<!-- OVERLAY -->
+
+<div id="overlay" class="overlay" role="dialog" aria-modal="true" aria-label="Camp details">
+  <div class="ol-panel">
+    <button class="ol-close" id="olClose" aria-label="Close">✕</button>
+    <div class="gallery" id="gallery">
+      <button class="g-nav g-prev" id="gPrev" aria-label="Previous photo">&#8249;</button>
+      <button class="g-nav g-next" id="gNext" aria-label="Next photo">&#8250;</button>
+      <div class="g-dots" id="gDots"></div>
+      <div class="g-cap"  id="gCap"></div>
+    </div>
+    <div class="ol-body">
+      <div class="ol-title" id="olTitle"></div>
+      <div class="ol-meta"  id="olMeta"></div>
+      <p   class="ol-desc"  id="olDesc"></p>
+      <div class="ol-weeks" id="olWeeks"></div>
+      <div class="detail-grid" id="olGrid"></div>
+      <div id="olMerits"></div>
+      <div id="olFit"></div>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="../camps.js"></script>
+
+</body>
+</html>

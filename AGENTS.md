@@ -33,7 +33,7 @@ Capabilities: `activity-catalog`, `activity-filtering`, `activity-map`,
 
 ### Summer camp page
 
-`camps.html` + `camps-data.js` + `camps.js` follow the same rules as the main
+`summer-camp/index.html` + `camps-data.js` + `camps.js` follow the same rules as the main
 page (ES modules, string concatenation, DOM-node map popups). Generated markup
 calls `window.openCamp(id)`. To update a camp, edit its entry in
 `camps-data.js`; use `null` for anything not confirmed so the page shows "?".

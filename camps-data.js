@@ -1,5 +1,5 @@
 /* ── SUMMER CAMP 2027 DATA ──────────────────────────────────────────────────── */
-/* Data for camps.html. Schema and field meanings: SPECIFICATIONS.md §8.          */
+/* Data for summer-camp/. Schema and field meanings: SPECIFICATIONS.md §8.          */
 /* Gathered Nov 12, 2026 from each camp's own registration or camp page (see the  */
 /* links on each entry). Drive times are estimates from Capitol Hill, DC.         */
 /* null in a fee or a flag means "not confirmed" — the page shows it as "?".      */
