@@ -8,7 +8,12 @@ Help the troop pick one summer camp and one week that most Scouts can attend, by
 
 ### Requirement: Separate camp page
 
-The comparison SHALL live on its own page, `camps.html`, backed by `camps-data.js` (data) and `camps.js` (behaviour), and SHALL share `styles.css` with the activity guide. Each page SHALL link to the other.
+The comparison SHALL live on its own page at the path `/summer-camp/` (`summer-camp/index.html`), backed by `camps-data.js` (data) and `camps.js` (behaviour), and SHALL share `styles.css` with the activity guide. Each page SHALL link to the other.
+
+#### Scenario: Old link
+
+- **WHEN** someone opens the old `camps.html` address
+- **THEN** they are redirected to `/summer-camp/`, keeping any query string or hash
 
 #### Scenario: Moving between pages
 

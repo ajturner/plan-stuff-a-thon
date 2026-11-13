@@ -367,9 +367,9 @@ Before merging any change:
 
 ---
 
-## 8. Summer Camp Page (`camps.html`)
+## 8. Summer Camp Page (`summer-camp/`)
 
-Files: `camps.html` (markup), `camps-data.js` (data), `camps.js` (behaviour); styles in the "SUMMER CAMP PAGE" section of `styles.css`.
+Files: `summer-camp/index.html` (markup; served at `/summer-camp/`), `camps.html` (redirect for old links, with `redirect-camps.js`), `camps-data.js` (data), `camps.js` (behaviour); styles in the "SUMMER CAMP PAGE" section of `styles.css`.
 
 `camps-data.js` exports:
 
@@ -386,4 +386,4 @@ Camp fields: `id`, `name`, `site`, `council`, `place`, `lat`, `lng`, `dist` (`ne
 
 ### 8.1 Pocket map (`camps.geojson`)
 
-`camps.geojson` is a point layer of the camps for the PocketMaps booklet generator (https://ajturner.github.io/pocketmaps/). It is generated from `camps-data.js`; regenerate it after changing camp data. Properties: `Name`, `Place`, `Drive`, `Meals`, `Youth`, `Weeks`, `Water`, `Badges`, `Council`, `Link` (camp registration page, used for each page's QR code), and `Summary` (one line used as the page description). The "Print a pocket map" header link on `camps.html` opens the generator with `name=Name&desc=Summary&qrlink={Link}`.
+`camps.geojson` is a point layer of the camps for the PocketMaps booklet generator (https://ajturner.github.io/pocketmaps/). It is generated from `camps-data.js`; regenerate it after changing camp data. Properties: `Name`, `Place`, `Drive`, `Meals`, `Youth`, `Weeks`, `Water`, `Badges`, `Council`, `Link` (camp registration page, used for each page's QR code), and `Summary` (one line used as the page description). The "Print a pocket map" header link on the summer camp page opens the generator with `name=Name&desc=Summary&qrlink={Link}`.
