@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="canonical" href="https://ajturner.github.io/plan-stuff-a-thon/training/">
+<title>Troop 380 · Training Calendar</title>
+
+<!-- ArcGIS JS SDK 5 -->
+<link rel="stylesheet" href="https://js.arcgis.com/5.0/esri/themes/light/main.css">
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- App styles (shared with the activity guide) -->
+<link rel="stylesheet" href="../styles.css">
+
+</head>
+<body class="camps-page training-page">
+
+<!-- HEADER -->
+
+<header>
+  <div class="hdr">
+    <div class="troop-label">Scouting America · Troop 380 · Training</div>
+    <h1>Training<br><em>Calendar</em></h1>
+    <p class="hdr-sub">Youth and adult training courses a Troop 380 Scout or leader can reach from DC: the National Capital Area Council calendar plus nearby councils within about three hours. Filter by who the course is for, where and when it runs, then open any course for dates, location, notes and the registration link.</p>
+    <div class="hdr-meta">
+      <div><span>Courses</span> <b id="hdrCount"></b></div>
+      <div><span>Councils</span> <b id="hdrCouncils"></b></div>
+      <div><span>Checked</span> <b id="hdrAsOf"></b></div>
+    </div>
+    <a class="print-btn page-link" href="../">&#8592; Activity guide</a>
+  </div>
+</header>
+
+<!-- LEGEND -->
+
+<div class="legend">
+  <div class="leg-item"><div class="leg-dot tr-dot-youth"></div>Youth</div>
+  <div class="leg-item"><div class="leg-dot tr-dot-adult"></div>Adult</div>
+  <div class="leg-item"><div class="leg-dot tr-dot-both"></div>Youth and adult</div>
+  <div class="leg-item"><div class="leg-dot ld-muted"></div>Filtered out</div>
+  <div class="leg-item">Map markers grow with the number of matching courses at a location</div>
+</div>
+
+<!-- MAP -->
+
+<div id="map-wrap">
+  <h2>📍 Training Locations</h2>
+  <div id="mapView"></div>
+</div>
+
+<!-- FILTERS -->
+
+<div class="filters">
+  <div class="filters-inner">
+    <div class="fg">
+      <span class="flabel">For</span>
+      <button class="fb on" data-g="aud" data-v="all">Everyone</button>
+      <button class="fb" data-g="aud" data-v="youth">Youth</button>
+      <button class="fb" data-g="aud" data-v="adult">Adult</button>
+    </div>
+    <div class="fg">
+      <span class="flabel">When</span>
+      <button class="fb on-t" data-g="when" data-v="upcoming">Upcoming</button>
+      <button class="fb" data-g="when" data-v="all">All dates</button>
+      <select id="monthSel" class="sort-sel" aria-label="Month"></select>
+    </div>
+    <div class="fg">
+      <label class="flabel" for="courseSel">Course</label>
+      <select id="courseSel" class="sort-sel"></select>
+    </div>
+    <div class="fg">
+      <label class="flabel" for="locSel">Location</label>
+      <select id="locSel" class="sort-sel"></select>
+    </div>
+    <div class="fg" id="councilGroup">
+      <label class="flabel" for="councilSel">Council</label>
+      <select id="councilSel" class="sort-sel"></select>
+    </div>
+    <div class="fg">
+      <span class="flabel">Drive</span>
+      <button class="fb on-b" data-g="drive" data-v="all">Any</button>
+      <button class="fb" data-g="drive" data-v="60">≤1 hr</button>
+      <button class="fb" data-g="drive" data-v="120">≤2 hr</button>
+      <button class="fb" data-g="drive" data-v="180">≤3 hr</button>
+    </div>
+    <div id="countBadge"></div>
+  </div>
+</div>
+
+<main class="main">
+
+  <!-- CALENDAR -->
+
+  <section class="tr-cal-section" aria-labelledby="calTitle">
+    <h2 id="calTitle" class="wk-title">Calendar</h2>
+    <p class="wk-sub">Coloured days have a course that matches the filters. Click a day to list only that day's courses.</p>
+    <div class="tr-day-bar" id="dayBar" hidden>
+      <span id="dayBarText"></span>
+      <button type="button" class="fb" id="dayClear">Show all days</button>
+    </div>
+    <div class="tr-cal" id="cal"></div>
+  </section>
+
+  <!-- CARDS -->
+
+  <h2 class="wk-title tr-list-title">Courses</h2>
+  <div class="grid" id="grid"></div>
+
+  <!-- UNDATED -->
+
+  <section class="wk-section" aria-labelledby="undTitle">
+    <h2 id="undTitle" class="wk-title">No date posted yet</h2>
+    <p class="wk-sub">These courses are on a council calendar without an upcoming date. Check back, or follow the link where there is one.</p>
+    <ul class="tr-undated" id="undated"></ul>
+  </section>
+</main>
+
+<footer>Troop 380 · Scouting America · Training Calendar · Dates and fees change — confirm on each course's registration page</footer>
+
+<!-- OVERLAY -->
+
+<div id="overlay" class="overlay" role="dialog" aria-modal="true" aria-label="Course details">
+  <div class="ol-panel">
+    <button class="ol-close" id="olClose" aria-label="Close">✕</button>
+    <div class="ol-body">
+      <div class="ol-title" id="olTitle"></div>
+      <div class="ol-meta"  id="olMeta"></div>
+      <p   class="ol-desc"  id="olDesc"></p>
+      <div class="detail-grid" id="olGrid"></div>
+      <div id="olNotes"></div>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="../training.js"></script>
+
+</body>
+</html>

@@ -817,3 +817,96 @@ footer {
 @media print {
   .camps-page #map-wrap, .camps-page .filters, .camps-page .overlay { display: none !important; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TRAINING PAGE — training/index.html / training.js
+   Reuses the header, legend, map, filter bar, card, and overlay styles above.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root { --tr-youth: #2f7fbf; --tr-adult: #c0562b; --tr-both: #5b3a8c; }
+
+/* Audience colors: legend dots, card stripes, calendar days, undated list */
+.tr-dot-youth, .tr-bg-youth { background: var(--tr-youth); }
+.tr-dot-adult, .tr-bg-adult { background: var(--tr-adult); }
+.tr-dot-both,  .tr-bg-both  { background: var(--tr-both); }
+.tr-aud-youth { background: #dbeefe; color: #1a4a72; }
+.tr-aud-adult { background: #ffe0cc; color: #7d3000; }
+.tr-aud-both  { background: #e6dcf5; color: #3d2463; }
+
+/* The legend's last item is a sentence, not a swatch */
+.training-page .legend .leg-item:last-child { font-style: italic; }
+.training-page .hdr-sub { max-width: 600px; }
+.training-page .filters select.sort-sel { max-width: 15rem; }
+.training-page [hidden] { display: none !important; }
+
+/* Calendar: a grid of mini months */
+.tr-cal-section { margin-bottom: 2.25rem; }
+.tr-cal { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: .9rem; }
+.tr-month { background: #fff; border: 1.5px solid var(--sand); border-radius: 8px; padding: .7rem .75rem .8rem; }
+.tr-month-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: .05em; color: var(--forest); margin-bottom: .35rem; }
+.tr-dow, .tr-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.tr-dow span {
+  font-family: 'DM Mono', monospace; font-size: .55rem; text-align: center;
+  color: var(--bark); padding-bottom: .15rem;
+}
+.tr-day {
+  position: relative; aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Mono', monospace; font-size: .66rem; color: #9a9a9a;
+  border: 1.5px solid transparent; border-radius: 5px; padding: 0;
+}
+.tr-day-today { border-color: var(--moss); color: var(--forest); }
+.tr-day-ev { color: #fff; font-weight: 500; cursor: pointer; }
+.tr-day-ev:hover { filter: brightness(1.15); }
+.tr-day-ev:focus-visible { outline: 2px solid var(--forest); outline-offset: 1px; }
+.tr-day-on { border-color: var(--forest); box-shadow: 0 0 0 2px #d4a72c; }
+.tr-day-n {
+  position: absolute; top: -4px; right: -4px; min-width: 13px; height: 13px; padding: 0 2px;
+  border-radius: 7px; background: var(--forest); color: var(--cream);
+  font-size: .5rem; line-height: 13px; text-align: center;
+}
+.tr-day-bar {
+  display: flex; align-items: center; gap: .75rem; flex-wrap: wrap;
+  background: #fff3b0; border: 1px solid #d4a72c; border-radius: 6px;
+  padding: .45rem .75rem; margin-bottom: .75rem;
+  font-family: 'DM Mono', monospace; font-size: .7rem; color: #6a4f00;
+}
+
+/* Cards */
+.tr-list-title { margin-bottom: .75rem; }
+.tr-head { display: flex; gap: .75rem; align-items: flex-start; }
+.tr-head-text { display: flex; flex-direction: column; gap: .2rem; min-width: 0; }
+.tr-date {
+  flex-shrink: 0; width: 4.4rem; display: flex; flex-direction: column; align-items: center;
+  background: var(--cream); border: 1px solid var(--sand); border-radius: 6px; padding: .3rem .2rem .35rem;
+}
+.tr-date-m { font-family: 'DM Mono', monospace; font-size: .55rem; text-transform: uppercase; letter-spacing: .06em; color: var(--bark); }
+.tr-date-d { font-family: 'Bebas Neue', sans-serif; font-size: 1.45rem; line-height: 1.05; color: var(--forest); letter-spacing: .02em; }
+.tr-date-w { font-family: 'DM Mono', monospace; font-size: .55rem; color: var(--slate); }
+.training-page .c-desc { flex: 0 1 auto; }
+.training-page .c-cost { margin-top: auto; }
+.tr-council { margin-left: auto; }
+.tr-past { opacity: .6; }
+
+/* Several courses in one map popup */
+.tr-pop-btn { display: block; width: 100%; text-align: left; margin-top: .35rem; }
+
+/* Courses with no date */
+.tr-undated { list-style: none; background: #fff; border: 1.5px solid var(--sand); border-radius: 8px; padding: .3rem .9rem; }
+.tr-und {
+  display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .6rem;
+  padding: .45rem 0; border-top: 1px dashed var(--sand); font-size: .8rem; color: var(--slate);
+}
+.tr-und:first-child { border-top: none; }
+.tr-und-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.tr-und-name { color: var(--forest); font-weight: 500; }
+.tr-und-note { font-family: 'DM Mono', monospace; font-size: .64rem; color: var(--bark); }
+.tr-und .site-link { margin-top: 0; }
+
+@media (max-width: 600px) {
+  .tr-cal { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .6rem; }
+}
+
+/* Long cost text stays on one line on a card; the overlay shows it in full */
+.training-page .c-cost { min-width: 0; }
+.training-page .cost-val { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.training-page .tr-council { flex-shrink: 0; white-space: nowrap; }

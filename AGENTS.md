@@ -29,7 +29,8 @@ Validate specs with `openspec validate --specs --strict`.
 
 Capabilities: `activity-catalog`, `activity-filtering`, `activity-map`,
 `activity-detail-overlay`, `activity-photo-gallery`, `activity-printing`,
-`site-delivery`, `camping-idea-intake`, `summer-camp-comparison`.
+`site-delivery`, `camping-idea-intake`, `summer-camp-comparison`,
+`training-calendar`.
 
 ### Summer camp page
 
@@ -39,6 +40,17 @@ calls `window.openCamp(id)`. To update a camp, edit its entry in
 `camps-data.js`; use `null` for anything not confirmed so the page shows "?".
 Patrol requests live in `PATROLS`; each request's `key` must match a key in
 `FIT_KEYS` in `camps.js`, or be `null` (shown, not scored).
+
+### Training page
+
+`training/index.html` + `training-data.js` + `training-nearby-data.js` +
+`training.js` follow the same rules as the main
+page (ES modules, string concatenation, DOM-node map popups). Generated markup
+calls `window.openTraining(id)`. To add a course date, append to `NCAC_EVENTS` in
+`training-data.js` (or `NEARBY_EVENTS` in `training-nearby-data.js` for another
+council) with the next unused `id`; add its venue to `VENUES` and its
+council to `COUNCILS` if they are new. Use `null` for a venue, cost or link a
+source does not give. Do not publish volunteers' personal email addresses.
 
 ---
 

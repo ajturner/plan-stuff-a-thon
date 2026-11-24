@@ -386,3 +386,26 @@ Camp fields: `id`, `name`, `site`, `council`, `place`, `lat`, `lng`, `dist` (`ne
 ### 8.1 Pocket map (`camps.geojson`)
 
 `camps.geojson` is a point layer of the camps for the PocketMaps booklet generator (https://ajturner.github.io/pocketmaps/). It is generated from `camps-data.js`; regenerate it after changing camp data. Properties: `Name`, `Place`, `Drive`, `Meals`, `Youth`, `Weeks`, `Water`, `Badges`, `Council`, `Link` (camp registration page, used for each page's QR code), and `Summary` (one line used as the page description). The "Print a pocket map" header link on the summer camp page opens the generator with `name=Name&desc=Summary&qrlink={Link}`.
+
+---
+
+## 9. Training Page (`training/`)
+
+Files: `training/index.html` (markup; served at `/training/`), `training-data.js` (NCAC data and the merged exports), `training-nearby-data.js` (courses from nearby councils within about 3 hours, exported as `NEARBY_*` and merged in by `training-data.js`), `training.js` (behaviour); styles in the "TRAINING PAGE" section of `styles.css`. The page is not linked from the activity guide yet.
+
+`training-data.js` exports:
+
+| Export | Meaning |
+|--------|---------|
+| `DATA_AS_OF` | Date of the council calendar the data was taken from |
+| `COUNCILS` | `{KEY: {name, short, url}}`; the council filter appears once there are two or more |
+| `COURSES` | `{KEY: {name, full, aud, desc}}`; `aud` is `youth`, `adult` or `both` |
+| `VENUES` | `{key: {name, addr, lat, lng, mins}}`; `mins` is the estimated drive from Capitol Hill |
+| `EVENTS` | One object per dated course (fields below) |
+| `UNDATED` | Courses on a council calendar with no upcoming date: `{council, name, aud, note, url}` |
+
+Event fields: `id` (unique, sequential), `course` (a `COURSES` key), `council` (a `COUNCILS` key), `host` (district or "Council"), `venue` (a `VENUES` key, or `null` when the location is not posted), `sessions` (`[{s, e, label?}]` as `'YYYY-MM-DD'`; a course in two parts is one event with two sessions), `time`, `cost` (`null` = not listed), `url` (registration page, or `null`), `notes`, and optionally `title` (overrides the course name), `aud` (overrides the course's audience) and `virtual` (`true` when a session is online).
+
+A "both" course matches the Youth and the Adult filter. A course with no venue never matches a drive-time filter. The map has one marker per venue, sized by the number of matching courses; the calendar colours each day that has a matching course, and clicking a day narrows the cards and the map to that day.
+
+Where a council calendar and a registration page disagree on a date, use the registration page and record the difference in the event's `notes`. Do not publish volunteers' personal email addresses; link to the council training page instead.

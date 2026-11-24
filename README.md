@@ -28,6 +28,10 @@ The summer camp page, `summer-camp/index.html` (live at `/summer-camp/`), compar
 
 ---
 
+## Training calendar page
+
+The training page, `training/index.html` (live at `/training/`), lists youth and adult training courses within reach of DC, from the National Capital Area Council calendar and twelve nearby councils within about three hours: a map of training locations, a month-by-month calendar, and cards filtered by audience, date, course, location, council and drive time. Data is in `training-data.js` (NCAC) and `training-nearby-data.js` (other councils), behaviour in `training.js`. It is not linked from the activity guide yet.
+
 ## Repository Structure
 
 ```
