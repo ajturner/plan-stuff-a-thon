@@ -83,17 +83,25 @@ function driveText(mins) {
   return h + ' hr';
 }
 
-/* ── FILTERS ───────────────────────────────────────────────────────────────── */
-var fAud = 'all', fWhen = 'upcoming', fMonth = 'all', fCourse = 'all', fLoc = 'all',
-    fCouncil = 'all', fDrive = 'all', fDay = '';
+/* ── STATE ─────────────────────────────────────────────────────────────────── */
+var fAud = 'all', fCourse = 'all', fLoc = 'all', fCouncil = 'all', fDrive = 'all',
+    fMonth = '', fDay = '';
+var selId = null;       // the course open in the results pane, or null for the list
+var listScroll = 0;     // page scroll to return to when leaving a course
+var mapView = null;
 
-// Everything except the single-day pick. The calendar uses this so that the
-// other days stay coloured while one day is selected.
+function byId(id) {
+  for (var i = 0; i < EVENTS.length; i++) { if (EVENTS[i].id === id) return EVENTS[i]; }
+  return null;
+}
+
+/* ── FILTERS ───────────────────────────────────────────────────────────────── */
+// Everything except the calendar picks (month, day). The calendar uses this so
+// that the other days stay coloured while one day or month is selected.
 function matchesBase(ev) {
+  if (!isUpcoming(ev)) return false;
   var a = aud(ev);
   var audOk = fAud === 'all' || a === 'both' || a === fAud;
-  var whenOk = fWhen === 'all' || isUpcoming(ev);
-  var monthOk = fMonth === 'all' || ev._days.some(function(d) { return d.slice(0, 7) === fMonth; });
   var courseOk = fCourse === 'all' || ev.course === fCourse;
   var locOk = fLoc === 'all' ||
     (fLoc === 'none' ? !ev.venue : fLoc === 'virtual' ? !!ev.virtual : ev.venue === fLoc);
@@ -101,13 +109,20 @@ function matchesBase(ev) {
   // A course with no posted location cannot be said to be inside a drive limit
   var v = venue(ev);
   var driveOk = fDrive === 'all' || (v && v.mins <= parseInt(fDrive, 10));
-  return audOk && whenOk && monthOk && courseOk && locOk && councilOk && driveOk;
+  return audOk && courseOk && locOk && councilOk && driveOk;
 }
 
-// Single source of truth for the cards and the map
+// Single source of truth for the course list
 function matchesFilters(ev) {
-  return matchesBase(ev) && (!fDay || ev._days.indexOf(fDay) !== -1);
+  return matchesBase(ev) &&
+    (!fMonth || ev._days.some(function(d) { return d.slice(0, 7) === fMonth; })) &&
+    (!fDay || ev._days.indexOf(fDay) !== -1);
 }
+
+// What the map shows: the open course alone, or everything in the list
+function onMap(ev) { return selId !== null ? ev.id === selId : matchesFilters(ev); }
+// What the calendar colours: the open course alone, or everything the filter bar allows
+function onCalendar(ev) { return selId !== null ? ev.id === selId : matchesBase(ev); }
 
 function compare(a, b) {
   // Order by the next day still to come, so a two-part course that is half over sorts by its second part
@@ -122,88 +137,97 @@ function compare(a, b) {
 /* ── ARCGIS MAP (SDK 5 ES modules) ─────────────────────────────────────────── */
 var AUD_COLOR = { youth: [47, 127, 191], adult: [192, 86, 43], both: [91, 58, 140] };
 var MUTED_COLOR = [176, 176, 176, 0.45];
+var PICK_OUTLINE = [212, 167, 44];
+var HOME_VIEW = { center: [-77.1, 39.0], zoom: 7 };
 var markerByVenue = {};
 
 function venueEvents(key) {
-  return EVENTS.filter(function(ev) { return ev.venue === key && matchesFilters(ev); }).sort(compare);
+  return EVENTS.filter(function(ev) { return ev.venue === key && onMap(ev); });
 }
 
-// One colour when every matching course at a venue is for the same audience, else "both"
-function venueAud(list) {
+// One colour when every course at a venue is for the same audience, else "both"
+function listAud(list) {
   var a = aud(list[0]);
   for (var i = 1; i < list.length; i++) { if (aud(list[i]) !== a) return 'both'; }
   return a;
 }
 
-function venueSymbol(list) {
+// picked: the venue chosen as the location filter, or the open course's venue
+function venueSymbol(list, picked) {
   if (!list.length) {
     return { type: 'simple-marker', style: 'circle', color: MUTED_COLOR, size: '9px', outline: { color: [255, 255, 255, 0.6], width: 1 } };
   }
-  var size = Math.min(26, 13 + list.length);
-  return { type: 'simple-marker', style: 'circle', color: AUD_COLOR[venueAud(list)], size: size + 'px', outline: { color: [255, 255, 255], width: 2 } };
+  var size = Math.min(26, 13 + list.length) + (picked ? 5 : 0);
+  return {
+    type: 'simple-marker', style: 'circle', color: AUD_COLOR[listAud(list)], size: size + 'px',
+    outline: picked ? { color: PICK_OUTLINE, width: 3.5 } : { color: [255, 255, 255], width: 2 }
+  };
 }
 
-// Popup content must be a DOM node, not an HTML string: SDK 5 sanitises string
-// content and strips buttons and their listeners (see AGENTS.md).
-function buildPopupNode(key) {
-  function el(tag, cls, text) {
-    var n = document.createElement(tag);
-    n.className = cls;
-    if (text !== undefined) n.textContent = text;
-    return n;
-  }
-  var v = VENUES[key];
-  var list = venueEvents(key);
-  var wrap = el('div', 'map-pop');
-  wrap.appendChild(el('div', 'map-pop-title', v.name));
-  wrap.appendChild(el('div', 'map-pop-meta', driveText(v.mins) + ' from DC · ' + v.addr));
-  if (!list.length) {
-    wrap.appendChild(el('div', 'map-pop-cost', 'No courses here match the filters.'));
-    return wrap;
-  }
-  wrap.appendChild(el('div', 'map-pop-cost', list.length + ' matching course' + (list.length === 1 ? '' : 's')));
-  list.slice(0, 8).forEach(function(ev) {
-    var btn = el('button', 'map-pop-btn tr-pop-btn', course(ev).name + ' · ' + datesText(ev));
-    btn.type = 'button';
-    btn.addEventListener('click', function() { window.openTraining(ev.id); });
-    wrap.appendChild(btn);
-  });
-  if (list.length > 8) wrap.appendChild(el('div', 'map-pop-meta', '+ ' + (list.length - 8) + ' more in the list below'));
-  return wrap;
+function pickedVenue() {
+  if (selId !== null) return byId(selId).venue;
+  return VENUES[fLoc] ? fLoc : null;
 }
 
 (function initMap() {
   var esriMap = new Map({ basemap: 'topo-vector' });
-  var view = new MapView({ container: 'mapView', map: esriMap, center: [-77.1, 39.0], zoom: 7 });
+  // Clicking a marker filters the course list, so the default popup is switched off
+  mapView = new MapView({ container: 'mapView', map: esriMap, center: HOME_VIEW.center, zoom: HOME_VIEW.zoom, popupEnabled: false });
   var layer = new GraphicsLayer();
   esriMap.add(layer);
 
   // Home marker: Capitol Hill, where drive times are measured from
   layer.add(new Graphic({
     geometry: { type: 'point', longitude: -76.996, latitude: 38.889 },
-    symbol: { type: 'simple-marker', style: 'diamond', color: [26, 58, 42], size: '12px', outline: { color: [255, 255, 255], width: 2 } },
-    popupTemplate: { title: 'Troop 380 · Capitol Hill', content: 'Drive times are estimated from here.' }
+    symbol: { type: 'simple-marker', style: 'diamond', color: [26, 58, 42], size: '12px', outline: { color: [255, 255, 255], width: 2 } }
   }));
 
   Object.keys(VENUES).forEach(function(key) {
     var v = VENUES[key];
     var g = new Graphic({
       geometry: { type: 'point', longitude: v.lng, latitude: v.lat },
-      symbol: venueSymbol(venueEvents(key)),
-      popupTemplate: { title: v.name, content: function() { return buildPopupNode(key); } }
+      attributes: { venue: key },
+      symbol: venueSymbol(venueEvents(key), false)
     });
     layer.add(g);
     markerByVenue[key] = g;
   });
+
+  mapView.on('click', function(e) {
+    mapView.hitTest(e).then(function(hit) {
+      var key = null;
+      hit.results.forEach(function(r) {
+        if (!key && r.graphic && r.graphic.attributes && r.graphic.attributes.venue) key = r.graphic.attributes.venue;
+      });
+      if (!key) return;
+      // Clicking the chosen location again clears it
+      setLocation(fLoc === key && selId === null ? 'all' : key);
+    });
+  });
+
+  mapView.on('pointer-move', function(e) {
+    mapView.hitTest(e).then(function(hit) {
+      var over = hit.results.some(function(r) { return r.graphic && r.graphic.attributes && r.graphic.attributes.venue; });
+      mapView.container.style.cursor = over ? 'pointer' : '';
+    });
+  });
 }());
 
-function applyMapFilter() {
+function applyMap() {
+  var picked = pickedVenue();
   Object.keys(markerByVenue).forEach(function(key) {
-    markerByVenue[key].symbol = venueSymbol(venueEvents(key));
+    markerByVenue[key].symbol = venueSymbol(venueEvents(key), key === picked);
   });
 }
 
-/* ── OVERLAY ───────────────────────────────────────────────────────────────── */
+function setLocation(key) {
+  fLoc = key;
+  document.getElementById('locSel').value = key;
+  selId = null;
+  render();
+}
+
+/* ── COURSE DETAILS (shown in the results pane) ────────────────────────────── */
 function audTag(ev) {
   return '<span class="tag tr-aud-' + aud(ev) + '">' + AUD_LABEL[aud(ev)] + '</span>';
 }
@@ -216,10 +240,7 @@ function learnLink(ev) {
     ' onclick="event.stopPropagation()">About ' + esc(c.name) + ' at Scouting America &#8599;</a>';
 }
 
-function openTraining(id) {
-  var ev = null;
-  for (var i = 0; i < EVENTS.length; i++) { if (EVENTS[i].id === id) { ev = EVENTS[i]; break; } }
-  if (!ev) return;
+function renderDetail(ev) {
   var c = course(ev);
   var v = venue(ev);
   var council = COUNCILS[ev.council];
@@ -229,7 +250,6 @@ function openTraining(id) {
   document.getElementById('olMeta').innerHTML =
     audTag(ev) +
     (ev.virtual ? '<span class="tag t-day">Part online</span>' : '') +
-    (isUpcoming(ev) ? '' : '<span class="tag t-def">Past</span>') +
     '<span class="tag t-def">' + esc(ev.host) + '</span>' +
     '<span class="tag t-bsa">' + esc(council.name) + '</span>';
 
@@ -275,39 +295,63 @@ function openTraining(id) {
   ev.notes.forEach(function(n) { noteHtml += '<li>' + esc(n) + '</li>'; });
   document.getElementById('olNotes').innerHTML = noteHtml ?
     '<div class="merits-box"><div class="dbox-title">&#128204; Know before you register</div><ul class="req-list">' + noteHtml + '</ul></div>' : '';
-
-  document.getElementById('overlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
 }
 
-function closeOverlay() {
-  document.getElementById('overlay').classList.remove('open');
-  document.body.style.overflow = '';
+// Bring the top of the results pane into view when it is off screen
+function showResultsTop() {
+  var t = document.querySelector('.tr-right').getBoundingClientRect().top;
+  if (t < 0 || t > window.innerHeight * 0.5) window.scrollBy(0, t);
 }
 
-// Generated card markup and map popups call this, so it must be on window
+function openTraining(id) {
+  var ev = byId(id);
+  if (!ev) return;
+  if (selId === null) listScroll = window.scrollY;
+  selId = id;
+  render();
+  showResultsTop();
+
+  var v = venue(ev);
+  if (v && mapView) {
+    mapView.goTo({ center: [v.lng, v.lat], zoom: Math.max(mapView.zoom || 0, 9) }).catch(function() { /* interrupted by another move */ });
+  }
+  // Scroll the calendar to the course's first month
+  var m = document.querySelector('.tr-month[data-month="' + firstDay(ev).slice(0, 7) + '"]');
+  var cal = document.getElementById('cal');
+  if (m && window.matchMedia('(max-width: 900px)').matches) cal.scrollLeft = m.offsetLeft - cal.offsetLeft;
+  else if (m) m.scrollIntoView({ block: 'nearest' });
+}
+
+function closeTraining() {
+  if (selId === null) return;
+  selId = null;
+  render();
+  window.scrollTo(0, listScroll);
+  if (mapView) mapView.goTo(HOME_VIEW).catch(function() { /* interrupted by another move */ });
+}
+
+// Generated card markup calls this, so it must be on window
 window.openTraining = openTraining;
 
-document.getElementById('olClose').addEventListener('click', closeOverlay);
-document.getElementById('overlay').addEventListener('click', function(e) {
-  if (e.target === this) closeOverlay();
-});
+document.getElementById('detailBack').addEventListener('click', closeTraining);
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeOverlay();
+  if (e.key !== 'Escape') return;
+  if (document.body.classList.contains('tr-sheet-on')) closeSheet();
+  else closeTraining();
 });
 
 /* ── CALENDAR ──────────────────────────────────────────────────────────────── */
-// First and last month to draw, as 'YYYY-MM'
+// Every month from this one (or the first course) to the last course, as 'YYYY-MM'
 function calendarSpan() {
   var first = null, last = null;
   EVENTS.forEach(function(ev) {
-    if (fWhen !== 'all' && !isUpcoming(ev)) return;
+    if (!isUpcoming(ev)) return;
     var a = firstDay(ev).slice(0, 7), b = lastDay(ev).slice(0, 7);
     if (!first || a < first) first = a;
     if (!last || b > last) last = b;
   });
   if (!first) return [];
-  if (fWhen !== 'all' && first < TODAY.slice(0, 7)) first = TODAY.slice(0, 7);
+  if (first < TODAY.slice(0, 7)) first = TODAY.slice(0, 7);
   var out = [];
   var y = parseInt(first.slice(0, 4), 10), m = parseInt(first.slice(5), 10);
   while (y + '-' + pad(m) <= last) {
@@ -318,18 +362,16 @@ function calendarSpan() {
   return out;
 }
 
+function monthLabel(k) { return MONTHS_LONG[parseInt(k.slice(5), 10) - 1] + ' ' + k.slice(0, 4); }
+
 function renderCalendar() {
-  // Day -> matching events, ignoring the single-day pick
   var byDay = {};
-  EVENTS.filter(matchesBase).forEach(function(ev) {
+  EVENTS.filter(onCalendar).forEach(function(ev) {
     ev._days.forEach(function(d) { (byDay[d] = byDay[d] || []).push(ev); });
   });
 
-  var months = calendarSpan();
-  if (fMonth !== 'all') months = months.filter(function(k) { return k === fMonth; });
-
   var html = '';
-  months.forEach(function(k) {
+  calendarSpan().forEach(function(k) {
     var y = parseInt(k.slice(0, 4), 10), m = parseInt(k.slice(5), 10) - 1;
     var lead = new Date(y, m, 1).getDay();
     var count = new Date(y, m + 1, 0).getDate();
@@ -338,45 +380,78 @@ function renderCalendar() {
     for (var d = 1; d <= count; d++) {
       var iso = k + '-' + pad(d);
       var list = byDay[iso];
-      var cls = 'tr-day' + (iso === TODAY ? ' tr-day-today' : '') + (iso === fDay ? ' tr-day-on' : '');
+      var cls = 'tr-day' + (iso === TODAY ? ' tr-day-today' : '') + (iso === fDay && selId === null ? ' tr-day-on' : '');
       if (list) {
         var names = list.map(function(ev) { return course(ev).name; }).join(', ');
-        cells += '<button type="button" class="' + cls + ' tr-day-ev tr-bg-' + venueAud(list) + '" data-day="' + iso + '"' +
+        cells += '<button type="button" class="' + cls + ' tr-day-ev tr-bg-' + listAud(list) + '" data-day="' + iso + '"' +
           ' title="' + esc(names) + '" aria-label="' + MONTHS_LONG[m] + ' ' + d + ': ' + esc(names) + '">' +
           d + (list.length > 1 ? '<span class="tr-day-n">' + list.length + '</span>' : '') + '</button>';
       } else {
         cells += '<span class="' + cls + '">' + d + '</span>';
       }
     }
+    var on = k === fMonth && selId === null;
     html +=
-      '<div class="tr-month">' +
-        '<div class="tr-month-name">' + MONTHS_LONG[m] + ' ' + y + '</div>' +
+      '<div class="tr-month' + (on ? ' tr-month-on' : '') + '" data-month="' + k + '">' +
+        '<button type="button" class="tr-month-name" data-month="' + k + '" aria-pressed="' + (on ? 'true' : 'false') + '"' +
+          ' title="Show only ' + monthLabel(k) + '">' + monthLabel(k) + '</button>' +
         '<div class="tr-dow"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>' +
         '<div class="tr-days">' + cells + '</div>' +
       '</div>';
   });
-  document.getElementById('cal').innerHTML = html || '<div class="empty">No months to show.</div>';
+  var cal = document.getElementById('cal');
+  var keepLeft = cal.scrollLeft;
+  cal.innerHTML = html || '<div class="empty">No months to show.</div>';
+  cal.scrollLeft = keepLeft;
 
   document.querySelectorAll('#cal .tr-day-ev').forEach(function(btn) {
     btn.addEventListener('click', function() {
       var day = btn.getAttribute('data-day');
-      fDay = (fDay === day) ? '' : day;
+      fDay = (fDay === day && selId === null) ? '' : day;
+      fMonth = '';
+      selId = null;
+      render();
+    });
+  });
+  document.querySelectorAll('#cal .tr-month-name').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var k = btn.getAttribute('data-month');
+      fMonth = (fMonth === k && selId === null) ? '' : k;
+      fDay = '';
+      selId = null;
+      render();
+    });
+  });
+}
+
+/* ── ACTIVE PICKS (day, month, map location) ───────────────────────────────── */
+function renderActive() {
+  var html = '';
+  function chip(kind, label) {
+    html += '<button type="button" class="tr-chip" data-clear="' + kind + '" aria-label="Clear ' + esc(label) + '">' +
+      esc(label) + ' <span aria-hidden="true">&#10005;</span></button>';
+  }
+  if (fDay) {
+    var dd = toDate(fDay);
+    chip('day', DOW[dd.getDay()] + ', ' + MONTHS[dd.getMonth()] + ' ' + dd.getDate() + ', ' + dd.getFullYear());
+  }
+  if (fMonth) chip('month', monthLabel(fMonth));
+  if (VENUES[fLoc]) chip('loc', VENUES[fLoc].name);
+  document.getElementById('activeBar').innerHTML = html;
+  document.querySelectorAll('#activeBar .tr-chip').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var kind = btn.getAttribute('data-clear');
+      if (kind === 'day') fDay = '';
+      else if (kind === 'month') fMonth = '';
+      else { fLoc = 'all'; document.getElementById('locSel').value = 'all'; }
       render();
     });
   });
 
-  var bar = document.getElementById('dayBar');
-  if (fDay) {
-    var dd = toDate(fDay);
-    document.getElementById('dayBarText').textContent =
-      'Showing ' + DOW[dd.getDay()] + ', ' + MONTHS_LONG[dd.getMonth()] + ' ' + dd.getDate() + ', ' + dd.getFullYear();
-    bar.hidden = false;
-  } else {
-    bar.hidden = true;
-  }
+  // Number of filter-bar choices in effect, shown on the phone's Filters button
+  var n = (fAud !== 'all') + (fCourse !== 'all') + (fLoc !== 'all') + (fCouncil !== 'all') + (fDrive !== 'all');
+  document.getElementById('filterOpen').textContent = 'Filters' + (n ? ' (' + n + ')' : '');
 }
-
-document.getElementById('dayClear').addEventListener('click', function() { fDay = ''; render(); });
 
 /* ── CARDS ─────────────────────────────────────────────────────────────────── */
 function dateBlock(ev) {
@@ -408,7 +483,7 @@ function renderCards() {
     var more = ev.sessions.length > 1 ?
       '<div class="c-merits">' + esc(ev.sessions.map(function(x) { return (x.label ? x.label + ' ' : '') + rangeText(x.s, x.e); }).join(' · ')) + '</div>' : '';
     html +=
-      '<article class="card' + (isUpcoming(ev) ? '' : ' tr-past') + '" onclick="window.openTraining(' + ev.id + ')" tabindex="0" role="button" aria-label="' + esc(title(ev)) + ', ' + esc(datesText(ev)) + '">' +
+      '<article class="card" onclick="window.openTraining(' + ev.id + ')" tabindex="0" role="button" aria-label="' + esc(title(ev)) + ', ' + esc(datesText(ev)) + '">' +
         '<div class="c-stripe tr-bg-' + aud(ev) + '"></div>' +
         '<div class="c-body">' +
           '<div class="tr-head">' +
@@ -421,7 +496,6 @@ function renderCards() {
           '<div class="tags">' + audTag(ev) +
             (ev.virtual ? '<span class="tag t-day">Part online</span>' : '') +
             (v ? '<span class="tag t-def">' + driveText(v.mins) + '</span>' : '') +
-            (isUpcoming(ev) ? '' : '<span class="tag t-def">Past</span>') +
           '</div>' +
           more +
           '<p class="c-desc">' + esc(placeText(ev)) + ' · ' + esc(ev.host) + '</p>' +
@@ -463,25 +537,24 @@ function renderUndated() {
 }
 
 function render() {
-  applyMapFilter();
+  var ev = selId !== null ? byId(selId) : null;
+  document.getElementById('listView').hidden = !!ev;
+  document.getElementById('detailView').hidden = !ev;
+  applyMap();
   renderCalendar();
-  renderCards();
-  renderUndated();
+  if (ev) {
+    renderDetail(ev);
+  } else {
+    renderActive();
+    renderCards();
+    renderUndated();
+  }
 }
 
 /* ── CONTROLS ──────────────────────────────────────────────────────────────── */
 function option(value, label) { return '<option value="' + esc(value) + '">' + esc(label) + '</option>'; }
 
 (function fillSelects() {
-  // Months that have at least one event day
-  var seen = {};
-  EVENTS.forEach(function(ev) { ev._days.forEach(function(d) { seen[d.slice(0, 7)] = true; }); });
-  var mHtml = option('all', 'Any month');
-  Object.keys(seen).sort().forEach(function(k) {
-    mHtml += option(k, MONTHS_LONG[parseInt(k.slice(5), 10) - 1] + ' ' + k.slice(0, 4));
-  });
-  document.getElementById('monthSel').innerHTML = mHtml;
-
   var used = {};
   EVENTS.forEach(function(ev) { used[ev.course] = true; });
   var cHtml = option('all', 'All courses');
@@ -506,7 +579,7 @@ function option(value, label) { return '<option value="' + esc(value) + '">' + e
   if (keys.length < 2) document.getElementById('councilGroup').hidden = true;
 }());
 
-var ON_CLS = { aud: 'on', when: 'on-t', drive: 'on-b' };
+var ON_CLS = { aud: 'on', drive: 'on-b' };
 document.querySelectorAll('.fb[data-g]').forEach(function(btn) {
   btn.addEventListener('click', function() {
     var g = btn.getAttribute('data-g');
@@ -516,9 +589,8 @@ document.querySelectorAll('.fb[data-g]').forEach(function(btn) {
     });
     btn.classList.add(ON_CLS[g] || 'on');
     if      (g === 'aud')   fAud = v;
-    else if (g === 'when')  fWhen = v;
     else if (g === 'drive') fDrive = v;
-    fDay = '';
+    selId = null;
     render();
   });
 });
@@ -526,14 +598,28 @@ document.querySelectorAll('.fb[data-g]').forEach(function(btn) {
 function bindSelect(id, set) {
   document.getElementById(id).addEventListener('change', function() {
     set(this.value);
-    fDay = '';
+    selId = null;
     render();
   });
 }
-bindSelect('monthSel',   function(v) { fMonth = v; });
 bindSelect('courseSel',  function(v) { fCourse = v; });
 bindSelect('locSel',     function(v) { fLoc = v; });
 bindSelect('councilSel', function(v) { fCouncil = v; });
+
+/* ── FILTER SHEET (phones) ─────────────────────────────────────────────────── */
+// On narrow screens the filter bar is a bottom sheet; these classes do nothing on wide ones
+function openSheet() {
+  document.body.classList.add('tr-sheet-on');
+  document.getElementById('filterOpen').setAttribute('aria-expanded', 'true');
+  document.getElementById('filterClose').focus();
+}
+function closeSheet() {
+  document.body.classList.remove('tr-sheet-on');
+  document.getElementById('filterOpen').setAttribute('aria-expanded', 'false');
+}
+document.getElementById('filterOpen').addEventListener('click', openSheet);
+document.getElementById('filterClose').addEventListener('click', closeSheet);
+document.getElementById('sheetBackdrop').addEventListener('click', closeSheet);
 
 /* ── INIT ──────────────────────────────────────────────────────────────────── */
 document.getElementById('hdrCount').textContent =

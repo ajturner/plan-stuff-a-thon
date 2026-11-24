@@ -45,8 +45,9 @@ Patrol requests live in `PATROLS`; each request's `key` must match a key in
 
 `training/index.html` + `training-data.js` + `training-nearby-data.js` +
 `training.js` follow the same rules as the main
-page (ES modules, string concatenation, DOM-node map popups). Generated markup
-calls `window.openTraining(id)`. To add a course date, append to `NCAC_EVENTS` in
+page (ES modules, string concatenation). It has no modal overlay and no map
+popups: `window.openTraining(id)` shows a course in the results pane, and a
+map click sets the location filter. To add a course date, append to `NCAC_EVENTS` in
 `training-data.js` (or `NEARBY_EVENTS` in `training-nearby-data.js` for another
 council) with the next unused `id`; add its venue to `VENUES` and its
 council to `COUNCILS` if they are new. Use `null` for a venue, cost or link a

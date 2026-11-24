@@ -26,39 +26,44 @@ Each dated course SHALL record its course type, audience (youth, adult or both),
 
 ### Requirement: Filters
 
-The visitor SHALL be able to filter courses by audience, upcoming or all dates, month, course type, location, council, and maximum drive time from Capitol Hill. A course for both audiences SHALL match the youth filter and the adult filter. One predicate SHALL drive the cards and the map.
+The visitor SHALL be able to filter upcoming courses by audience, course type, location, council, and maximum drive time from Capitol Hill. A course for both audiences SHALL match the youth filter and the adult filter. One predicate SHALL drive the course list and the map. On narrow screens the filters SHALL open as a bottom sheet.
 
 #### Scenario: Filtering for youth
 
 - **WHEN** the visitor chooses "Youth"
 - **THEN** only youth courses and courses open to both remain, and venues with no matching course grey out on the map
 
+#### Scenario: Filtering on a phone
+
+- **WHEN** the visitor taps "Filters" on a narrow screen
+- **THEN** the filters slide up as a sheet, and "Done", the backdrop or Escape closes it
+
 ### Requirement: Calendar
 
-The page SHALL show a month grid for every month in the range of courses, colouring each day that has a course matching the filters and showing a count when a day has more than one. Choosing a day SHALL narrow the cards and the map to that day, and the choice SHALL be clearable.
+The page SHALL show a month grid for every month from now to the last course, colouring each day that has a course matching the filters and showing a count when a day has more than one. Choosing a day or a month name SHALL narrow the course list and the map to it, and the choice SHALL be clearable. The calendar is the only date filter.
 
 #### Scenario: Choosing a day
 
 - **WHEN** the visitor clicks a coloured day
-- **THEN** only courses running that day are listed, the day is outlined, and a "Show all days" control appears
+- **THEN** only courses running that day are listed, the day is outlined, and a removable chip names the day
 
 ### Requirement: Map
 
-The map SHALL show one marker per venue, sized by the number of matching courses and coloured by audience, plus a marker for Capitol Hill. A venue's popup SHALL list its matching courses, each opening that course's details.
+The map SHALL stay pinned at the top of the facets pane and show one marker per venue, sized by the number of matching courses and coloured by audience, plus a marker for Capitol Hill. Clicking a venue marker SHALL filter the course list to that venue; clicking it again SHALL clear the filter.
 
-#### Scenario: Opening a course from the map
+#### Scenario: Filtering from the map
 
-- **WHEN** the visitor clicks a venue marker and then a course in its popup
-- **THEN** that course's details open
+- **WHEN** the visitor clicks a venue marker
+- **THEN** only that venue's courses are listed, the marker is outlined, and a removable chip names the venue
 
 ### Requirement: Course details
 
-Opening a course SHALL show its audience, host, council, every session with day of week, times, cost, venue address with drive time and a map link, the registration link (or the council training page when none is posted), and its notes.
+Opening a course SHALL replace the course list in the results pane with its details: audience, host, council, every session with day of week, times, cost, venue address with drive time and a map link, the registration link (or the council training page when none is posted), and its notes. While a course is open the map SHALL show only its venue and the calendar only its dates. A back control SHALL return to the full results.
 
-#### Scenario: Closing details
+#### Scenario: Returning to the results
 
-- **WHEN** the visitor presses Escape, clicks the backdrop, or clicks the close button
-- **THEN** the details close
+- **WHEN** the visitor clicks "Back to all results" or presses Escape
+- **THEN** the course list returns at its previous scroll position with the earlier filters intact
 
 ### Requirement: Side-by-side layout
 
