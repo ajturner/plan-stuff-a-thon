@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="canonical" href="https://ajturner.github.io/plan-stuff-a-thon/training/">
+<title>Troop 380 · Training Calendar</title>
+
+<!-- ArcGIS JS SDK 5 -->
+<link rel="stylesheet" href="https://js.arcgis.com/5.0/esri/themes/light/main.css">
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- App styles (shared with the activity guide) -->
+<link rel="stylesheet" href="../styles.css">
+
+</head>
+<body class="camps-page training-page app-page">
+
+<a class="tr-skip" href="#results">Skip to course results</a>
+
+<!-- HEADER -->
+
+<header>
+  <div class="hdr">
+    <div class="troop-label">Scouting America · Troop 380 · Training</div>
+    <h1>Training <em>Calendar</em></h1>
+    <p class="hdr-sub">Youth and adult training courses within about three hours of DC, from the National Capital Area Council and nearby councils. Filter, pick a day or a map location, then open any course for dates and registration.</p>
+    <div class="hdr-meta">
+      <div><span>Courses</span> <b id="hdrCount"></b></div>
+      <div><span>Councils</span> <b id="hdrCouncils"></b></div>
+      <div><span>Checked</span> <b id="hdrAsOf"></b></div>
+    </div>
+    <nav class="hdr-links" aria-label="Other pages">
+      <a class="print-btn page-link" href="../"><span aria-hidden="true">&#8592;</span> Activity guide</a>
+      <a class="print-btn page-link" href="../summer-camp/"><span aria-hidden="true">☀</span> Summer camp 2027</a>
+    </nav>
+  </div>
+</header>
+
+<div class="tr-split">
+
+<!-- LEFT: MAP, FILTERS, CALENDAR -->
+
+<aside class="tr-left" aria-label="Map, filters and calendar">
+
+  <div id="map-wrap">
+    <h2 id="mapTitle"><span aria-hidden="true">📍</span> Training Locations</h2>
+    <div id="mapView" role="group" aria-labelledby="mapTitle" aria-describedby="mapHelp"></div>
+    <p class="sr-only" id="mapHelp">Map of training locations. Clicking a marker lists that location's courses, Shift-clicking adds another location, and clicking empty map clears them. The Location filter picks a location from the keyboard.</p>
+    <div class="legend" aria-label="Map legend">
+      <div class="leg-item"><div class="leg-dot tr-dot-youth"></div>Youth</div>
+      <div class="leg-item"><div class="leg-dot tr-dot-adult"></div>Adult</div>
+      <div class="leg-item"><div class="leg-dot tr-dot-both"></div>Both</div>
+      <div class="leg-item"><div class="leg-dot ld-muted"></div>Filtered out</div>
+      <div class="leg-item"><div class="leg-dot tr-dot-home"></div>Capitol Hill</div>
+      <div class="leg-item">Click a marker to list its courses · Shift-click to add more · click the map to clear</div>
+    </div>
+  </div>
+
+  <div class="filters" id="filterSheet" aria-labelledby="sheetTitle">
+    <div class="tr-sheet-head">
+      <h2 class="wk-title" id="sheetTitle">Filters</h2>
+      <button type="button" class="fb on" id="filterClose">Done</button>
+    </div>
+    <div class="filters-inner">
+      <div class="fg" role="group" aria-labelledby="lblFor">
+        <span class="flabel" id="lblFor">For</span>
+        <button type="button" class="fb on" data-g="aud" data-v="all">Everyone</button>
+        <button type="button" class="fb" data-g="aud" data-v="youth">Youth</button>
+        <button type="button" class="fb" data-g="aud" data-v="adult">Adult</button>
+      </div>
+      <div class="fg">
+        <label class="flabel" for="courseSel">Course</label>
+        <select id="courseSel" class="sort-sel"></select>
+      </div>
+      <div class="fg">
+        <label class="flabel" for="locSel">Location</label>
+        <select id="locSel" class="sort-sel"></select>
+      </div>
+      <div class="fg" id="councilGroup">
+        <label class="flabel" for="councilSel">Council</label>
+        <select id="councilSel" class="sort-sel"></select>
+      </div>
+      <div class="fg" role="group" aria-labelledby="lblDrive">
+        <span class="flabel" id="lblDrive">Drive</span>
+        <button type="button" class="fb on-b" data-g="drive" data-v="all">Any</button>
+        <button type="button" class="fb" data-g="drive" data-v="60">≤1 hr</button>
+        <button type="button" class="fb" data-g="drive" data-v="120">≤2 hr</button>
+        <button type="button" class="fb" data-g="drive" data-v="180">≤3 hr</button>
+      </div>
+    </div>
+  </div>
+
+  <section class="tr-cal-section" aria-labelledby="calTitle">
+    <h2 id="calTitle" class="wk-title">Calendar</h2>
+    <p class="wk-sub">Coloured days have a matching course. Click a day or a month name to list only its courses; Shift-click days to pick several.</p>
+    <div class="tr-cal" id="cal"></div>
+  </section>
+
+</aside>
+
+<!-- RIGHT: RESULTS -->
+
+<main class="main tr-right" id="results" tabindex="-1">
+
+  <!-- Print only: the filters in effect and a QR code back to this view -->
+  <div class="tr-print-head">
+    <p class="tr-print-filters" id="printFilters"></p>
+    <div class="tr-print-qr" id="printQr" aria-hidden="true"></div>
+  </div>
+
+  <div id="listView">
+    <div class="tr-results-head">
+      <h2 class="wk-title" id="resultsTitle" tabindex="-1">Courses</h2>
+      <div id="countBadge" role="status" aria-live="polite"></div>
+      <button type="button" class="fb tr-filter-open" id="filterOpen" aria-controls="filterSheet" aria-expanded="false">Filters</button>
+      <div class="tr-tools" role="group" aria-label="Share and print">
+        <button type="button" class="fb tr-copy" data-copy-link>Copy link</button>
+        <button type="button" class="fb tr-copy" data-print><span aria-hidden="true">🖨</span> Print</button>
+        <button type="button" class="fb tr-copy" data-pocket><span aria-hidden="true">🗺</span> Pocket map <span class="sr-only">(opens in a new tab)</span></button>
+      </div>
+      <ul class="tr-active" id="activeBar" aria-label="Filters in effect" hidden></ul>
+    </div>
+
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <!-- One course, shown in place of the list so the map and calendar stay in view -->
+  <div id="detailView" hidden>
+    <div class="tr-results-head">
+      <button type="button" class="fb on" id="detailBack">&#8592; Back to all results</button>
+      <div class="tr-tools" role="group" aria-label="Share and print">
+        <button type="button" class="fb tr-copy" data-copy-link>Copy link</button>
+        <button type="button" class="fb tr-copy" data-print><span aria-hidden="true">🖨</span> Print</button>
+      </div>
+      <span class="tr-detail-hint">Its location and dates are highlighted on the map and calendar</span>
+    </div>
+    <article class="tr-detail" aria-label="Course details">
+      <h2 class="ol-title" id="olTitle" tabindex="-1"></h2>
+      <div class="ol-meta"  id="olMeta"></div>
+      <div class="tr-what-wrap" id="olDesc"></div>
+      <div class="detail-grid" id="olGrid"></div>
+      <div id="olNotes"></div>
+    </article>
+  </div>
+</main>
+
+</div>
+
+<footer>Troop 380 · Scouting America · Training Calendar · Dates and fees change — confirm on each course's registration page</footer>
+
+<!-- Hover card for calendar days -->
+
+<div class="tr-tip" id="calTip" aria-hidden="true" hidden></div>
+
+<!-- Backdrop behind the filter sheet on phones -->
+
+<div class="tr-sheet-backdrop" id="sheetBackdrop"></div>
+
+<script type="module" src="../training.js"></script>
+
+</body>
+</html>
