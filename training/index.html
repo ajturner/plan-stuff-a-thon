@@ -26,7 +26,7 @@
 <header>
   <div class="hdr">
     <div class="troop-label">Scouting America · Troop 380 · Training</div>
-    <h1>Training<br><em>Calendar</em></h1>
+    <h1>Training <em>Calendar</em></h1>
     <p class="hdr-sub">Youth and adult training courses a Troop 380 Scout or leader can reach from DC: the National Capital Area Council calendar plus nearby councils within about three hours. Filter by who the course is for, where and when it runs, then open any course for dates, location, notes and the registration link.</p>
     <div class="hdr-meta">
       <div><span>Courses</span> <b id="hdrCount"></b></div>
@@ -37,82 +37,82 @@
   </div>
 </header>
 
-<!-- LEGEND -->
+<div class="tr-split">
 
-<div class="legend">
-  <div class="leg-item"><div class="leg-dot tr-dot-youth"></div>Youth</div>
-  <div class="leg-item"><div class="leg-dot tr-dot-adult"></div>Adult</div>
-  <div class="leg-item"><div class="leg-dot tr-dot-both"></div>Youth and adult</div>
-  <div class="leg-item"><div class="leg-dot ld-muted"></div>Filtered out</div>
-  <div class="leg-item">Map markers grow with the number of matching courses at a location</div>
-</div>
+<!-- LEFT: MAP, FILTERS, CALENDAR -->
 
-<!-- MAP -->
+<aside class="tr-left" aria-label="Map, filters and calendar">
 
-<div id="map-wrap">
-  <h2>📍 Training Locations</h2>
-  <div id="mapView"></div>
-</div>
-
-<!-- FILTERS -->
-
-<div class="filters">
-  <div class="filters-inner">
-    <div class="fg">
-      <span class="flabel">For</span>
-      <button class="fb on" data-g="aud" data-v="all">Everyone</button>
-      <button class="fb" data-g="aud" data-v="youth">Youth</button>
-      <button class="fb" data-g="aud" data-v="adult">Adult</button>
+  <div id="map-wrap">
+    <h2>📍 Training Locations</h2>
+    <div id="mapView"></div>
+    <div class="legend">
+      <div class="leg-item"><div class="leg-dot tr-dot-youth"></div>Youth</div>
+      <div class="leg-item"><div class="leg-dot tr-dot-adult"></div>Adult</div>
+      <div class="leg-item"><div class="leg-dot tr-dot-both"></div>Both</div>
+      <div class="leg-item"><div class="leg-dot ld-muted"></div>Filtered out</div>
+      <div class="leg-item">Bigger marker = more courses</div>
     </div>
-    <div class="fg">
-      <span class="flabel">When</span>
-      <button class="fb on-t" data-g="when" data-v="upcoming">Upcoming</button>
-      <button class="fb" data-g="when" data-v="all">All dates</button>
-      <select id="monthSel" class="sort-sel" aria-label="Month"></select>
-    </div>
-    <div class="fg">
-      <label class="flabel" for="courseSel">Course</label>
-      <select id="courseSel" class="sort-sel"></select>
-    </div>
-    <div class="fg">
-      <label class="flabel" for="locSel">Location</label>
-      <select id="locSel" class="sort-sel"></select>
-    </div>
-    <div class="fg" id="councilGroup">
-      <label class="flabel" for="councilSel">Council</label>
-      <select id="councilSel" class="sort-sel"></select>
-    </div>
-    <div class="fg">
-      <span class="flabel">Drive</span>
-      <button class="fb on-b" data-g="drive" data-v="all">Any</button>
-      <button class="fb" data-g="drive" data-v="60">≤1 hr</button>
-      <button class="fb" data-g="drive" data-v="120">≤2 hr</button>
-      <button class="fb" data-g="drive" data-v="180">≤3 hr</button>
-    </div>
-    <div id="countBadge"></div>
   </div>
-</div>
 
-<main class="main">
-
-  <!-- CALENDAR -->
+  <div class="filters">
+    <div class="filters-inner">
+      <div class="fg">
+        <span class="flabel">For</span>
+        <button class="fb on" data-g="aud" data-v="all">Everyone</button>
+        <button class="fb" data-g="aud" data-v="youth">Youth</button>
+        <button class="fb" data-g="aud" data-v="adult">Adult</button>
+      </div>
+      <div class="fg">
+        <span class="flabel">When</span>
+        <button class="fb on-t" data-g="when" data-v="upcoming">Upcoming</button>
+        <button class="fb" data-g="when" data-v="all">All dates</button>
+        <select id="monthSel" class="sort-sel" aria-label="Month"></select>
+      </div>
+      <div class="fg">
+        <label class="flabel" for="courseSel">Course</label>
+        <select id="courseSel" class="sort-sel"></select>
+      </div>
+      <div class="fg">
+        <label class="flabel" for="locSel">Location</label>
+        <select id="locSel" class="sort-sel"></select>
+      </div>
+      <div class="fg" id="councilGroup">
+        <label class="flabel" for="councilSel">Council</label>
+        <select id="councilSel" class="sort-sel"></select>
+      </div>
+      <div class="fg">
+        <span class="flabel">Drive</span>
+        <button class="fb on-b" data-g="drive" data-v="all">Any</button>
+        <button class="fb" data-g="drive" data-v="60">≤1 hr</button>
+        <button class="fb" data-g="drive" data-v="120">≤2 hr</button>
+        <button class="fb" data-g="drive" data-v="180">≤3 hr</button>
+      </div>
+    </div>
+  </div>
 
   <section class="tr-cal-section" aria-labelledby="calTitle">
     <h2 id="calTitle" class="wk-title">Calendar</h2>
     <p class="wk-sub">Coloured days have a course that matches the filters. Click a day to list only that day's courses.</p>
+    <div class="tr-cal" id="cal"></div>
+  </section>
+
+</aside>
+
+<!-- RIGHT: RESULTS -->
+
+<main class="main tr-right">
+
+  <div class="tr-results-head">
+    <h2 class="wk-title">Courses</h2>
+    <div id="countBadge"></div>
     <div class="tr-day-bar" id="dayBar" hidden>
       <span id="dayBarText"></span>
       <button type="button" class="fb" id="dayClear">Show all days</button>
     </div>
-    <div class="tr-cal" id="cal"></div>
-  </section>
+  </div>
 
-  <!-- CARDS -->
-
-  <h2 class="wk-title tr-list-title">Courses</h2>
   <div class="grid" id="grid"></div>
-
-  <!-- UNDATED -->
 
   <section class="wk-section" aria-labelledby="undTitle">
     <h2 id="undTitle" class="wk-title">No date posted yet</h2>
@@ -120,6 +120,8 @@
     <ul class="tr-undated" id="undated"></ul>
   </section>
 </main>
+
+</div>
 
 <footer>Troop 380 · Scouting America · Training Calendar · Dates and fees change — confirm on each course's registration page</footer>
 

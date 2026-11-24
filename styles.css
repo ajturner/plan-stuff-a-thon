@@ -910,3 +910,47 @@ footer {
 .training-page .c-cost { min-width: 0; }
 .training-page .cost-val { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 .training-page .tr-council { flex-shrink: 0; white-space: nowrap; }
+
+/* Training page layout: facets (map, filters, calendar) on the left, results on the right.
+   The left pane sticks to the viewport and scrolls on its own, so the map and calendar
+   stay in view while the results scroll with the page. */
+.training-page header { padding: 1.5rem 2rem 1.25rem; }
+.training-page .hdr { max-width: none; }
+.training-page h1 { font-size: clamp(2.2rem, 4.5vw, 3.4rem); margin-bottom: .5rem; }
+.training-page .hdr-sub { max-width: 760px; }
+.training-page .hdr-meta { margin-top: .75rem; }
+
+.tr-split { display: grid; grid-template-columns: minmax(380px, 40%) minmax(0, 1fr); align-items: start; }
+.tr-left {
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  background: var(--sand); border-right: 2px solid var(--bark);
+}
+.tr-left #map-wrap { padding: .9rem 1rem .6rem; }
+.tr-left #map-wrap h2 { font-size: 1.2rem; margin-bottom: .5rem; }
+.tr-left #mapView { height: 240px; max-width: none; }
+.tr-left .legend { background: none; padding: .55rem 0 0; gap: .35rem .9rem; justify-content: flex-start; }
+.tr-left .leg-item { font-size: .58rem; }
+.tr-left .filters { position: static; padding: .9rem 1rem; border-bottom: 1px solid var(--bark); }
+.tr-left .filters-inner { gap: .6rem .85rem; }
+.tr-left .tr-cal-section { padding: .9rem 1rem 1.5rem; margin-bottom: 0; }
+.tr-left .tr-cal { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: .6rem; }
+
+.tr-right.main { max-width: none; margin: 0; padding: 0 1.5rem 3rem; }
+.tr-right .grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.tr-results-head {
+  position: sticky; top: 0; z-index: 50; background: var(--cream);
+  display: flex; flex-wrap: wrap; align-items: center; gap: .4rem 1rem;
+  padding: .9rem 0 .7rem; margin-bottom: .4rem; border-bottom: 1px solid var(--sand);
+}
+.tr-results-head .tr-day-bar { margin: 0; padding: .25rem .6rem; }
+.tr-results-head #countBadge { margin-left: 0; }
+.training-page .c-foot { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .9rem; }
+.training-page .c-foot .site-link { margin-top: 0; }
+
+/* Narrow screens: one column, facets first */
+@media (max-width: 900px) {
+  .tr-split { grid-template-columns: 1fr; }
+  .tr-left { position: static; height: auto; overflow: visible; border-right: none; border-bottom: 2px solid var(--bark); }
+  .tr-left #mapView { height: 260px; }
+  .tr-right.main { padding: 0 1rem 2.5rem; }
+}

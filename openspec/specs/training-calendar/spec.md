@@ -60,6 +60,24 @@ Opening a course SHALL show its audience, host, council, every session with day 
 - **WHEN** the visitor presses Escape, clicks the backdrop, or clicks the close button
 - **THEN** the details close
 
+### Requirement: Side-by-side layout
+
+On wide screens the map, filters and calendar SHALL sit in a left pane that stays in view while the course results scroll on the right. On narrow screens they SHALL stack in one column.
+
+#### Scenario: Scrolling the results
+
+- **WHEN** the visitor scrolls down the course list on a wide screen
+- **THEN** the map, filters and calendar remain visible beside it
+
+### Requirement: Learn more link
+
+Each course SHALL link to the Scouting America page about that kind of training, from its card and from its details.
+
+#### Scenario: Learning about a course
+
+- **WHEN** the visitor follows a course's "About … at Scouting America" link
+- **THEN** the Scouting America page opens in a new tab and the course details do not open
+
 ### Requirement: Courses without dates
 
 Courses that appear on a council calendar without an upcoming date SHALL be listed separately, following the audience and council filters.

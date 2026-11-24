@@ -399,12 +399,14 @@ Files: `training/index.html` (markup; served at `/training/`), `training-data.js
 |--------|---------|
 | `DATA_AS_OF` | Date of the council calendar the data was taken from |
 | `COUNCILS` | `{KEY: {name, short, url}}`; the council filter appears once there are two or more |
-| `COURSES` | `{KEY: {name, full, aud, desc}}`; `aud` is `youth`, `adult` or `both` |
+| `COURSES` | `{KEY: {name, full, aud, learn, desc}}`; `aud` is `youth`, `adult` or `both`; `learn` is the scouting.org page about the course |
 | `VENUES` | `{key: {name, addr, lat, lng, mins}}`; `mins` is the estimated drive from Capitol Hill |
 | `EVENTS` | One object per dated course (fields below) |
 | `UNDATED` | Courses on a council calendar with no upcoming date: `{council, name, aud, note, url}` |
 
 Event fields: `id` (unique, sequential), `course` (a `COURSES` key), `council` (a `COUNCILS` key), `host` (district or "Council"), `venue` (a `VENUES` key, or `null` when the location is not posted), `sessions` (`[{s, e, label?}]` as `'YYYY-MM-DD'`; a course in two parts is one event with two sessions), `time`, `cost` (`null` = not listed), `url` (registration page, or `null`), `notes`, and optionally `title` (overrides the course name), `aud` (overrides the course's audience) and `virtual` (`true` when a session is online).
+
+On screens wider than 900px the page is split: the map, filters and calendar sit in a left pane that stays in view and scrolls on its own, and the course cards scroll on the right. Narrower screens stack them in one column. Every card and detail view links to the course's Scouting America page.
 
 A "both" course matches the Youth and the Adult filter. A course with no venue never matches a drive-time filter. The map has one marker per venue, sized by the number of matching courses; the calendar colours each day that has a matching course, and clicking a day narrows the cards and the map to that day.
 

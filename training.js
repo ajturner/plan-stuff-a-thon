@@ -208,6 +208,14 @@ function audTag(ev) {
   return '<span class="tag tr-aud-' + aud(ev) + '">' + AUD_LABEL[aud(ev)] + '</span>';
 }
 
+// Link to the Scouting America page about the course
+function learnLink(ev) {
+  var c = course(ev);
+  if (!c.learn) return '';
+  return '<a class="site-link" href="' + esc(c.learn) + '" target="_blank" rel="noopener"' +
+    ' onclick="event.stopPropagation()">About ' + esc(c.name) + ' at Scouting America &#8599;</a>';
+}
+
 function openTraining(id) {
   var ev = null;
   for (var i = 0; i < EVENTS.length; i++) { if (EVENTS[i].id === id) { ev = EVENTS[i]; break; } }
@@ -256,7 +264,7 @@ function openTraining(id) {
       (ev.time ? '<p class="cost-note">' + esc(ev.time) + '</p>' : '') +
       '<div class="dbox-title dbox-title-gap">&#128176; Cost</div>' +
       '<div class="cost-sub">' + (ev.cost ? esc(ev.cost) : 'Not listed — see the registration page') + '</div>' +
-      '<div class="ol-links">' + regHtml + '</div>' +
+      '<div class="ol-links">' + regHtml + learnLink(ev) + '</div>' +
     '</div>' +
     '<div class="dbox">' +
       '<div class="dbox-title">&#128205; Where</div>' +
@@ -422,6 +430,7 @@ function renderCards() {
         '</div>' +
         '<div class="c-foot">' +
           '<button class="detail-btn" onclick="event.stopPropagation();window.openTraining(' + ev.id + ')">Details + Registration &#8594;</button>' +
+          learnLink(ev) +
         '</div>' +
       '</article>';
   });

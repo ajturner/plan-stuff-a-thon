@@ -23,23 +23,23 @@ export const NEARBY_COUNCILS = {
 };
 
 export const NEARBY_COURSES = {
-  WB: { name: "Wood Badge", full: "Wood Badge", aud: "adult",
+  WB: { name: "Wood Badge", full: "Wood Badge", aud: "adult", learn: 'https://www.scouting.org/training/resources-for-program-trainers-training-committees/woodbadge/',
     desc: "Advanced leadership course for adult Scouters, run over two weekends followed by a personal \"ticket\" of projects." },
-  ILST: { name: "ILST", full: "Introduction to Leadership Skills for Troops", aud: "youth",
+  ILST: { name: "ILST", full: "Introduction to Leadership Skills for Troops", aud: "youth", learn: 'https://www.scouting.org/training/youth/',
     desc: "Troop-level youth leadership training, here offered as a council or district session." },
-  YLT: { name: "Youth leadership", full: "Council youth leadership course", aud: "youth",
+  YLT: { name: "Youth leadership", full: "Council youth leadership course", aud: "youth", learn: 'https://www.scouting.org/training/youth/',
     desc: "A council's own youth leadership course, separate from NYLT." },
-  LST: { name: "Leader Specific", full: "Position-specific leader training", aud: "adult",
+  LST: { name: "Leader Specific", full: "Position-specific leader training", aud: "adult", learn: 'https://www.scouting.org/training/position-specific-courses/',
     desc: "Classroom training for a specific adult role: Scoutmaster, den leader, Cubmaster or committee member." },
-  ADULTDAY: { name: "Training day", full: "Adult leader training day", aud: "adult",
+  ADULTDAY: { name: "Training day", full: "Adult leader training day", aud: "adult", learn: 'https://www.scouting.org/training/supplemental-training-opportunities/',
     desc: "A day of several short adult leader courses offered together. Check the class list on the registration page." },
-  RANGE: { name: "Range instructor", full: "Range and target sports instructor courses", aud: "adult",
+  RANGE: { name: "Range instructor", full: "Range and target sports instructor courses", aud: "adult", learn: 'https://www.scouting.org/outdoor-programs/range-activities/',
     desc: "NRA, USA Archery and Scouting America rangemaster certifications needed to run rifle, shotgun, pistol, muzzleloading, BB and archery ranges." },
-  CHAINSAW: { name: "Chainsaw", full: "Chainsaw operator and safety training", aud: "adult",
+  CHAINSAW: { name: "Chainsaw", full: "Chainsaw operator and safety training", aud: "adult", learn: 'https://www.scouting.org/training/',
     desc: "Adult training required before running a chainsaw at a council camp." },
-  AQUA: { name: "Aquatics Supervision", full: "Aquatics Supervision", aud: "both",
+  AQUA: { name: "Aquatics Supervision", full: "Aquatics Supervision", aud: "both", learn: 'https://www.scouting.org/outdoor-programs/aquatics/',
     desc: "Swimming and Water Rescue or Paddle Craft Safety, for leaders and older Scouts who supervise unit swims and floats." },
-  BACKCOUNTRY: { name: "Backcountry skills", full: "Backcountry skills training", aud: "both",
+  BACKCOUNTRY: { name: "Backcountry skills", full: "Backcountry skills training", aud: "both", learn: 'https://www.scouting.org/training/',
     desc: "Council-run backcountry trek skills course." }
 };
 

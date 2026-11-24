@@ -17,31 +17,33 @@ export const COUNCILS = Object.assign({
   NCAC: { name: 'National Capital Area Council', short: 'NCAC', url: 'https://www.ncacbsa.org/training/' }
 }, NEARBY_COUNCILS);
 
-/* Courses. aud: 'youth' | 'adult' | 'both'. An event may override it with its own `aud`. */
+/* Courses. aud: 'youth' | 'adult' | 'both'. An event may override it with its own `aud`.
+   learn: the Scouting America (scouting.org) page about the course, or the closest
+   one that exists; each was checked to load on Nov 23, 2026. */
 export const COURSES = Object.assign({
-  BALOO: { name: 'BALOO', full: 'Basic Adult Leader Outdoor Orientation', aud: 'adult',
+  BALOO: { name: 'BALOO', full: 'Basic Adult Leader Outdoor Orientation', aud: 'adult', learn: 'https://www.scouting.org/training/',
     desc: 'Overnight outdoor training for Cub Scout leaders. A pack needs a BALOO-trained adult on every pack campout.' },
-  IOLS: { name: 'IOLS', full: 'Introduction to Outdoor Leader Skills', aud: 'adult',
+  IOLS: { name: 'IOLS', full: 'Introduction to Outdoor Leader Skills', aud: 'adult', learn: 'https://www.scouting.org/training/',
     desc: 'Hands-on outdoor skills through First Class. Required for Scoutmasters and Assistant Scoutmasters to be fully trained.' },
-  BCOLS: { name: 'BCOLS', full: 'Back Country Outdoor Leader Skills', aud: 'adult',
+  BCOLS: { name: 'BCOLS', full: 'Back Country Outdoor Leader Skills', aud: 'adult', learn: 'https://www.scouting.org/training/',
     desc: 'Backcountry trek leadership for adults. Each course is a classroom day plus a field weekend; you attend both.' },
-  SST: { name: 'SST', full: 'Scoutmaster & Assistant Scoutmaster Specific Training', aud: 'adult',
+  SST: { name: 'SST', full: 'Scoutmaster & Assistant Scoutmaster Specific Training', aud: 'adult', learn: 'https://www.scouting.org/training/position-specific-courses/',
     desc: 'Position-specific classroom training for Scoutmasters and Assistant Scoutmasters.' },
-  CSLST: { name: 'CSLST', full: 'Cub Scout Leader Specific Training', aud: 'adult',
+  CSLST: { name: 'CSLST', full: 'Cub Scout Leader Specific Training', aud: 'adult', learn: 'https://www.scouting.org/training/position-specific-courses/',
     desc: 'Position-specific classroom training for den leaders, Cubmasters and pack committee members.' },
-  DCT: { name: 'Den Chief', full: 'Den Chief Training', aud: 'youth',
+  DCT: { name: 'Den Chief', full: 'Den Chief Training', aud: 'youth', learn: 'https://www.scouting.org/training/youth/den-chief-training/',
     desc: 'Half-day training for Scouts serving, or about to serve, as den chiefs with a Cub Scout pack.' },
-  NYLT: { name: 'NYLT', full: 'National Youth Leadership Training', aud: 'youth',
+  NYLT: { name: 'NYLT', full: 'National Youth Leadership Training', aud: 'youth', learn: 'https://www.scouting.org/programs/scouts-bsa/resources/nylt/',
     desc: 'Six-day youth leadership course run as a model troop. Scouts must be 13 by the course start and First Class if registered in a troop.' },
-  WFA: { name: 'WFA', full: 'Wilderness First Aid', aud: 'both',
+  WFA: { name: 'WFA', full: 'Wilderness First Aid', aud: 'both', learn: 'https://www.scouting.org/health-and-safety/safety-moments/wilderness-first-aid/',
     desc: 'Two-day wilderness first aid course run by NCAC Camping. Includes 3–5 hours of online work before the first class. Bring your own lunch.' },
-  LNT1: { name: 'LNT Level 1', full: 'Leave No Trace Level 1', aud: 'both',
+  LNT1: { name: 'LNT Level 1', full: 'Leave No Trace Level 1', aud: 'both', learn: 'https://www.scouting.org/outdoor-programs/leave-no-trace/',
     desc: 'Overnight Leave No Trace instructor course. Graduates can teach Leave No Trace awareness sessions to units.' },
-  FOT: { name: 'Fundamentals', full: 'Fundamentals of Training: Science of Training and Craft of Training', aud: 'both',
+  FOT: { name: 'Fundamentals', full: 'Fundamentals of Training: Science of Training and Craft of Training', aud: 'both', learn: 'https://www.scouting.org/training/supplemental-training-opportunities/',
     desc: 'Train-the-trainer day. Required for Wood Badge and NYLT staff, youth and adult.' },
-  UOS: { name: 'UoS', full: 'University of Scouting', aud: 'adult',
+  UOS: { name: 'UoS', full: 'University of Scouting', aud: 'adult', learn: 'https://www.scouting.org/training/supplemental-training-opportunities/',
     desc: 'The council\'s annual one-day conference of elective classes for adult leaders.' },
-  COMM: { name: 'Commissioners College', full: 'Commissioners College', aud: 'adult',
+  COMM: { name: 'Commissioners College', full: 'Commissioners College', aud: 'adult', learn: 'https://www.scouting.org/commissioners/training/',
     desc: 'Annual training day for unit, district and council commissioners.' }
 }, NEARBY_COURSES);
 
