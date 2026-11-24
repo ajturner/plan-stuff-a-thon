@@ -1,7 +1,7 @@
 'use strict';
 
 /* ── IMPORTS ───────────────────────────────────────────────────────────────── */
-import { CAMPS, WEEKS, SURVEY_WEEKS, PATROLS } from './camps-data.js';
+import { CAMPS, WEEKS, PATROLS } from './camps-data.js';
 
 import Map           from 'https://js.arcgis.com/5.0/@arcgis/core/Map.js';
 import MapView       from 'https://js.arcgis.com/5.0/@arcgis/core/views/MapView.js';
@@ -275,9 +275,8 @@ function weekStrip(c) {
   WEEKS.forEach(function(k) {
     var s = c.weeks[k];
     var cls = s ? 'wk-' + s : 'wk-none';
-    var survey = SURVEY_WEEKS.indexOf(k) !== -1 ? ' wk-survey' : '';
     var title = weekShort(k) + ': ' + (s ? WEEK_LABEL[s] : 'Not offered');
-    html += '<span class="wk-cell ' + cls + survey + '" title="' + title + '">' + weekShort(k) + '</span>';
+    html += '<span class="wk-cell ' + cls + '" title="' + title + '">' + weekShort(k) + '</span>';
   });
   if (!weekCount(c)) html += '<span class="wk-unknown">2027 dates not found</span>';
   return '<div class="wk-strip">' + html + '</div>';
@@ -415,9 +414,7 @@ function matchesFilters(c) {
   var mealsOk =
     fMeals === 'all' ||
     (fMeals === 'both' ? (hasMeal(c, 'dh') && hasMeal(c, 'pc')) : hasMeal(c, fMeals));
-  var weekOk =
-    fWeek === 'all' ||
-    (fWeek === 'survey' ? SURVEY_WEEKS.some(function(k) { return !!c.weeks[k]; }) : !!c.weeks[fWeek]);
+  var weekOk = fWeek === 'all' || !!c.weeks[fWeek];
   var waterOk = fWater === 'all' || c.fresh === true;
   var driveOk = fDrive === 'all' || c.mins <= parseInt(fDrive, 10);
   // Camps that publish no merit badge list never match a badge search
@@ -501,7 +498,7 @@ function renderCards() {
 function renderWeekTable(list) {
   var head = '<thead><tr><th class="wk-th-camp">Camp</th><th>Drive</th><th>Meals</th>';
   WEEKS.forEach(function(k) {
-    head += '<th class="' + (SURVEY_WEEKS.indexOf(k) !== -1 ? 'wk-th-survey' : '') + '">' + weekShort(k) + '</th>';
+    head += '<th>' + weekShort(k) + '</th>';
   });
   head += '<th>Youth</th><th>Fit</th></tr></thead>';
 
@@ -514,8 +511,7 @@ function renderWeekTable(list) {
       '<td>' + esc(meals) + '</td>';
     WEEKS.forEach(function(k) {
       var s = c.weeks[k];
-      var survey = SURVEY_WEEKS.indexOf(k) !== -1 ? ' wk-td-survey' : '';
-      body += '<td class="wk-td' + survey + '">' +
+      body += '<td class="wk-td">' +
         (s ? '<span class="wk-pill wk-' + s + '">' + WEEK_LABEL[s] + '</span>' : '<span class="wk-dash">—</span>') +
         '</td>';
     });

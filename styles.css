@@ -739,7 +739,6 @@ footer {
   font-family: 'DM Mono', monospace; font-size: .6rem; padding: 2px 5px;
   border-radius: 3px; border: 1.5px solid transparent; min-width: 2.4rem; text-align: center;
 }
-.wk-survey { border-color: #b8891f; }
 .wk-unknown { font-family: 'DM Mono', monospace; font-size: .62rem; color: #888; margin-left: .3rem; }
 .wk-pill {
   display: inline-block; font-family: 'DM Mono', monospace; font-size: .6rem;
@@ -780,8 +779,6 @@ footer {
 .wk-th-camp, .wk-td-camp { position: sticky; left: 0; background: inherit; }
 .wk-td-camp { font-weight: 500; color: var(--forest); background: #fff; }
 .wk-table tbody tr:hover .wk-td-camp { background: #f7f3ec; }
-.wk-th-survey { background: #fdecc8 !important; color: #7d4a00 !important; }
-.wk-td-survey { background: #fffaf0; }
 .wk-dash { color: #ccc; }
 
 /* Overlay extras */

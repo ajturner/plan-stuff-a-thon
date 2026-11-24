@@ -9,9 +9,6 @@
 /* Sunday start dates of the weeks compared on the page (2027). */
 export const WEEKS = ['06-13', '06-20', '06-27', '07-04', '07-11', '07-18', '07-25'];
 
-/* Weeks the troop's parent survey asked about. Highlighted on the page. */
-export const SURVEY_WEEKS = ['06-27', '07-04'];
-
 /* What each patrol asked for at the Nov 11, 2026 troop meeting.
    key: the camp feature that answers the request (see FIT_KEYS in camps.js), or null when
    no camp field can check it yet. */

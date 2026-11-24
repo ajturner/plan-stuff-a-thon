@@ -376,7 +376,6 @@ Files: `summer-camp/index.html` (markup; served at `/summer-camp/`), `camps.html
 | Export | Meaning |
 |--------|---------|
 | `WEEKS` | Sunday start dates compared on the page, as `'MM-DD'` |
-| `SURVEY_WEEKS` | Weeks from the parent survey; highlighted |
 | `PATROLS` | `{code, name, asks:[{text, key}]}`; `key` is a `FIT_KEYS` name or `null` |
 | `CAMPS` | One object per camp (fields below) |
 

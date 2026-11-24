@@ -31,7 +31,7 @@ The page SHALL list each patrol's requests. Each request that maps to a camp fea
 
 ### Requirement: Sort and filter
 
-The planner SHALL be able to sort camps by patrol fit, drive time, youth cost (camps with no posted fee last), number of weeks offered, or name, and filter by meal method (including camps that offer both), week offered (including either survey week), fresh water, and maximum drive time. One predicate SHALL drive the cards, the week table, and the map.
+The planner SHALL be able to sort camps by patrol fit, drive time, youth cost (camps with no posted fee last), number of weeks offered, or name, and filter by meal method (including camps that offer both), week offered, fresh water, and maximum drive time. One predicate SHALL drive the cards, the week table, and the map.
 
 #### Scenario: Filtering by meal method
 
@@ -49,7 +49,7 @@ Camps that publish a merit badge list SHALL show it in their details, grouped by
 
 ### Requirement: Week availability
 
-Each camp SHALL show its 2027 weeks with a status of open, almost full, full, or offered (status not published), and the weeks named in the parent survey SHALL be highlighted. A week-by-week table SHALL show the same camps in the same order.
+Each camp SHALL show its 2027 weeks with a status of open, almost full, full, or offered (status not published). A week-by-week table SHALL show the same camps in the same order.
 
 #### Scenario: Comparing weeks
 
