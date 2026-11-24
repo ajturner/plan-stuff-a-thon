@@ -35,7 +35,7 @@ Capabilities: `activity-catalog`, `activity-filtering`, `activity-map`,
 ### Summer camp page
 
 `summer-camp/index.html` + `camps-data.js` + `camps.js` follow the same rules as the main
-page (ES modules, string concatenation, DOM-node map popups). Generated markup
+page (ES modules, string concatenation, the shared layout in `shared.js`). Generated markup
 calls `window.openCamp(id)`. To update a camp, edit its entry in
 `camps-data.js`; use `null` for anything not confirmed so the page shows "?".
 Patrol requests live in `PATROLS`; each request's `key` must match a key in
@@ -168,24 +168,57 @@ window.openOverlay = openOverlay;
 
 ---
 
-## The map popup content rule (critical)
+## The map marker rule (critical)
 
-`popupTemplate.content` must be a **function returning a DOM node**, not an HTML
-string:
+The maps have **no popups** (`popupEnabled: false`). Markers are handled by
+`bindMarkers()` in `shared.js`, which needs each `Graphic` to carry
+`attributes: { key: id }`:
 
-```js
-// ✅ Correct — buildPopupNode() creates elements and attaches a listener
-popupTemplate: { title: a.title, content: function() { return buildPopupNode(a); } }
+- hovering a marker shows the styled hover card (`#hoverTip`), built from an
+  HTML string the page supplies (escape data with `esc()`);
+- clicking a marker calls `window.openOverlay(id)` (or `window.openCamp(id)`), so
+  the print handler's activity tracking still runs.
 
-// ❌ Wrong — SDK 5 sanitises string content: the <button> and its onclick are
-// stripped, leaving "View details" as dead text that looks fine but does nothing
-popupTemplate: { title: a.title, content: '<div>…<button onclick="…">View details</button></div>' }
-```
+Do not bring back `popupTemplate`. If you ever must, its `content` has to be a
+function returning a DOM node: SDK 5 sanitises string content and strips buttons
+and handlers.
 
-This is why `buildPopupNode()` uses `document.createElement` and
-`addEventListener` rather than string concatenation, and why popup styling lives
-in `styles.css` under `.map-pop*` instead of inline attributes. The button calls
-`window.openOverlay(id)` so the print handler's activity tracking still runs.
+## The shared layout and accessibility rules (critical)
+
+All three pages use `body.app-page` and the same structure: a `.tr-split` grid
+with `<aside class="tr-left">` (map, legend, filters) beside
+`<main class="tr-right" id="results">` (count, filter chips, cards). On phones
+the `.filters` block is a bottom sheet opened by `#filterOpen`. `shared.js`
+supplies the hover card, map controls (Home, Search), marker binding, filter
+chips, the sheet, and the focus trap for the details dialog. The `tr-` class
+prefix is historical (the layout started on the training page).
+
+The pages target **WCAG 2.2 AA**. Keep to these when changing markup or styles:
+
+- Text contrast of at least 4.5:1. Use `var(--bark)`, `var(--slate)` or
+  `var(--forest)` for small text, never a light grey.
+- Every control is a real `<button>`, `<select>`, `<input>` or `<a>`, at least
+  24 by 24 CSS pixels, with a visible focus ring (do not remove outlines).
+- A card is not a control. Its title is a `.tr-title-btn` button; the visible
+  "Details" button is `aria-hidden` with `tabindex="-1"` so there is one tab stop.
+- Filter buttons carry `aria-pressed` (set by `syncButtons()`); never set the
+  `on*` classes by hand.
+- Decorative emoji and arrows go in `<span aria-hidden="true">`; links that
+  open a new tab add `.sr-only` text saying so.
+- Never signal state by colour alone: add text (visible or `.sr-only`).
+- Details open in the results pane, not in a modal: `openOverlay(id)` /
+  `openCamp(id)` hide `#listView` and show `#detailView`, move focus to
+  `#olTitle`, and light only that item's marker. "Back to all results" or
+  Escape (`closeOverlay()`) restores the list, its scroll position and focus.
+  The markup keeps the `.overlay` / `.ol-panel` classes because the
+  single-sheet print styles target them.
+- Filters and the open item live in the query string (`syncUrl()` /
+  `applyUrl()` on each page, `setUrl()` in `shared.js`). When you add a filter,
+  add it to both. Print and Pocket map (`bindTools()`, in the `.tr-tools` group
+  beside the results heading) act on the filtered list, so a new filter needs
+  no extra work there. Links name an item by a slug built from its title (`assignSlugs()`),
+  so they survive reordering; when you rename an item, add a `slug` field holding
+  the old slug so existing links still open it.
 
 ---
 
@@ -282,8 +315,11 @@ Before marking any task done, verify:
 - [ ] Gallery spinner shows, then photos appear (requires internet)
 - [ ] All filter combinations produce correct results
 - [ ] Overlay closes via ✕ button, backdrop click, and Escape key
-- [ ] Map popup "View details" button opens the overlay (including for markers
-      greyed out by the current filters)
+- [ ] Hovering a map marker shows the hover card; clicking it opens the overlay
+      (including for markers greyed out by the current filters)
+- [ ] Filter chips appear above the results and "Clear all filters" resets them
+- [ ] At 375px wide there is no sideways scrolling and "Filters" opens the sheet
+- [ ] Tab reaches every control with a visible focus ring; Escape closes the overlay
 - [ ] Brace and paren counts are balanced in app.js (`{` count === `}` count, `(` count === `)` count)
 - [ ] No `require(` anywhere in any file
 - [ ] `<script type="module" src="app.js">` is the only script tag in index.html

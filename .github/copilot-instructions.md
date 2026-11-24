@@ -164,7 +164,7 @@ There is no automated test suite. Manual testing procedure:
 2. Open the browser console — zero errors expected on load
 3. Click each filter combination and verify card counts change
 4. Click a card — overlay opens, gallery spinner appears, photos load
-5. Click map markers — popups open, "View details" button works
+5. Hover map markers — the hover card appears; click one — the overlay opens
 6. Press Escape — overlay closes
 7. Resize to 375px width — layout should not break
 

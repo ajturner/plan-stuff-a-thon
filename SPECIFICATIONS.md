@@ -158,17 +158,15 @@ Each activity gets a `simple-marker` circle with:
 - Size: `14px`
 - White outline, width `2`
 
-### 4.5 Popups
-Each graphic's `popupTemplate.content` is a **function returning a DOM node**
-(built by `buildPopupNode(a)`), not an HTML string — SDK 5 sanitises string
-content and strips buttons and event handlers. Styling comes from the `.map-pop*`
-classes in `styles.css`. The node contains:
-1. Activity title (Bebas Neue, styled inline)
-2. Drive time + trip style
-3. Cost string
-4. `<button onclick="window.openOverlay(id)">View details</button>`
+### 4.5 Marker hover card and click
+The map has no popups (`popupEnabled: false`). `bindMarkers()` in `shared.js`
+reads each graphic's `attributes.key` and:
+1. on hover, shows the shared hover card (`#hoverTip`) with drive time, trip style, title and cost;
+2. on click, calls `window.openOverlay(id)`.
 
-**Critical:** The button's listener calls `window.openOverlay()` rather than the bare module-scope `openOverlay`, so that the print handler's wrapper — which records the currently open activity — still runs. `openOverlay` is explicitly assigned to `window` in the OVERLAY section.
+**Critical:** the click goes through `window.openOverlay()` rather than the bare module-scope `openOverlay`, so that the print handler's wrapper — which records the currently open activity — still runs. `openOverlay` is explicitly assigned to `window` in the OVERLAY section.
+
+The map also carries the SDK's `Home` and `Search` widgets, added by `addMapControls()`.
 
 ### 4.6 `window.openOverlay` contract
 ```js
@@ -216,7 +214,7 @@ Navigation: prev/next buttons (`#gPrev`, `#gNext`) and dots call `gSetPhoto(idx)
 ## 6. Overlay Specification
 
 ### 6.1 Trigger
-Any `.card` click, any `.detail-btn` click, or any map popup "View details" button calls `window.openOverlay(id)`.
+Any `.card` click, the card title button, any `.detail-btn` click, or a map marker click calls `window.openOverlay(id)`. The details are not a modal: they replace the list in the results pane (`#listView` hidden, `#detailView` shown), so the map stays visible with only that item's marker lit and the view zoomed to it. Opening moves focus to the title; "Back to all results" or Escape restores the list at its previous scroll position and returns focus to whatever opened it. Changing a filter also returns to the list. The markup keeps the `.overlay` / `.ol-panel` classes for the single-sheet print styles.
 
 ### 6.2 Open behavior
 1. Gallery load initiated (async, non-blocking)
@@ -385,13 +383,13 @@ Camp fields: `id`, `name`, `site`, `council`, `place`, `lat`, `lng`, `dist` (`ne
 
 ### 8.1 Pocket map (`camps.geojson`)
 
-`camps.geojson` is a point layer of the camps for the PocketMaps booklet generator (https://ajturner.github.io/pocketmaps/). It is generated from `camps-data.js`; regenerate it after changing camp data. Properties: `Name`, `Place`, `Drive`, `Meals`, `Youth`, `Weeks`, `Water`, `Badges`, `Council`, `Link` (camp registration page, used for each page's QR code), and `Summary` (one line used as the page description). The "Print a pocket map" header link on the summer camp page opens the generator with `name=Name&desc=Summary&qrlink={Link}`.
+`camps.geojson` is a point layer of the camps for the PocketMaps booklet generator (https://ajturner.github.io/pocketmaps/). It is generated from `camps-data.js`; regenerate it after changing camp data. Properties: `Name`, `Place`, `Drive`, `Meals`, `Youth`, `Weeks`, `Water`, `Badges`, `Council`, `Link` (camp registration page, used for each page's QR code), and `Summary` (one line used as the page description). The static file remains for direct use, but the pages no longer link to it: see 10.2.
 
 ---
 
 ## 9. Training Page (`training/`)
 
-Files: `training/index.html` (markup; served at `/training/`), `training-data.js` (NCAC data and the merged exports), `training-nearby-data.js` (courses from nearby councils within about 3 hours, exported as `NEARBY_*` and merged in by `training-data.js`), `training.js` (behaviour); styles in the "TRAINING PAGE" section of `styles.css`. The page is not linked from the activity guide yet.
+Files: `training/index.html` (markup; served at `/training/`), `training-data.js` (NCAC data and the merged exports), `training-nearby-data.js` (courses from nearby councils within about 3 hours, exported as `NEARBY_*` and merged in by `training-data.js`), `training.js` (behaviour); styles in the "TRAINING PAGE" section of `styles.css`. Each page's header links to the other two.
 
 `training-data.js` exports:
 
@@ -401,8 +399,7 @@ Files: `training/index.html` (markup; served at `/training/`), `training-data.js
 | `COUNCILS` | `{KEY: {name, short, url}}`; the council filter appears once there are two or more |
 | `COURSES` | `{KEY: {name, full, aud, learn, desc}}`; `aud` is `youth`, `adult` or `both`; `learn` is the scouting.org page about the course |
 | `VENUES` | `{key: {name, addr, lat, lng, mins}}`; `mins` is the estimated drive from Capitol Hill |
-| `EVENTS` | One object per dated course (fields below) |
-| `UNDATED` | Courses on a council calendar with no upcoming date: `{council, name, aud, note, url}` |
+| `EVENTS` | One object per dated course (fields below). Only courses with a posted date are listed: a course a council names without a date is left out of the data, the page, the print and the pocket map |
 
 Event fields: `id` (unique, sequential), `course` (a `COURSES` key), `council` (a `COUNCILS` key), `host` (district or "Council"), `venue` (a `VENUES` key, or `null` when the location is not posted), `sessions` (`[{s, e, label?}]` as `'YYYY-MM-DD'`; a course in two parts is one event with two sessions), `time`, `cost` (`null` = not listed), `url` (registration page, or `null`), `notes`, and optionally `title` (overrides the course name), `aud` (overrides the course's audience) and `virtual` (`true` when a session is online).
 
@@ -415,3 +412,37 @@ Accessibility (WCAG 2.2 AA) rules for this page: text colors are overridden unde
 A "both" course matches the Youth and the Adult filter. A course with no venue never matches a drive-time filter. The map has one marker per venue, sized by the number of matching courses; the calendar colours each day that has a matching course, and clicking a day narrows the cards and the map to that day.
 
 Where a council calendar and a registration page disagree on a date, use the registration page and record the difference in the event's `notes`. Do not publish volunteers' personal email addresses; link to the council training page instead.
+
+---
+
+## 10. Shared Layout and Accessibility (`shared.js`, `body.app-page`)
+
+The activity guide, the summer camp page and the training page share one layout, styled in the "SHARED APP LAYOUT" and training sections of `styles.css`:
+
+- `.tr-split`: on screens wider than 900px, `aside.tr-left` (map pinned at its top, legend, filters, and on the camp page the patrol requests) stays in view and scrolls on its own beside `main.tr-right#results` (heading, live count, filter chips, cards). Narrower screens stack them and turn the `.filters` block into a bottom sheet opened by `#filterOpen`.
+- `shared.js` (used by `app.js` and `camps.js`; `training.js` has its own copy of the same behaviour): `showTip` / `hideTip` / `bindDataTips` (hover card), `addMapControls` (Home and Search), `bindMarkers` (marker hover and click), `renderChips` (removable chip per filter plus "Clear all filters"), `syncButtons` (`aria-pressed` and the `on*` class), `resultsToTop`, `trapTab` (used by the filter sheet), and `initSheet`.
+- Changing a filter re-renders, updates the chips and scrolls the results to the top. Hovering or focusing a card rings its marker on the map.
+
+Accessibility target: WCAG 2.2 AA. The rules are listed in AGENTS.md ("The shared layout and accessibility rules"). Text colors that failed 4.5:1 are overridden under `.app-page` (`--bark`, link blue, week-status and season cells, photo captions). Printing hides `.tr-left` and the results heading, so both print modes look as before.
+
+### 10.1 Shareable URLs
+
+Each page keeps its filters and its open item in the query string, so any view can be bookmarked or shared. `setUrl()` in `shared.js` rewrites the address after every state change (`replaceState`; opening an item from the list uses `pushState`, so the browser's Back returns to the list). On load and on back/forward each page's `applyUrl()` reads the query string, ignoring any value it does not recognise. A "Copy link" button in the results heading and in the details heading copies the current address.
+
+| Page | Parameters |
+|------|------------|
+| Activity guide (`/`) | `type`, `style` (`day`/`overnight`), `season` (`Sp`/`Su`/`Fa`/`Wi`), `baloo=yes`, `ha` (`yes`/`no`), `activity` (slug) |
+| Summer camp (`/summer-camp/`) | `sort`, `meals`, `week` (`MM-DD`), `water=fresh`, `drive` (minutes), `badge` (text), `view=calendar`, `camp` (slug) |
+| Training (`/training/`) | `for` (`youth`/`adult`), `course`, `loc` (venue keys, comma-separated), `council`, `drive` (minutes), `month` (`YYYY-MM`), `day` (`YYYY-MM-DD`, comma-separated), `training` (slug) |
+
+An item is named in a link by a **slug** built from its own text, not by its id or position, so links survive items being added, removed or reordered. `assignSlugs()` in `shared.js` builds them at load: the activity title (`billy-goat-trail-great-falls`), the camp name (`camp-olmsted`), and for a course its council, course name, first date and title (`ncac-nylt-2027-06-20-nylt-courses-27-3-and-27-4`). Renaming an item changes its slug; to keep old links working through a rename, give the item an explicit `slug` field with the old value. Numeric ids are still accepted in links (`?camp=3`) for links shared before slugs, so avoid renumbering ids.
+
+On the camp page, `view=calendar` shows the same filtered, sorted camps as the week-by-week table instead of the card grid (the Grid / Calendar switch in the results heading).
+
+### 10.2 Print and pocket map tools
+
+Every page has the same tool group at the right of the results heading (`.tr-tools`): **Copy link**, **Print** and **Pocket map**. The page header holds only links to the other pages. With an item open, the details heading has Copy link and Print.
+
+- **Print** prints what the results pane shows: the filtered list (on the camp page, the grid or the calendar, whichever is selected), or the open item. A print-only heading at the top of the results (`.tr-print-head`) names the filters in effect (`#printFilters`, filled by `setPrintFilters()`) and carries a QR code for the page's current address (`#printQr`, drawn by `refreshPrintQr()` whenever the address changes), so a printed list leads back to the same filtered search and a printed item to that item. The QR library (`qrcode-generator` 1.4.4) is loaded on demand from jsDelivr; if it cannot load, the printout has no code. On the activity guide the list button is `#printIndexBtn` and the item button is `#printActivityBtn`, which prints the single-sheet layout with planning notes.
+- **Pocket map** calls `openPocketMap()` in `shared.js` with the places the current filters show (title, a subtitle naming the filters, and `Name` / `Summary` / `Link` per place) and opens the PocketMaps generator in a new tab. The places are sent as GeoJSON in a `data:` URL inside the address. When that address would exceed about 7,000 characters (roughly 25 places), a `blob:` URL is used instead, which only works where the page shares PocketMaps' origin (the published site); elsewhere the visitor is asked to narrow the filters. Courses with no posted location are left out. The generator's own index QR is switched off (`indexqr=0`) because it would encode the whole data-carrying address; each place still gets a QR code for its `Link`.
+

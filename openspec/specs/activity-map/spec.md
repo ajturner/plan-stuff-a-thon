@@ -29,37 +29,46 @@ Every activity in the catalog SHALL be drawn as a point marker at its coordinate
 - **WHEN** an activity is banded `near`, `mid`, `far`, or `xfar`
 - **THEN** its marker is drawn green, orange, red, or purple respectively
 
-### Requirement: Marker popups
+### Requirement: Marker hover card
 
-Clicking a marker SHALL open a popup summarising the activity: its title, drive time, trip style, and cost.
+Hovering a marker SHALL show a styled card summarising the activity: its title, drive time, trip style, and cost. The map SHALL NOT use popups.
 
 #### Scenario: Inspecting a marker
 
-- **WHEN** the planner clicks a marker
-- **THEN** a popup shows that activity's title, drive time from DC, whether it is a day trip or overnight, and its cost
+- **WHEN** the planner hovers a marker
+- **THEN** a card shows that activity's title, drive time from DC, whether it is a day trip or overnight, and its cost
 
 ### Requirement: Opening details from the map
 
-A planner SHALL be able to reach an activity's full detail overlay from its map popup.
+A planner SHALL be able to open an activity's full detail overlay by clicking its marker.
 
 #### Scenario: Opening details from the map
 
-- **WHEN** the planner clicks "View details" in a marker popup
+- **WHEN** the planner clicks a marker
 - **THEN** the detail overlay for that activity opens
 
 #### Scenario: Opening details from a dimmed marker
 
-- **WHEN** the planner clicks "View details" in the popup of a marker the current filters exclude
+- **WHEN** the planner clicks a marker the current filters exclude
 - **THEN** the detail overlay for that activity opens, so a filtered-out option can still be inspected in full
 
-### Requirement: Popup content must be built as DOM nodes
+### Requirement: Map controls
 
-Popup content SHALL be supplied as a function returning a DOM node with listeners attached, never as an HTML string.
+The map SHALL offer a Home control that returns to the starting view and a search box for finding a place or address.
 
-#### Scenario: Interactive content survives
+#### Scenario: Returning home
 
-- **WHEN** the popup is rendered
-- **THEN** its button is a real element with a working listener, because the SDK sanitises string content and would otherwise strip the button and its inline handler, leaving inert text
+- **WHEN** the planner has panned or searched and clicks Home
+- **THEN** the map returns to its starting view
+
+### Requirement: Result highlighting
+
+Hovering or focusing an activity in the results SHALL outline its marker on the map.
+
+#### Scenario: Hovering a result
+
+- **WHEN** the planner hovers an activity card
+- **THEN** that activity's marker is drawn larger with a gold outline until the pointer leaves
 
 ### Requirement: Filtered markers are dimmed, not removed
 
@@ -78,7 +87,7 @@ When filters exclude an activity, its marker SHALL be redrawn smaller and grey r
 #### Scenario: Dimmed markers stay interactive
 
 - **WHEN** the planner clicks a dimmed marker
-- **THEN** its popup still opens, so a filtered-out option can still be inspected
+- **THEN** its details still open, so a filtered-out option can still be inspected
 
 ### Requirement: Legend
 

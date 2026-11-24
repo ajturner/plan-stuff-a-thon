@@ -1,7 +1,7 @@
 'use strict';
 
 /* ── IMPORTS ───────────────────────────────────────────────────────────────── */
-import { EVENTS, COURSES, VENUES, COUNCILS, UNDATED, DATA_AS_OF } from './training-data.js';
+import { EVENTS, COURSES, VENUES, COUNCILS, DATA_AS_OF } from './training-data.js';
 
 import Map           from 'https://js.arcgis.com/5.0/@arcgis/core/Map.js';
 import MapView       from 'https://js.arcgis.com/5.0/@arcgis/core/views/MapView.js';
@@ -9,6 +9,8 @@ import Graphic       from 'https://js.arcgis.com/5.0/@arcgis/core/Graphic.js';
 import GraphicsLayer from 'https://js.arcgis.com/5.0/@arcgis/core/layers/GraphicsLayer.js';
 import Home          from 'https://js.arcgis.com/5.0/@arcgis/core/widgets/Home.js';
 import Search        from 'https://js.arcgis.com/5.0/@arcgis/core/widgets/Search.js';
+
+import { urlParams, setUrl, bindCopyLinks, assignSlugs, findItem, bindTools, setPrintFilters, refreshPrintQr } from './shared.js';
 
 /* ── HELPERS ───────────────────────────────────────────────────────────────── */
 var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -66,6 +68,10 @@ function eventDays(ev) {
   return out;
 }
 EVENTS.forEach(function(ev) { ev._days = eventDays(ev); });
+
+// Stable names for shared links, e.g. ?training=ncac-nylt-2027-06-20-nylt-courses-27-3-and-27-4.
+// Built from council, course, first date and title, so they do not depend on id or order.
+assignSlugs(EVENTS, function(ev) { return [ev.council, course(ev).name, firstDay(ev), ev.title || ''].join(' '); });
 
 function placeText(ev) {
   var v = venue(ev);
@@ -353,11 +359,15 @@ function showResultsTop() {
   if (t < 0 || t > window.innerHeight * 0.5) window.scrollBy(0, t);
 }
 
-function openTraining(id) {
+// fromUrl: true when the address already names this course (page load, back/forward)
+function openTraining(id, fromUrl) {
   var ev = byId(id);
   if (!ev) return;
-  if (selId === null) listScroll = window.scrollY;
+  var wasList = selId === null;
+  if (wasList) listScroll = window.scrollY;
   selId = id;
+  // Opening from the list adds a history entry, so the browser's Back returns to the list
+  if (!fromUrl) syncUrl(wasList);
   render();
   showResultsTop();
   // Move keyboard and screen-reader focus to the course that just opened
@@ -520,6 +530,7 @@ function clearFilter(kind) {
 
 function renderActive() {
   var list = activeFilters();
+  setPrintFilters(list);
   var html = '';
   list.forEach(function(f) {
     html += '<li><button type="button" class="tr-chip" data-clear="' + f.kind + '">' +
@@ -742,23 +753,48 @@ function placeTip(html, r) {
   window.addEventListener('scroll', hideTip, { passive: true });
 }());
 
-/* ── UNDATED COURSES ───────────────────────────────────────────────────────── */
-function renderUndated() {
-  var list = UNDATED.filter(function(u) {
-    return (fAud === 'all' || u.aud === 'both' || u.aud === fAud) &&
-           (fCouncil === 'all' || u.council === fCouncil);
-  });
-  var html = '';
-  list.forEach(function(u) {
-    html += '<li class="tr-und">' +
-      '<span class="tr-und-dot tr-bg-' + u.aud + '"></span>' +
-      '<span class="tr-und-name">' + esc(u.name) + '</span>' +
-      (u.note ? '<span class="tr-und-note">' + esc(u.note) + '</span>' : '') +
-      '<span class="tr-und-note">' + esc(COUNCILS[u.council].short) + '</span>' +
-      (u.url ? '<a class="site-link" href="' + esc(u.url) + '" target="_blank" rel="noopener">' + esc(u.name.split(' — ')[0]) + ' link <span aria-hidden="true">&#8599;</span> <span class="sr-only">(opens in a new tab)</span></a>' : '') +
-    '</li>';
-  });
-  document.getElementById('undated').innerHTML = html || '<li class="tr-und">None for these filters.</li>';
+/* ── SHAREABLE URL ─────────────────────────────────────────────────────────── */
+// ?for=youth&course=NYLT&loc=snyder,kings&council=NCAC&drive=120&month=2027-03&day=2027-03-13&training=21
+var applyingUrl = false;   // true while the page is being set from the address
+
+function syncUrl(push) {
+  if (applyingUrl) return;
+  setUrl({
+    'for':    fAud !== 'all' ? fAud : '',
+    course:   fCourse !== 'all' ? fCourse : '',
+    loc:      fLocs.join(','),
+    council:  fCouncil !== 'all' ? fCouncil : '',
+    drive:    fDrive !== 'all' ? fDrive : '',
+    month:    fMonth,
+    day:      fDays.slice().sort().join(','),
+    training: selId !== null ? byId(selId)._slug : ''
+  }, push);
+}
+
+// Set the filters and the open course from the address (page load, back/forward).
+// Values the page does not know are ignored.
+function applyUrl() {
+  var p = urlParams();
+  function list(name) { return (p.get(name) || '').split(',').filter(function(x) { return x; }); }
+  applyingUrl = true;
+  var a = p.get('for');
+  fAud = (a === 'youth' || a === 'adult') ? a : 'all';
+  fCourse = COURSES[p.get('course')] ? p.get('course') : 'all';
+  fCouncil = COUNCILS[p.get('council')] ? p.get('council') : 'all';
+  var d = p.get('drive');
+  fDrive = (d === '60' || d === '120' || d === '180') ? d : 'all';
+  fLocs = list('loc').filter(function(k) { return !!VENUES[k] || k === 'virtual' || k === 'none'; });
+  fMonth = /^\d{4}-\d{2}$/.test(p.get('month') || '') ? p.get('month') : '';
+  fDays = list('day').filter(function(x) { return /^\d{4}-\d{2}-\d{2}$/.test(x); });
+  var item = findItem(EVENTS, p.get('training'));
+  if (item) {
+    openTraining(item.id, true);
+  } else {
+    selId = null;
+    render();
+  }
+  applyingUrl = false;
+  refreshPrintQr();
 }
 
 function render() {
@@ -774,8 +810,8 @@ function render() {
   } else {
     renderActive();
     renderCards();
-    renderUndated();
   }
+  syncUrl(false);
 }
 
 /* ── CONTROLS ──────────────────────────────────────────────────────────────── */
@@ -868,4 +904,25 @@ document.getElementById('hdrCount').textContent =
   EVENTS.filter(isUpcoming).length + ' upcoming';
 document.getElementById('hdrCouncils').textContent = Object.keys(COUNCILS).length + ' within 3 hours';
 document.getElementById('hdrAsOf').textContent = DATA_AS_OF;
-render();
+window.addEventListener('popstate', applyUrl);
+bindCopyLinks();
+
+// Print and pocket map of the courses the current filters show (courses with no posted location cannot be mapped)
+bindTools({
+  pocket: function() {
+    var filters = activeFilters().map(function(f) { return f.label; }).join(' · ');
+    return {
+      title: 'Troop 380 Training Calendar',
+      subtitle: filters || 'Upcoming courses within 3 hours of DC',
+      places: EVENTS.filter(matchesFilters).filter(function(ev) { return !!venue(ev); }).sort(compare).map(function(ev) {
+        var v = venue(ev);
+        return {
+          lng: v.lng, lat: v.lat, name: ev.title || course(ev).name,
+          summary: datesText(ev) + ' · ' + v.name + ' · ' + AUD_LABEL[aud(ev)],
+          link: ev.url || (window.location.origin + window.location.pathname + '?training=' + ev._slug)
+        };
+      })
+    };
+  }
+});
+applyUrl();

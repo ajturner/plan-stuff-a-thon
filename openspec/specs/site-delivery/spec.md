@@ -35,7 +35,7 @@ Because module scope is not the global scope, any function invoked from a genera
 
 #### Scenario: Opening details from generated markup
 
-- **WHEN** a card or map popup rendered from a concatenated HTML string invokes the detail overlay
+- **WHEN** a card rendered from a concatenated HTML string, or a map marker click, invokes the detail overlay
 - **THEN** the call resolves, because the function was assigned to the window object at module scope
 
 ### Requirement: Automatic publication
@@ -46,3 +46,66 @@ Pushing to the default branch SHALL publish the site, excluding repository docum
 
 - **WHEN** a change lands on the default branch
 - **THEN** the site is rebuilt and published to the pages branch without the version control, workflow, or documentation files
+
+### Requirement: Shared layout and accessibility
+
+The activity guide, the summer camp page and the training page SHALL share one layout: on wide screens a facets pane (map, legend, filters) that stays in view beside the results, and on narrow screens a single column with the filters in a bottom sheet. Every filter in effect SHALL show as a removable chip above the results with a control that clears them all. The pages SHALL meet WCAG 2.2 level AA: text contrast of at least 4.5:1, every control operable by keyboard with a visible focus indicator and a target of at least 24 by 24 CSS pixels, state never conveyed by colour alone, and no horizontal scrolling at 320 CSS pixels wide.
+
+#### Scenario: Filtering on a phone
+
+- **WHEN** a visitor on a narrow screen taps "Filters"
+- **THEN** the filters slide up as a sheet, and "Done", the backdrop or Escape closes it
+
+#### Scenario: Clearing filters
+
+- **WHEN** the visitor has set two filters and chooses "Clear all filters"
+- **THEN** every result is listed again and the filter buttons show their defaults
+
+### Requirement: Shareable URLs
+
+Every activity, camp and training course SHALL have a durable URL that opens that item when visited, and every combination of filters SHALL have a durable URL that restores it. The address SHALL update as the visitor filters or opens an item, the browser's Back SHALL return from an item to the list, and each page SHALL offer a control that copies the current link. An item's URL SHALL identify it by a name derived from its own content, not by its id or position, so that the URL keeps working when items are added, removed or reordered; an item MAY carry an explicit slug to keep its URL through a rename.
+
+#### Scenario: Sharing an item
+
+- **WHEN** a visitor opens the link `…/summer-camp/?camp=camp-olmsted`
+- **THEN** the camp page loads with Camp Olmsted's details open
+
+#### Scenario: Data reordered after sharing
+
+- **WHEN** camps are added or reordered and a visitor later opens that same link
+- **THEN** Camp Olmsted's details still open
+
+#### Scenario: Sharing a filtered search
+
+- **WHEN** a visitor opens the link `…/summer-camp/?meals=dh&week=07-04`
+- **THEN** the camp page loads listing only dining-hall camps offered the week of July 4, with those filters shown as chips
+
+#### Scenario: Unknown values
+
+- **WHEN** a link carries a filter value or id the page does not recognise
+- **THEN** that value is ignored and the rest of the link still applies
+
+### Requirement: Print and pocket map tools
+
+Each page SHALL offer Print and Pocket map controls in the same place, beside the results heading and apart from the links between pages. Both SHALL act on what the current filters show: Print SHALL print the filtered results (or the open item), name the filters in effect, and include a QR code that opens the same view online: the filtered search for a list, the item for an item. Pocket map SHALL open the booklet generator with only the filtered places that have a location, with the filters shown as its subtitle.
+
+#### Scenario: Pocket map of a filtered list
+
+- **WHEN** the visitor filters the camps to dining-hall camps and chooses "Pocket map"
+- **THEN** the booklet generator opens in a new tab holding only those camps, with the filters as its subtitle
+
+#### Scenario: Scanning a printed list
+
+- **WHEN** the visitor prints the camps filtered to dining-hall camps and scans the QR code on the printout
+- **THEN** the camp page opens with that filter applied
+
+#### Scenario: Scanning a printed item
+
+- **WHEN** the visitor prints one activity's sheet and scans its QR code
+- **THEN** the activity guide opens with that activity's details showing
+
+#### Scenario: Nothing to map
+
+- **WHEN** no result with a location matches the filters and the visitor chooses "Pocket map"
+- **THEN** the visitor is told there is nothing to map and no tab opens
+

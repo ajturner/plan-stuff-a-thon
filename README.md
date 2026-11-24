@@ -13,7 +13,7 @@ Open `troop380_activities.html` directly in any modern browser — no build step
 ## Features
 
 - **45 activities** ranging from 45-minute day trips to fly-in high adventure expeditions, including 12 BALOO-compliant Cub Scout sites and 16 high adventure programs (age 13/14+)
-- **ArcGIS JS SDK 5** interactive map with color-coded distance markers and popup cards
+- **ArcGIS JS SDK 5** interactive map with color-coded distance markers, a hover card on each marker, and Search and Home controls
 - **Five-axis filtering** — by activity type, trip style (day/overnight), season, Cub Scout / BALOO compliance, and high adventure (show only / hide)
 - **Map stays in sync with the filters** — markers for activities that no longer match are greyed out and shrunk rather than removed, so you keep the geographic context
 - **Photo galleries** loaded live from the Wikipedia REST API (no API keys required)
@@ -30,7 +30,7 @@ The summer camp page, `summer-camp/index.html` (live at `/summer-camp/`), compar
 
 ## Training calendar page
 
-The training page, `training/index.html` (live at `/training/`), lists youth and adult training courses within reach of DC, from the National Capital Area Council calendar and twelve nearby councils within about three hours: a map of training locations, a month-by-month calendar, and cards filtered by audience, date, course, location, council and drive time. Data is in `training-data.js` (NCAC) and `training-nearby-data.js` (other councils), behaviour in `training.js`. It is not linked from the activity guide yet.
+The training page, `training/index.html` (live at `/training/`), lists youth and adult training courses within reach of DC, from the National Capital Area Council calendar and twelve nearby councils within about three hours: a map of training locations, a month-by-month calendar, and cards filtered by audience, date, course, location, council and drive time. Data is in `training-data.js` (NCAC) and `training-nearby-data.js` (other councils), behaviour in `training.js`. The three pages link to each other from their headers.
 
 ## Repository Structure
 
@@ -70,7 +70,7 @@ scenarios:
 |------------|--------|
 | `activity-catalog` | The activity record schema, vocabularies, and data invariants |
 | `activity-filtering` | The five filter groups and their combined semantics |
-| `activity-map` | Map rendering, markers, popups, and filter dimming |
+| `activity-map` | Map rendering, markers, hover cards, and filter dimming |
 | `activity-detail-overlay` | The detail modal and how it opens and closes |
 | `activity-photo-gallery` | Wikipedia and Commons photo sourcing and navigation |
 | `activity-printing` | The full index and single-activity planning sheet |

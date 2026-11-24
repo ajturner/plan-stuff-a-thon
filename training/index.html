@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="../styles.css">
 
 </head>
-<body class="camps-page training-page">
+<body class="camps-page training-page app-page">
 
 <a class="tr-skip" href="#results">Skip to course results</a>
 
@@ -29,13 +29,16 @@
   <div class="hdr">
     <div class="troop-label">Scouting America · Troop 380 · Training</div>
     <h1>Training <em>Calendar</em></h1>
-    <p class="hdr-sub">Youth and adult training courses a Troop 380 Scout or leader can reach from DC: the National Capital Area Council calendar plus nearby councils within about three hours. Filter by who the course is for and where it runs, pick a day or month on the calendar or a location on the map, then open any course for dates, location, notes and the registration link.</p>
+    <p class="hdr-sub">Youth and adult training courses within about three hours of DC, from the National Capital Area Council and nearby councils. Filter, pick a day or a map location, then open any course for dates and registration.</p>
     <div class="hdr-meta">
       <div><span>Courses</span> <b id="hdrCount"></b></div>
       <div><span>Councils</span> <b id="hdrCouncils"></b></div>
       <div><span>Checked</span> <b id="hdrAsOf"></b></div>
     </div>
-    <a class="print-btn page-link" href="../">&#8592; Activity guide</a>
+    <nav class="hdr-links" aria-label="Other pages">
+      <a class="print-btn page-link" href="../"><span aria-hidden="true">&#8592;</span> Activity guide</a>
+      <a class="print-btn page-link" href="../summer-camp/"><span aria-hidden="true">☀</span> Summer camp 2027</a>
+    </nav>
   </div>
 </header>
 
@@ -105,27 +108,36 @@
 
 <main class="main tr-right" id="results" tabindex="-1">
 
+  <!-- Print only: the filters in effect and a QR code back to this view -->
+  <div class="tr-print-head">
+    <p class="tr-print-filters" id="printFilters"></p>
+    <div class="tr-print-qr" id="printQr" aria-hidden="true"></div>
+  </div>
+
   <div id="listView">
     <div class="tr-results-head">
       <h2 class="wk-title" id="resultsTitle" tabindex="-1">Courses</h2>
       <div id="countBadge" role="status" aria-live="polite"></div>
       <button type="button" class="fb tr-filter-open" id="filterOpen" aria-controls="filterSheet" aria-expanded="false">Filters</button>
+      <div class="tr-tools" role="group" aria-label="Share and print">
+        <button type="button" class="fb tr-copy" data-copy-link>Copy link</button>
+        <button type="button" class="fb tr-copy" data-print><span aria-hidden="true">🖨</span> Print</button>
+        <button type="button" class="fb tr-copy" data-pocket><span aria-hidden="true">🗺</span> Pocket map <span class="sr-only">(opens in a new tab)</span></button>
+      </div>
       <ul class="tr-active" id="activeBar" aria-label="Filters in effect" hidden></ul>
     </div>
 
     <div class="grid" id="grid"></div>
-
-    <section class="wk-section" aria-labelledby="undTitle">
-      <h2 id="undTitle" class="wk-title">No date posted yet</h2>
-      <p class="wk-sub">These courses are on a council calendar without an upcoming date. Check back, or follow the link where there is one.</p>
-      <ul class="tr-undated" id="undated"></ul>
-    </section>
   </div>
 
   <!-- One course, shown in place of the list so the map and calendar stay in view -->
   <div id="detailView" hidden>
     <div class="tr-results-head">
       <button type="button" class="fb on" id="detailBack">&#8592; Back to all results</button>
+      <div class="tr-tools" role="group" aria-label="Share and print">
+        <button type="button" class="fb tr-copy" data-copy-link>Copy link</button>
+        <button type="button" class="fb tr-copy" data-print><span aria-hidden="true">🖨</span> Print</button>
+      </div>
       <span class="tr-detail-hint">Its location and dates are highlighted on the map and calendar</span>
     </div>
     <article class="tr-detail" aria-label="Course details">

@@ -166,29 +166,3 @@ const NCAC_EVENTS = [
 
 /* Every dated course: NCAC ids 1–32, nearby councils from 33. */
 export const EVENTS = NCAC_EVENTS.concat(NEARBY_EVENTS);
-
-/* Courses on the council calendar with no upcoming date posted. */
-export const UNDATED = [
-  { council: 'NCAC', name: 'Wood Badge', aud: 'adult', note: 'Fall 2026 course has finished; 2027 dates not posted', url: 'https://scoutingevent.com/082-WB26' },
-  { council: 'NCAC', name: 'ILST — Introduction to Leadership Skills for Troops', aud: 'youth', note: 'Taught at the troop level', url: 'https://www.ncacbsa.org/national-youth-leadership-training/' },
-  { council: 'NCAC', name: 'STEM merit badge workshops', aud: 'youth', note: '', url: null },
-  { council: 'NCAC', name: 'CST 12 conference', aud: 'adult', note: 'See the regional calendar', url: 'https://scoutingevent.com/000/Calendar/Embed?region=12' },
-  { council: 'NCAC', name: 'Charter Organization Representative (COR)', aud: 'adult', note: '', url: null },
-  { council: 'NCAC', name: 'Climbing — Scouterhorn operation (NCAC climbing tower)', aud: 'adult', note: '', url: null },
-  { council: 'NCAC', name: 'Climbing Level I Instructor', aud: 'adult', note: '', url: null },
-  { council: 'NCAC', name: 'Committee training — pack and committee chair', aud: 'adult', note: '', url: null },
-  { council: 'NCAC', name: 'Cubmaster and pack committee', aud: 'adult', note: '', url: null },
-  { council: 'NCAC', name: 'Den leaders and assistant den leaders', aud: 'adult', note: '', url: null },
-  { council: 'NCAC', name: 'First aid and CPR-Pro for camp health officers', aud: 'adult', note: '', url: null },
-  { council: 'NCAC', name: 'Goshen training 2027', aud: 'adult', note: '', url: null },
-  { council: 'NCAC', name: 'Merit badge counselor', aud: 'adult', note: '', url: null },
-  { council: 'NCAC', name: 'NCAP assessor training — long term and short term', aud: 'adult', note: '', url: null },
-  { council: 'NCAC', name: 'NYLT course directors conference', aud: 'adult', note: '', url: null },
-  { council: 'NCAC', name: 'Outdoor Ethics Guide — Tread Lightly! trainer course', aud: 'adult', note: '', url: null },
-  { council: 'NCAC', name: 'Paddle Craft Safety — white water', aud: 'adult', note: 'Limit 12 leaders', url: null },
-  { council: 'NCAC', name: 'Paddle Craft Safety — moving water', aud: 'adult', note: 'Limit 12 leaders', url: null },
-  { council: 'NCAC', name: 'Safeguarding Youth', aud: 'adult', note: '', url: null },
-  { council: 'NCAC', name: 'Troop position-specific training', aud: 'adult', note: '', url: null },
-  { council: 'NCAC', name: 'Wood Badge course directors conference', aud: 'adult', note: '', url: null },
-  { council: 'NCAC', name: 'Youth Mental Health First Aid', aud: 'adult', note: '', url: null }
-];

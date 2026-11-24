@@ -49,11 +49,11 @@ Camps that publish a merit badge list SHALL show it in their details, grouped by
 
 ### Requirement: Week availability
 
-Each camp SHALL show its 2027 weeks with a status of open, almost full, full, or offered (status not published). A week-by-week table SHALL show the same camps in the same order.
+Each camp SHALL show its 2027 weeks with a status of open, almost full, full, or offered (status not published). The planner SHALL be able to switch the results between a grid of cards and a calendar, where the calendar is a week-by-week table of the same filtered camps in the same order. The chosen view SHALL be part of the shareable URL.
 
 #### Scenario: Comparing weeks
 
-- **WHEN** the planner scrolls to the week table
+- **WHEN** the planner chooses "Calendar"
 - **THEN** each row is a camp, each column a Sunday start date, and clicking a row opens that camp's details
 
 ### Requirement: Camp details
@@ -62,5 +62,5 @@ Opening a camp SHALL show photos (sourced as in activity-photo-gallery), locatio
 
 #### Scenario: Opening from the map
 
-- **WHEN** the planner clicks a camp marker and then "View details"
+- **WHEN** the planner clicks a camp marker
 - **THEN** the details panel opens for that camp

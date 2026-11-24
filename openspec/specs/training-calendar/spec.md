@@ -8,7 +8,7 @@ Help Troop 380 Scouts and leaders find youth and adult training courses they can
 
 ### Requirement: Separate training page
 
-The calendar SHALL live on its own page at the path `/training/` (`training/index.html`), backed by `training-data.js` and `training-nearby-data.js` (data) and `training.js` (behaviour), and SHALL share `styles.css` with the activity guide. The page SHALL link back to the activity guide.
+The calendar SHALL live on its own page at the path `/training/` (`training/index.html`), backed by `training-data.js` and `training-nearby-data.js` (data) and `training.js` (behaviour), and SHALL share `styles.css` with the activity guide. The activity guide, the summer camp page and the training page SHALL each link to the other two from a compact header that keeps the page title on one line on wide screens.
 
 #### Scenario: Opening the page
 
@@ -115,11 +115,12 @@ Each course SHALL link to the Scouting America page about that kind of training,
 - **WHEN** the visitor follows a course's "About … at Scouting America" link
 - **THEN** the Scouting America page opens in a new tab and the course details do not open
 
-### Requirement: Courses without dates
+### Requirement: Dated courses only
 
-Courses that appear on a council calendar without an upcoming date SHALL be listed separately, following the audience and council filters.
+Only courses with a posted date SHALL appear. A course that a council names without a date SHALL NOT be shown on the page, in the print, or in the pocket map.
 
-#### Scenario: Viewing undated courses
+#### Scenario: A council lists a course with no date
 
-- **WHEN** the visitor scrolls past the cards
-- **THEN** the undated courses are listed with any note or link the council gave
+- **WHEN** a council calendar names a course but gives no date for it
+- **THEN** the course does not appear anywhere on the training page
+

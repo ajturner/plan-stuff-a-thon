@@ -825,7 +825,7 @@ footer {
 
 :root { --tr-youth: #2f7fbf; --tr-adult: #c0562b; --tr-both: #5b3a8c; }
 
-/* Audience colors: legend dots, card stripes, calendar days, undated list */
+/* Audience colors: legend dots, card stripes, calendar days */
 .tr-dot-youth, .tr-bg-youth { background: var(--tr-youth); }
 .tr-dot-adult, .tr-bg-adult { background: var(--tr-adult); }
 .tr-dot-both,  .tr-bg-both  { background: var(--tr-both); }
@@ -835,9 +835,9 @@ footer {
 
 /* The legend's last item is a sentence, not a swatch */
 .training-page .legend .leg-item:last-child { font-style: italic; }
-.training-page .hdr-sub { max-width: 600px; }
-.training-page .filters select.sort-sel { max-width: 15rem; }
-.training-page [hidden] { display: none !important; }
+.app-page .hdr-sub { max-width: 600px; }
+.app-page .filters select.sort-sel { max-width: 15rem; }
+.app-page [hidden] { display: none !important; }
 
 /* Calendar: a grid of mini months */
 .tr-cal-section { margin-bottom: 2.25rem; }
@@ -890,18 +890,6 @@ footer {
 /* Several courses in one map popup */
 .tr-pop-btn { display: block; width: 100%; text-align: left; margin-top: .35rem; }
 
-/* Courses with no date */
-.tr-undated { list-style: none; background: #fff; border: 1.5px solid var(--sand); border-radius: 8px; padding: .3rem .9rem; }
-.tr-und {
-  display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .6rem;
-  padding: .45rem 0; border-top: 1px dashed var(--sand); font-size: .8rem; color: var(--slate);
-}
-.tr-und:first-child { border-top: none; }
-.tr-und-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-.tr-und-name { color: var(--forest); font-weight: 500; }
-.tr-und-note { font-family: 'DM Mono', monospace; font-size: .64rem; color: var(--bark); }
-.tr-und .site-link { margin-top: 0; }
-
 @media (max-width: 600px) {
   .tr-cal { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .6rem; }
 }
@@ -914,11 +902,11 @@ footer {
 /* Training page layout: facets (map, filters, calendar) on the left, results on the right.
    The left pane sticks to the viewport and scrolls on its own, so the map and calendar
    stay in view while the results scroll with the page. */
-.training-page header { padding: 1.5rem 2rem 1.25rem; }
-.training-page .hdr { max-width: none; }
-.training-page h1 { font-size: clamp(2.2rem, 4.5vw, 3.4rem); margin-bottom: .5rem; }
-.training-page .hdr-sub { max-width: 760px; }
-.training-page .hdr-meta { margin-top: .75rem; }
+.app-page header { padding: 1.5rem 2rem 1.25rem; }
+.app-page .hdr { max-width: none; }
+.app-page h1 { font-size: clamp(2.2rem, 4.5vw, 3.4rem); margin-bottom: .5rem; }
+.app-page .hdr-sub { max-width: 760px; }
+.app-page .hdr-meta { margin-top: .75rem; }
 
 .tr-split { display: grid; grid-template-columns: minmax(380px, 40%) minmax(0, 1fr); align-items: start; }
 .tr-left {
@@ -944,8 +932,8 @@ footer {
 }
 .tr-results-head .tr-day-bar { margin: 0; padding: .25rem .6rem; }
 .tr-results-head #countBadge { margin-left: 0; }
-.training-page .c-foot { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .9rem; }
-.training-page .c-foot .site-link { margin-top: 0; }
+.app-page .c-foot { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .9rem; }
+.app-page .c-foot .site-link { margin-top: 0; }
 
 /* Narrow screens: one column, facets first */
 @media (max-width: 900px) {
@@ -1025,13 +1013,13 @@ button.tr-month-name:focus-visible { outline: 2px solid var(--forest); outline-o
 
 /* ── Training page: accessibility (WCAG 2.2 AA) ── */
 /* Text colors with at least 4.5:1 on the page's white, cream and sand backgrounds */
-.training-page { --bark: #5f4a2b; --tr-youth: #27679d; --tr-adult: #b04e26; }
-.training-page .tr-day { color: #5c5c5c; }
-.training-page .tr-day-ev { color: #fff; }
-.training-page .tr-day-today { border-color: var(--forest); color: var(--forest); font-weight: 500; }
-.training-page .site-link { color: #1d5f8a; border-color: #1d5f8a; }
-.training-page .empty { color: var(--slate); }
-.training-page .c-desc, .training-page .wk-sub, .training-page .cost-note { font-weight: 400; }
+.app-page { --bark: #5f4a2b; --tr-youth: #27679d; --tr-adult: #b04e26; }
+.app-page .tr-day { color: #5c5c5c; }
+.app-page .tr-day-ev { color: #fff; }
+.app-page .tr-day-today { border-color: var(--forest); color: var(--forest); font-weight: 500; }
+.app-page .site-link { color: #1d5f8a; border-color: #1d5f8a; }
+.app-page .empty { color: var(--slate); }
+.app-page .c-desc, .app-page .wk-sub, .app-page .cost-note { font-weight: 400; }
 
 .sr-only {
   position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
@@ -1045,29 +1033,29 @@ button.tr-month-name:focus-visible { outline: 2px solid var(--forest); outline-o
 .tr-skip:focus { top: .5rem; }
 
 /* One focus ring that shows on light and dark backgrounds */
-.training-page :focus-visible {
+.app-page :focus-visible {
   outline: 3px solid #fff; outline-offset: 0;
   box-shadow: 0 0 0 5px var(--forest);
 }
-.training-page #results:focus, .training-page #resultsTitle:focus, .training-page #olTitle:focus { outline: none; box-shadow: none; }
+.app-page #results:focus, .app-page #resultsTitle:focus, .app-page #olTitle:focus { outline: none; box-shadow: none; }
 
 /* Pointer targets of at least 24 by 24 CSS pixels */
 .tr-left .tr-cal { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
 .tr-left .tr-month { padding: .7rem .55rem .8rem; }
 .tr-day-ev { min-width: 24px; min-height: 24px; }
-.training-page .detail-btn { padding: 5px 10px; }
-.training-page .fb, .tr-chip { min-height: 28px; }
+.app-page .detail-btn { padding: 5px 10px; }
+.app-page .fb, .tr-chip { min-height: 28px; }
 button.tr-month-name { min-height: 24px; }
 
 /* Card title is the keyboard way into a course */
-.training-page .card h3.c-title { font-weight: 400; margin: 0; }
+.app-page .card h3.c-title { font-weight: 400; margin: 0; }
 .tr-title-btn {
   background: none; border: none; padding: 0; margin: 0; cursor: pointer; text-align: left;
   font: inherit; letter-spacing: inherit; color: inherit; line-height: inherit;
 }
 .tr-title-btn:hover { text-decoration: underline; }
-.training-page h3.dbox-title { font-weight: 400; }
-.training-page .tr-sheet-head h2 { margin: 0; }
+.app-page h3.dbox-title { font-weight: 400; }
+.app-page .tr-sheet-head h2 { margin: 0; }
 
 /* ── Filter chips above the results ── */
 ul.tr-active { list-style: none; flex: 0 0 100%; }
@@ -1083,7 +1071,7 @@ ul.tr-active { list-style: none; flex: 0 0 100%; }
 /* ── Hovering a result: its dates stand out, the others fade ── */
 .tr-cal-hover .tr-day-ev:not(.tr-day-hl) { opacity: .3; }
 .tr-day-hl { border-color: var(--forest); box-shadow: 0 0 0 2px #d4a72c; }
-.training-page .card:hover, .training-page .card:focus-within { border-color: var(--forest); }
+.app-page .card:hover, .app-page .card:focus-within { border-color: var(--forest); }
 
 /* ── Calendar hover card ── */
 .tr-tip {
@@ -1105,3 +1093,178 @@ ul.tr-active { list-style: none; flex: 0 0 100%; }
 /* Months scrolled into view must clear the pinned map */
 @media (min-width: 901px) { .tr-left .tr-month { scroll-margin-top: 330px; scroll-margin-bottom: 12px; } }
 .tr-title-btn { display: inline-block; min-height: 24px; min-width: 24px; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SHARED APP LAYOUT — activity guide, summer camp and training pages
+   body.app-page: facets pane (.tr-left) beside results (.tr-right), filter chips,
+   hover card, phone filter sheet and the WCAG 2.2 AA rules above. The "tr-"
+   prefix is historical: these classes started on the training page.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.app-page h1 br { display: none; }
+.app-page .tr-left .legend .leg-pill { font-size: .56rem; padding: 1px 6px; }
+.ld-xfar { background: var(--c-xfar); }
+.tr-left .pref-wrap { padding: .9rem 1rem; border-bottom: 1px solid var(--bark); background: none; }
+.tr-left .pref-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .5rem; }
+.tr-left .filters .mb-search { width: 100%; max-width: 15rem; }
+.tr-right .wk-section { margin-top: 2rem; }
+.app-page .tr-right.main .empty { padding: 2.5rem 1rem; }
+
+/* Text and state colors that were under 4.5:1 */
+.app-page .wk-none { background: #eee; color: #5c5c5c; text-decoration: line-through; }
+.app-page .wk-almost { border-style: dashed; border-color: #7d4a00; }
+.app-page .wk-unknown, .app-page .pref-list li.pref-na { color: #5c5c5c; }
+.app-page .wk-dash { color: #5c5c5c; }
+.app-page .map-pop-meta { color: var(--bark); }
+.app-page .ask-na { color: #5c5c5c; border-color: #8a8a8a; }
+.app-page .ask-unk { color: #444; }
+.app-page .ol-desc { font-weight: 400; }
+/* A season the activity does not run in: greyed and struck through, not just faded */
+.app-page .sd { opacity: 1; }
+.app-page .sd:not(.on) { background: #eee; color: #5c5c5c; text-decoration: line-through; }
+/* Photo caption and loading text over the dark gallery */
+.app-page .g-cap { color: #fff; background: linear-gradient(transparent, rgba(0,0,0,.78)); }
+.app-page .g-loader, .app-page .g-empty { color: #fff; }
+
+/* Targets of at least 24 by 24 CSS pixels */
+.app-page .g-dot { width: 24px; height: 24px; background: none; position: relative; }
+.app-page .g-dot::after {
+  content: ''; position: absolute; inset: 8px; border-radius: 50%;
+  background: rgba(255,255,255,.5); border: 1px solid rgba(0,0,0,.45);
+}
+.app-page .g-dot.on::after { background: #fff; }
+.app-page .g-dots { gap: 0; }
+.app-page .wk-cell { min-height: 20px; }
+.app-page .wk-cell[data-tip] { cursor: default; }
+.app-page .ol-title:focus { outline: none; box-shadow: none; }
+.app-page .wk-table tbody tr:focus-visible { outline: 3px solid var(--forest); outline-offset: -3px; box-shadow: none; }
+.wk-open-btn {
+  background: none; border: none; padding: 0; font: inherit; color: inherit; cursor: pointer;
+  text-align: left; min-height: 24px; text-decoration: underline;
+}
+
+/* Printing: the split collapses and the facets pane is left out */
+@media print {
+  .tr-split { display: block !important; }
+  .tr-left, .tr-results-head, .tr-skip, .tr-tip, .tr-sheet-backdrop { display: none !important; }
+  .tr-right.main { padding: 0 !important; }
+}
+.wk-key { display: flex; flex-wrap: wrap; gap: .4rem; margin: .5rem 0 .9rem; }
+.tr-left .pref-inner h2 { font-size: 1.2rem; }
+.app-page .wk-scroll:focus-visible { outline: 3px solid var(--forest); box-shadow: none; }
+/* Keeps the table's screen-reader-only text inside its scroll box */
+.app-page .wk-scroll { position: relative; }
+
+/* ── Details shown in the results pane (activity guide and summer camp) ──
+   The former modal keeps its .overlay / .ol-panel markup so the single-sheet
+   print styles still apply, but on screen it is an ordinary block. */
+.tr-right .overlay {
+  display: none; position: static; inset: auto; z-index: auto;
+  background: none; backdrop-filter: none; padding: 0; overflow: visible;
+}
+.tr-right .overlay.open { display: block; }
+.tr-right .ol-panel {
+  max-width: 860px; margin: .9rem 0 0; box-shadow: none;
+  border: 1.5px solid var(--sand); background: #fff;
+}
+.tr-right .ol-panel .ol-body { background: var(--cream); }
+.tr-right .ol-title { font-size: 2rem; }
+
+@media print {
+  /* Single-sheet print: the sheet now lives inside main */
+  body.print-single .main.tr-right { display: block !important; }
+  body.print-single #listView { display: none !important; }
+  body.print-single .ol-panel { border: none !important; }
+}
+
+/* Copy link buttons in the results and details headings */
+.tr-copy { background: #fff; }
+.tr-results-head .tr-filter-open + .tr-copy { margin-left: 0; }
+@media (min-width: 901px) { .tr-results-head .tr-copy { margin-left: auto; } }
+@media (max-width: 900px) { .tr-filter-open { margin-left: auto; } }
+@media print { .tr-copy { display: none !important; } }
+
+/* Grid / Calendar switch on the camp page: two buttons joined into one control */
+.tr-view { display: inline-flex; }
+.tr-view .fb { border-radius: 0; margin: 0; }
+.tr-view .fb:first-child { border-radius: 20px 0 0 20px; border-right-width: 0; }
+.tr-view .fb:last-child { border-radius: 0 20px 20px 0; }
+.tr-right #calView.wk-section { margin-top: .6rem; }
+
+/* ── Compact page header (all app pages): title and page links on one row ── */
+.app-page header { padding: .9rem 1.5rem .85rem; }
+.app-page .hdr {
+  max-width: none; display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 1.5rem; row-gap: .3rem; align-items: center;
+}
+.app-page .troop-label { grid-column: 1 / -1; margin-bottom: 0; font-size: .62rem; }
+.app-page h1 { font-size: clamp(1.8rem, 3.4vw, 2.6rem); line-height: 1; margin: 0; white-space: nowrap; }
+.app-page .hdr-links { display: flex; flex-wrap: wrap; gap: .4rem; justify-content: flex-end; }
+.app-page .hdr-links .print-btn { margin-top: 0; min-height: 28px; }
+.app-page .hdr-sub { grid-column: 1; max-width: 760px; font-size: .85rem; line-height: 1.45; font-weight: 400; }
+.app-page .hdr-meta { grid-column: 2; margin-top: 0; gap: .3rem 1rem; justify-content: flex-end; align-self: end; font-size: .62rem; }
+@media (max-width: 900px) {
+  .app-page header { padding: .8rem 1rem; }
+  .app-page .hdr { grid-template-columns: 1fr; }
+  .app-page h1 { white-space: normal; }
+  .app-page .hdr-links, .app-page .hdr-meta { grid-column: 1; justify-content: flex-start; }
+}
+@media print { .hdr-links { display: none !important; } }
+@media (min-width: 901px) {
+  .app-page .troop-label { grid-row: 1; }
+  .app-page h1 { grid-column: 1; grid-row: 2; }
+  .app-page .hdr-links { grid-column: 2; grid-row: 2; }
+  .app-page .hdr-sub { grid-row: 3; }
+  .app-page .hdr-meta { grid-row: 3; }
+}
+@media (max-width: 900px) {
+  .app-page .hdr-links .print-btn { font-size: .6rem; padding: .3rem .55rem; letter-spacing: .04em; }
+  .app-page .hdr-meta { gap: .15rem .9rem; }
+  .app-page .hdr-sub { font-size: .82rem; }
+}
+
+/* ── Share and print tools: one group at the right of the results heading ── */
+.tr-tools { display: inline-flex; flex-wrap: wrap; gap: .35rem; }
+@media (min-width: 901px) {
+  .tr-results-head .tr-tools { margin-left: auto; }
+  .tr-results-head .tr-tools .tr-copy { margin-left: 0; }
+}
+.tr-print-filters { display: none; }
+
+@media print {
+  .tr-tools { display: none !important; }
+  /* A printed list says which filters it shows */
+  .tr-print-filters:not(:empty) { display: block; font-family: 'DM Mono', monospace; font-size: 8pt; color: #333; margin: 0 0 6pt; }
+  /* An item open in the results pane prints in place of the list */
+  #detailView:not([hidden]) .overlay { display: block !important; }
+  .app-page .tr-detail { max-width: none; }
+  .app-page .wk-scroll { overflow: visible !important; border: none !important; }
+}
+
+/* ── Print-only heading: filters in effect and a QR code back to this view ── */
+.tr-print-head { display: none; }
+@media print {
+  .tr-print-head {
+    display: flex !important; justify-content: space-between; align-items: flex-start; gap: 12pt;
+    margin: 0 0 8pt; break-inside: avoid;
+  }
+  .tr-print-filters:not(:empty) { font-size: 9pt; margin: 0; align-self: center; }
+  /* With an item open the list's filters are beside the point */
+  .tr-right:has(#detailView:not([hidden])) .tr-print-filters { visibility: hidden; }
+  .tr-print-qr { width: 1in; flex-shrink: 0; margin-left: auto; text-align: center; }
+  .tr-print-qr svg { display: block; width: 1in; height: 1in; }
+  .tr-print-qr-cap { font-family: 'DM Mono', monospace; font-size: 5.5pt; line-height: 1.2; color: #000; margin-top: 2pt; }
+}
+
+/* ── Print: QR code at the top right of the first page, beside the header ── */
+@media print {
+  .tr-print-qr { position: absolute; top: 0; right: 0; margin: 0; }
+  .app-page header { padding-right: 1.25in !important; min-height: 1.3in; }
+  .app-page .hdr { display: block; }
+  .app-page .hdr-meta { justify-content: flex-start; margin-top: 4pt; }
+  .tr-print-head { margin: 0 0 4pt; min-height: 0; }
+  .tr-print-head:has(.tr-print-filters:empty) { margin: 0; }
+  /* Single activity sheet has no page header: the code sits beside the sheet title and photo */
+  body.print-single .ol-panel::before { margin-right: 1.25in; }
+  body.print-single .gallery { margin-right: 1.25in; }
+}
+@media print { .tr-print-qr { z-index: 5; background: #fff; } }

@@ -8,7 +8,7 @@ Give a planner everything needed to decide on and organise one trip — photos, 
 
 ### Requirement: Opening the overlay
 
-The overlay SHALL open from a card click, from a card's details button, from keyboard activation of a focused card, and from a marker popup's "View details" button on the map.
+The overlay SHALL open from a card click, from a card's details button, from keyboard activation of a card's title, and from a click on the activity's map marker. The details SHALL replace the list in the results pane rather than cover the page, so the map stays in view with only that activity's marker lit. Opening SHALL move focus to the title; a "Back to all results" control or Escape SHALL restore the list at its previous scroll position and return focus to the control that opened the details.
 
 #### Scenario: Clicking a card
 
@@ -39,30 +39,22 @@ The overlay SHALL show the activity title, a photo gallery, meta pills, the desc
 - **WHEN** an activity has no `website` value
 - **THEN** the official website link is omitted
 
-### Requirement: Closing the overlay
+### Requirement: Returning to the results
 
-The overlay SHALL close via its close button, a click on the backdrop outside the panel, and the Escape key, restoring page scrolling each time.
+The details SHALL close via the "Back to all results" control, the Escape key, or a change of filter, and the list SHALL return each time.
+
+#### Scenario: Back control
+
+- **WHEN** the details are open and the planner clicks "Back to all results"
+- **THEN** the list returns at its previous scroll position and the map returns to its starting view
 
 #### Scenario: Escape key
 
-- **WHEN** the overlay is open and the planner presses Escape
-- **THEN** the overlay closes and the page scrolls normally again
+- **WHEN** the details are open and the planner presses Escape
+- **THEN** the list returns
 
-#### Scenario: Backdrop click
+#### Scenario: Changing a filter
 
-- **WHEN** the planner clicks the dimmed area outside the panel
-- **THEN** the overlay closes
+- **WHEN** the details are open and the planner changes a filter
+- **THEN** the list returns, filtered, at its top
 
-#### Scenario: Click inside the panel
-
-- **WHEN** the planner clicks content inside the panel
-- **THEN** the overlay stays open
-
-### Requirement: Scroll locking
-
-While the overlay is open, background page scrolling SHALL be suppressed so the panel reads as a modal.
-
-#### Scenario: Scrolling behind the overlay
-
-- **WHEN** the overlay is open and the planner scrolls
-- **THEN** the page behind the overlay does not move
