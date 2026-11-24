@@ -1022,3 +1022,86 @@ button.tr-month-name:focus-visible { outline: 2px solid var(--forest); outline-o
 
 /* Grid children may shrink below their content, so the sideways calendar cannot widen the page */
 .tr-split > * { min-width: 0; }
+
+/* ── Training page: accessibility (WCAG 2.2 AA) ── */
+/* Text colors with at least 4.5:1 on the page's white, cream and sand backgrounds */
+.training-page { --bark: #5f4a2b; --tr-youth: #27679d; --tr-adult: #b04e26; }
+.training-page .tr-day { color: #5c5c5c; }
+.training-page .tr-day-ev { color: #fff; }
+.training-page .tr-day-today { border-color: var(--forest); color: var(--forest); font-weight: 500; }
+.training-page .site-link { color: #1d5f8a; border-color: #1d5f8a; }
+.training-page .empty { color: var(--slate); }
+.training-page .c-desc, .training-page .wk-sub, .training-page .cost-note { font-weight: 400; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+.tr-skip {
+  position: absolute; left: .5rem; top: -4rem; z-index: 1000;
+  background: #fff; color: var(--forest); padding: .6rem 1rem; border-radius: 4px;
+  font-family: 'DM Sans', sans-serif; font-size: .9rem; font-weight: 500;
+}
+.tr-skip:focus { top: .5rem; }
+
+/* One focus ring that shows on light and dark backgrounds */
+.training-page :focus-visible {
+  outline: 3px solid #fff; outline-offset: 0;
+  box-shadow: 0 0 0 5px var(--forest);
+}
+.training-page #results:focus, .training-page #resultsTitle:focus, .training-page #olTitle:focus { outline: none; box-shadow: none; }
+
+/* Pointer targets of at least 24 by 24 CSS pixels */
+.tr-left .tr-cal { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+.tr-left .tr-month { padding: .7rem .55rem .8rem; }
+.tr-day-ev { min-width: 24px; min-height: 24px; }
+.training-page .detail-btn { padding: 5px 10px; }
+.training-page .fb, .tr-chip { min-height: 28px; }
+button.tr-month-name { min-height: 24px; }
+
+/* Card title is the keyboard way into a course */
+.training-page .card h3.c-title { font-weight: 400; margin: 0; }
+.tr-title-btn {
+  background: none; border: none; padding: 0; margin: 0; cursor: pointer; text-align: left;
+  font: inherit; letter-spacing: inherit; color: inherit; line-height: inherit;
+}
+.tr-title-btn:hover { text-decoration: underline; }
+.training-page h3.dbox-title { font-weight: 400; }
+.training-page .tr-sheet-head h2 { margin: 0; }
+
+/* ── Filter chips above the results ── */
+ul.tr-active { list-style: none; flex: 0 0 100%; }
+.tr-chip-all { background: #fff; border-color: var(--forest); color: var(--forest); }
+.tr-chip-all:hover { background: var(--forest); color: var(--cream); }
+
+/* ── "What" box in a course's details ── */
+.tr-what-wrap { margin-bottom: .9rem; }
+.tr-what { border-left: 5px solid var(--pine); }
+.tr-what-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.25rem; letter-spacing: .04em; color: var(--pine); line-height: 1.15; }
+.tr-what-text { font-size: .95rem; line-height: 1.6; color: #1f2d3a; margin-top: .3rem; }
+
+/* ── Hovering a result: its dates stand out, the others fade ── */
+.tr-cal-hover .tr-day-ev:not(.tr-day-hl) { opacity: .3; }
+.tr-day-hl { border-color: var(--forest); box-shadow: 0 0 0 2px #d4a72c; }
+.training-page .card:hover, .training-page .card:focus-within { border-color: var(--forest); }
+
+/* ── Calendar hover card ── */
+.tr-tip {
+  position: fixed; z-index: 600; width: max-content; max-width: min(300px, calc(100vw - 16px));
+  background: var(--forest); color: var(--cream); border-radius: 8px; padding: .6rem .75rem .65rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,.35); font-family: 'DM Sans', sans-serif; font-size: .78rem; line-height: 1.35;
+}
+.tr-tip-date { font-family: 'DM Mono', monospace; font-size: .64rem; letter-spacing: .1em; text-transform: uppercase; color: var(--fern); margin-bottom: .35rem; }
+.tr-tip ul { list-style: none; display: flex; flex-direction: column; gap: .4rem; }
+.tr-tip li { display: flex; gap: .45rem; align-items: flex-start; color: var(--sand); }
+.tr-tip li b { color: #fff; font-weight: 500; }
+.tr-tip-dot { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid #fff; flex-shrink: 0; margin-top: .25rem; }
+.tr-tip-more { margin-top: .4rem; font-size: .7rem; color: var(--fern); }
+
+@media (max-width: 900px) {
+  .tr-left .tr-month { flex: 0 0 225px; }
+}
+
+/* Months scrolled into view must clear the pinned map */
+@media (min-width: 901px) { .tr-left .tr-month { scroll-margin-top: 330px; scroll-margin-bottom: 12px; } }
+.tr-title-btn { display: inline-block; min-height: 24px; min-width: 24px; }

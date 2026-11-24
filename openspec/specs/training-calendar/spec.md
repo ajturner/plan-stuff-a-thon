@@ -49,21 +49,53 @@ The page SHALL show a month grid for every month from now to the last course, co
 
 ### Requirement: Map
 
-The map SHALL stay pinned at the top of the facets pane and show one marker per venue, sized by the number of matching courses and coloured by audience, plus a marker for Capitol Hill. Clicking a venue marker SHALL filter the course list to that venue; clicking it again SHALL clear the filter.
+The map SHALL stay pinned at the top of the facets pane and show one marker per venue, sized by the number of matching courses and coloured by audience, plus a marker for Capitol Hill. Clicking a venue marker SHALL filter the course list to that venue; clicking it again, or clicking empty map, SHALL clear the filter. Shift-clicking markers, or calendar days, SHALL add to the selection, and a course SHALL match when it is at any selected venue and runs on any selected day. Hovering a marker SHALL show the same hover card as a calendar day, listing that venue's matching courses. The map SHALL offer a Home control that returns to the starting view and a search box for finding a place or address.
 
 #### Scenario: Filtering from the map
 
 - **WHEN** the visitor clicks a venue marker
 - **THEN** only that venue's courses are listed, the marker is outlined, and a removable chip names the venue
 
+#### Scenario: Selecting two venues
+
+- **WHEN** the visitor clicks one venue marker and Shift-clicks another
+- **THEN** courses at either venue are listed, both markers are outlined, and each venue has its own removable chip
+
 ### Requirement: Course details
 
-Opening a course SHALL replace the course list in the results pane with its details: audience, host, council, every session with day of week, times, cost, venue address with drive time and a map link, the registration link (or the council training page when none is posted), and its notes. While a course is open the map SHALL show only its venue and the calendar only its dates. A back control SHALL return to the full results.
+Opening a course SHALL replace the course list in the results pane with its details: a "What" box describing the training, then audience, host, council, every session with day of week, times, cost, venue address with drive time and a map link, the registration link (or the council training page when none is posted), and its notes. While a course is open the map SHALL show only its venue and the calendar only its dates. A back control SHALL return to the full results.
 
 #### Scenario: Returning to the results
 
 - **WHEN** the visitor clicks "Back to all results" or presses Escape
 - **THEN** the course list returns at its previous scroll position with the earlier filters intact
+
+### Requirement: Filters in effect
+
+Every filter in effect, whether set in the filter bar, on the calendar or on the map, SHALL be shown as a removable chip above the course list, followed by a control that clears them all. Changing any filter SHALL scroll the course list back to its top.
+
+#### Scenario: Clearing all filters
+
+- **WHEN** the visitor has chosen an audience, a course and a month and clicks "Clear all filters"
+- **THEN** every course is listed again, the chips disappear, and the filter bar shows its defaults
+
+### Requirement: Hover previews
+
+Hovering or focusing a calendar day that has courses SHALL show a styled card naming them, which stays while the pointer is over it and closes on Escape. Hovering or focusing a course in the list SHALL outline its venue on the map and its dates on the calendar.
+
+#### Scenario: Hovering a result
+
+- **WHEN** the visitor hovers a course card
+- **THEN** its venue marker is outlined and its dates stand out on the calendar while other days fade
+
+### Requirement: Accessibility
+
+The page SHALL meet WCAG 2.2 level AA: text contrast of at least 4.5:1, every control operable by keyboard with a visible focus indicator and a target of at least 24 by 24 CSS pixels, names and states exposed to assistive technology, focus moved to a course when it opens and back when it closes, and no horizontal scrolling at 320 CSS pixels wide. The map's marker filter SHALL have a keyboard equivalent.
+
+#### Scenario: Opening a course by keyboard
+
+- **WHEN** a keyboard user activates a course title
+- **THEN** focus moves to the course heading, and "Back to all results" returns focus to that course's title
 
 ### Requirement: Side-by-side layout
 
